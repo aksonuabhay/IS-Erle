@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<project type="activity" builder="java">
+  <name>Is Erle Waypoint Processor</name>
+  <description>
+    It reads the waypoint mission text file, generates payload data for mavlink and publishes it. Mavlink in turn subscribes it processes it and then puts it on the comm activity's channel. Mavlink receives acknowledments from the drone in return which it will publish it to this activity. This activity will respond with relevant waypoint query data.
+  </description>
+
+  <identifyingName>is.erle.waypoint.processor</identifyingName>
+  <version>1.0.0</version>
+
+  <activity type="interactivespaces_native">
+    <name>is.erle.waypoint.processor</name>
+    <class>is.erle.waypoint.processor.IsErleWaypointProcessorActivity</class>
+
+    <configuration>
+      <property name="space.activity.log.level" required="false">
+        <value>info</value>
+      </property>
+    </configuration>
+  </activity>
+</project>

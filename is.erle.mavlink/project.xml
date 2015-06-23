@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<project type="activity" builder="java">
+  <name>Is Erle Mavlink</name>
+  <description>
+    This activity will subscribe to 2 channels one from waypoint processor and one from comms. It will take the waypoint payload data and
+    make it Mavlink understandable. It will then publish this data on comms. It will also be subscribing comms, it will parse all the data into
+    releavant fields and then publish it on relevant topics. The incoming data will have imu, compass, gps, battery, barometer etc data, it will all get separated and published on individual topics.
+  </description>
+
+  <identifyingName>is.erle.mavlink</identifyingName>
+  <version>1.0.0</version>
+
+  <activity type="interactivespaces_native">
+    <name>is.erle.mavlink</name>
+    <class>is.erle.mavlink.IsErleMavlinkActivity</class>
+
+    <configuration>
+      <property name="space.activity.log.level" required="false">
+        <value>info</value>
+      </property>
+    </configuration>
+  </activity>
+</project>
