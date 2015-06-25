@@ -1,8 +1,11 @@
 package is.erle.comms;
 
 import java.net.InetSocketAddress;
+import java.util.Map;
 
-import interactivespaces.activity.impl.BaseActivity;
+import com.google.common.collect.Maps;
+
+import interactivespaces.activity.impl.ros.BaseRoutableRosActivity;
 import interactivespaces.service.comm.network.client.UdpClientNetworkCommunicationEndpoint;
 import interactivespaces.service.comm.network.client.UdpClientNetworkCommunicationEndpointListener;
 import interactivespaces.service.comm.network.client.UdpClientNetworkCommunicationEndpointService;
@@ -10,12 +13,15 @@ import interactivespaces.service.comm.network.client.UdpClientNetworkCommunicati
 /**
  * A simple Interactive Spaces Java-based activity.
  */
-public class IsErleCommsActivity extends BaseActivity {
+public class IsErleCommsActivity extends BaseRoutableRosActivity {
 
 	private static final String CONFIGURATION_SERVER_HOST = "space.comm.udp.server.host";
 	private static final String CONFIGURATION_SERVER_PORT = "space.comm.udp.server.port";
 	
+	private static final String CONFIGURATION_CHANNEL_NAME = "space.activity.route.output.output1";
 	
+	private static long jsonOutputCounter = 0;
+	private static long jsonInputCounter = 0 ;
 	
 	private UdpClientNetworkCommunicationEndpoint udpDroneClient;
 	private InetSocketAddress udpDroneServerAddress;
@@ -59,11 +65,18 @@ public class IsErleCommsActivity extends BaseActivity {
     @Override
     public void onActivityActivate() {
         getLog().info("Activity is.erle.comms activate");
+        jsonOutputCounter = 0;
+        Map<String,Object> temp=Maps.newHashMap();
+        temp.put(Long.toString(jsonOutputCounter++), "ACTIVATE");
+        sendOutputJson("output", temp);
     }
 
     @Override
     public void onActivityDeactivate() {
         getLog().info("Activity is.erle.comms deactivate");
+        Map<String,Object> temp=Maps.newHashMap();
+        temp.put(Long.toString(jsonOutputCounter), "DEACTIVATE");
+        sendOutputJson("output", temp);
     }
 
     @Override
@@ -81,9 +94,20 @@ public class IsErleCommsActivity extends BaseActivity {
         getLog().info("Activity is.erle.comms cleanup");
     }
     
+    @Override
+    public void onNewInputJson(String channelName, Map <String , Object> message)
+    {
+    	String temp = message.get(Long.toString(jsonInputCounter)).toString();
+    	udpDroneClient.write(udpDroneServerAddress, temp.getBytes());
+    	jsonInputCounter++;
+    }
+    
     protected void handleUdpDroneResponse(byte[] response,
 			InetSocketAddress address) {
-		// TODO Auto-generated method stub
+        Map<String,Object> temp=Maps.newHashMap();
+        String message = new String(response);
+        temp.put(Long.toString(jsonOutputCounter++), message);
+        sendOutputJson(getConfiguration().getRequiredPropertyString(CONFIGURATION_CHANNEL_NAME), temp);
 		
 	}
 }
