@@ -18,7 +18,7 @@ public class IsErleCommsActivity extends BaseRoutableRosActivity {
 	private static final String CONFIGURATION_SERVER_HOST = "space.comm.udp.server.host";
 	private static final String CONFIGURATION_SERVER_PORT = "space.comm.udp.server.port";
 	
-	private static final String CONFIGURATION_CHANNEL_NAME = "space.activity.route.output.output1";
+//	private static final String CONFIGURATION_CHANNEL_NAME = "space.activity.route.output.output";
 	
 	private static long jsonOutputCounter = 0;
 	private static long jsonInputCounter = 0 ;
@@ -107,7 +107,7 @@ public class IsErleCommsActivity extends BaseRoutableRosActivity {
         Map<String,Object> temp=Maps.newHashMap();
         String message = new String(response);
         temp.put(Long.toString(jsonOutputCounter++), message);
-        sendOutputJson(getConfiguration().getRequiredPropertyString(CONFIGURATION_CHANNEL_NAME), temp);
+        sendOutputJson("output", temp);
 		
 	}
 }
