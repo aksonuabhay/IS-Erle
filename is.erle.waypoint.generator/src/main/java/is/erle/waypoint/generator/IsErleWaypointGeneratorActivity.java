@@ -6,6 +6,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Map;
 
+
+import com.google.common.collect.Maps;
+
 import interactivespaces.activity.impl.ros.BaseRoutableRosActivity;
 
 /**
@@ -19,6 +22,7 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
 	
 	private BufferedReader br;
 	
+	private String currentLine;
 	private int waypointCount;
 	
     @Override
@@ -28,7 +32,6 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
         try 
         {
 			br = new BufferedReader(new FileReader(CONFIGURATION_FILE_NAME));
-			String currentLine;
 			while ((currentLine = br.readLine())!=null) 
 			{
 				if (lineCount != 1) 
@@ -43,7 +46,7 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
 			{
 				getLog().fatal("Waypoint count and number of lines mismatch , recheck mission file ");
 			}
-			
+			br.close();
 		} 
         catch (FileNotFoundException e) 
         {
@@ -71,6 +74,22 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
     @Override
     public void onActivityActivate() {
         getLog().info("Activity is.erle.waypoint.generator activate");
+        try 
+        {
+			br = new BufferedReader (new FileReader(CONFIGURATION_FILE_NAME));
+			currentLine = br.readLine(); 
+			Map<String, Object> temp = Maps.newHashMap();
+			temp.put("mission", "START");
+			sendOutputJson(getConfiguration().getRequiredPropertyString(CONFIGURATION_PUBLISHER_NAME), temp);
+		} 
+        catch (FileNotFoundException e) 
+        {
+			// TODO Auto-generated catch block
+			getLog().error(e);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			getLog().error(e);
+		}
     }
 
     @Override
@@ -97,5 +116,25 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
     public void onNewInputJson(String channelName, Map <String , Object> message)
     {
     	//To Do
+    	if (message.get("mission") == "WAYPOINT_REQUEST") 
+    	{
+    		try 
+    		{
+				currentLine = br.readLine();
+				for (String subString : currentLine.split(" " , 9)) // Make sure that there are total 9 columns
+				{
+					// Make a payload object and then send it to the mavlink activity
+					//payLoad = substring
+				}
+				Map temp = Maps.newHashMap();
+				//temp.put("mission", payLoad);
+				sendOutputJson(getConfiguration().getRequiredPropertyString(CONFIGURATION_PUBLISHER_NAME), temp);
+			} 
+    		catch (IOException e) 
+    		{
+				// TODO Auto-generated catch block
+    			getLog().error(e);
+			}
+		}
     }
 }
