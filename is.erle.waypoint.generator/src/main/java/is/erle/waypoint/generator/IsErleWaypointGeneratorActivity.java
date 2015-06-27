@@ -20,6 +20,8 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
 	private static final String CONFIGURATION_SUBSCRIBER_NAME = "space.activity.routes.inputs";
 	private static final String CONFIGURATION_FILE_NAME = "~/interactivespaces/controller/mission.txt";
 	
+	private static final String SEPARATOR ="\t";
+	
 	private BufferedReader br;
 	
 	private String currentLine;
@@ -37,7 +39,7 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
 				if (lineCount != 1) 
 				{
 					currentLine =currentLine.trim();
-					waypointCount = Integer.parseInt(currentLine.substring(0,currentLine.indexOf(" ") )); // Not sure that space is the separator of tab is the separator
+					waypointCount = Integer.parseInt(currentLine.substring(0,currentLine.indexOf(SEPARATOR) )); // Not sure that tab is the separator 
 				}
 
 				lineCount++;
@@ -74,22 +76,10 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
     @Override
     public void onActivityActivate() {
         getLog().info("Activity is.erle.waypoint.generator activate");
-        try 
-        {
-			br = new BufferedReader (new FileReader(CONFIGURATION_FILE_NAME));
-			currentLine = br.readLine(); 
 			Map<String, Object> temp = Maps.newHashMap();
-			temp.put("mission", "START");
+			String temps="START-" + Integer.toString(waypointCount);
+			temp.put("mission", temps);
 			sendOutputJson(getConfiguration().getRequiredPropertyString(CONFIGURATION_PUBLISHER_NAME), temp);
-		} 
-        catch (FileNotFoundException e) 
-        {
-			// TODO Auto-generated catch block
-			getLog().error(e);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			getLog().error(e);
-		}
     }
 
     @Override
@@ -116,19 +106,28 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
     public void onNewInputJson(String channelName, Map <String , Object> message)
     {
     	//To Do
-    	if (message.get("mission") == "WAYPOINT_REQUEST") 
+    	String msgFromDrone[] = message.get("mission").toString().split("-") ;
+    	if (msgFromDrone[0] == "WAYPOINT_REQUEST") 
     	{
+    		
     		try 
     		{
-				currentLine = br.readLine();
-				for (String subString : currentLine.split(" " , 9)) // Make sure that there are total 9 columns
-				{
-					// Make a payload object and then send it to the mavlink activity
-					//payLoad = substring
+    			br = new BufferedReader(new FileReader(CONFIGURATION_FILE_NAME));
+    			
+    			currentLine=br.readLine(); //So that it can ignore first line of file, it can be used in checking the integrity of file/version of file 
+    			
+    			for (int i = 0; i <= Integer.parseInt(msgFromDrone[1]); i++) 
+    			{
+					currentLine=br.readLine(); // Seek to the current line
+					
 				}
-				Map temp = Maps.newHashMap();
-				//temp.put("mission", payLoad);
+    			
+    			String payLoad[] = currentLine.split(SEPARATOR);
+    			
+				Map<String, Object> temp = Maps.newHashMap();
+				temp.put("mission", payLoad);
 				sendOutputJson(getConfiguration().getRequiredPropertyString(CONFIGURATION_PUBLISHER_NAME), temp);
+				br.close();
 			} 
     		catch (IOException e) 
     		{
@@ -136,5 +135,17 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
     			getLog().error(e);
 			}
 		}
+    	
+    	else if (msgFromDrone[0] == "WAYPOINT_ACK")
+    	{
+    		getLog().info("Mission successfully uploaded on the drone");
+    	}
+    	
+    	else
+    	{
+    		getLog().info("Invalid request");
+    	}
     }
 }
+
+
