@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+
 	<classpathentry kind="src" path="src/main/java"/>
-	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+
+
 	<classpathentry kind="lib" path="/home/abhay/interactivespaces/controller/bootstrap/org.apache.servicemix.bundles.freemarker-2.3.22_1.jar"/>
 	<classpathentry kind="lib" path="/home/abhay/interactivespaces/controller/bootstrap/com.springsource.org.apache.httpcomponents.httpcore-4.1.jar"/>
 	<classpathentry kind="lib" path="/home/abhay/interactivespaces/controller/bootstrap/rosjava_osgi_node-1.8.0.jar"/>
@@ -70,13 +73,12 @@
 	<classpathentry kind="lib" path="/home/abhay/interactivespaces/controller/lib/system/java/interactivespaces-bootstrap-core-1.8.0.jar"/>
 	<classpathentry kind="lib" path="/home/abhay/interactivespaces/controller/lib/system/java/interactivespaces-launcher-bootstrap-1.8.0.jar"/>
 	<classpathentry kind="lib" path="/usr/share/java/RXTXcomm.jar"/>
-	<classpathentry kind="lib" path="/home/abhay/interactivespaces/workbench/IS_APM/comm.mavlink.packet/Dependencies/org.mavlink.library.jar"/>
-	<classpathentry kind="lib" path="/home/abhay/interactivespaces/workbench/IS_APM/comm.mavlink.packet/Dependencies/org.mavlink.util.jar"/>
-	<classpathentry kind="lib" path="/home/abhay/interactivespaces/workbench/IS-Erle/is.erle.waypoint.sender/Dependencies/is.mavlink.pixhawk-1.0.0.jar"/>
+	<classpathentry kind="lib" path="/home/abhay/interactivespaces/workbench/IS-Erle/Dependencies/is.mavlink.pixhawk-1.0.0.jar"/>
 	<classpathentry kind="lib" path="/home/abhay/interactivespaces/workbench/extras/testing/hamcrest-core-1.3.jar"/>
 	<classpathentry kind="lib" path="/home/abhay/interactivespaces/workbench/extras/testing/mockito-all-1.9.5.jar"/>
 	<classpathentry kind="lib" path="/home/abhay/interactivespaces/workbench/extras/testing/org.apache.servicemix.bundles.junit-4.11_1.jar"/>
 	<classpathentry kind="lib" path="/home/abhay/interactivespaces/workbench/extras/testing/interactivespaces-workbench-testing-1.8.0.SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="/home/abhay/interactivespaces/workbench/extras/testing/interactivespaces-workbench-testing-1.8.0.jar"/>
+
 	<classpathentry kind="output" path="bin"/>
 </classpath>

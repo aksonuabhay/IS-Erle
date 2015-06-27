@@ -73,9 +73,7 @@
 	<classpathentry kind="lib" path="/home/abhay/interactivespaces/controller/lib/system/java/interactivespaces-bootstrap-core-1.8.0.jar"/>
 	<classpathentry kind="lib" path="/home/abhay/interactivespaces/controller/lib/system/java/interactivespaces-launcher-bootstrap-1.8.0.jar"/>
 	<classpathentry kind="lib" path="/usr/share/java/RXTXcomm.jar"/>
-	<classpathentry kind="lib" path="/home/abhay/interactivespaces/workbench/IS_APM/comm.mavlink.packet/Dependencies/org.mavlink.library.jar"/>
-	<classpathentry kind="lib" path="/home/abhay/interactivespaces/workbench/IS_APM/comm.mavlink.packet/Dependencies/org.mavlink.util.jar"/>
-	<classpathentry kind="lib" path="/home/abhay/interactivespaces/workbench/IS-Erle/is.erle.waypoint.sender/Dependencies/is.mavlink.pixhawk-1.0.0.jar"/>
+	<classpathentry kind="lib" path="/home/abhay/interactivespaces/workbench/IS-Erle/Dependencies/is.mavlink.pixhawk-1.0.0.jar"/>
 	<classpathentry kind="lib" path="/home/abhay/interactivespaces/workbench/extras/testing/hamcrest-core-1.3.jar"/>
 	<classpathentry kind="lib" path="/home/abhay/interactivespaces/workbench/extras/testing/mockito-all-1.9.5.jar"/>
 	<classpathentry kind="lib" path="/home/abhay/interactivespaces/workbench/extras/testing/org.apache.servicemix.bundles.junit-4.11_1.jar"/>
