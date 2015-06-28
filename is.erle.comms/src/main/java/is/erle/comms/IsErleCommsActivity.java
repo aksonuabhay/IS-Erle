@@ -105,8 +105,7 @@ public class IsErleCommsActivity extends BaseRoutableRosActivity {
     protected void handleUdpDroneResponse(byte[] response,
 			InetSocketAddress address) {
         Map<String,Object> temp=Maps.newHashMap();
-        String message = new String(response);
-        temp.put(Long.toString(jsonOutputCounter++), message);
+        temp.put("comm", response);
         sendOutputJson("output", temp);
 		
 	}
