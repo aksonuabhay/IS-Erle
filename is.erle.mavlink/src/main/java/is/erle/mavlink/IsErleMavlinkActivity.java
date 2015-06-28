@@ -7,6 +7,8 @@ import interactivespaces.activity.impl.ros.BaseRoutableRosActivity;
 
 import com.MAVLink.*;
 import com.MAVLink.Messages.MAVLinkMessage;
+import com.MAVLink.common.*;
+import com.MAVLink.pixhawk.*;
 import com.google.common.collect.Maps;
 /**
  * A simple Interactive Spaces Java-based activity.
@@ -110,9 +112,549 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	private void hadnleMavMessage(MAVLinkMessage mavMessage2) 
 	{
 		//To Do
-		switch (mavPacket.msgid) {
-		case value:
-			
+		switch (mavMessage2.msgid) {
+		case msg_set_cam_shutter.MAVLINK_MSG_ID_SET_CAM_SHUTTER:
+
+			break;
+
+		case msg_image_triggered.MAVLINK_MSG_ID_IMAGE_TRIGGERED:
+
+			break;
+
+		case msg_image_trigger_control.MAVLINK_MSG_ID_IMAGE_TRIGGER_CONTROL:
+
+			break;
+
+		case msg_image_available.MAVLINK_MSG_ID_IMAGE_AVAILABLE:
+
+			break;
+
+		case msg_set_position_control_offset.MAVLINK_MSG_ID_SET_POSITION_CONTROL_OFFSET:
+
+			break;
+
+		case msg_position_control_setpoint.MAVLINK_MSG_ID_POSITION_CONTROL_SETPOINT:
+
+			break;
+
+		case msg_marker.MAVLINK_MSG_ID_MARKER:
+
+			break;
+
+		case msg_raw_aux.MAVLINK_MSG_ID_RAW_AUX:
+
+			break;
+
+		case msg_watchdog_heartbeat.MAVLINK_MSG_ID_WATCHDOG_HEARTBEAT:
+
+			break;
+
+		case msg_watchdog_process_info.MAVLINK_MSG_ID_WATCHDOG_PROCESS_INFO:
+
+			break;
+
+		case msg_watchdog_process_status.MAVLINK_MSG_ID_WATCHDOG_PROCESS_STATUS:
+
+			break;
+
+		case msg_watchdog_command.MAVLINK_MSG_ID_WATCHDOG_COMMAND:
+
+			break;
+
+		case msg_pattern_detected.MAVLINK_MSG_ID_PATTERN_DETECTED:
+
+			break;
+
+		case msg_point_of_interest.MAVLINK_MSG_ID_POINT_OF_INTEREST:
+
+			break;
+
+		case msg_point_of_interest_connection.MAVLINK_MSG_ID_POINT_OF_INTEREST_CONNECTION:
+
+			break;
+
+		case msg_brief_feature.MAVLINK_MSG_ID_BRIEF_FEATURE:
+
+			break;
+
+		case msg_attitude_control.MAVLINK_MSG_ID_ATTITUDE_CONTROL:
+
+			break;
+
+		case msg_detection_stats.MAVLINK_MSG_ID_DETECTION_STATS:
+
+			break;
+
+		case msg_onboard_health.MAVLINK_MSG_ID_ONBOARD_HEALTH:
+
+			break;
+
+		case msg_heartbeat.MAVLINK_MSG_ID_HEARTBEAT:
+
+			break;
+
+		case msg_sys_status.MAVLINK_MSG_ID_SYS_STATUS:
+
+			break;
+
+		case msg_system_time.MAVLINK_MSG_ID_SYSTEM_TIME:
+
+			break;
+
+		case msg_ping.MAVLINK_MSG_ID_PING:
+
+			break;
+
+		case msg_change_operator_control.MAVLINK_MSG_ID_CHANGE_OPERATOR_CONTROL:
+
+			break;
+
+		case msg_change_operator_control_ack.MAVLINK_MSG_ID_CHANGE_OPERATOR_CONTROL_ACK:
+
+			break;
+
+		case msg_auth_key.MAVLINK_MSG_ID_AUTH_KEY:
+
+			break;
+
+		case msg_set_mode.MAVLINK_MSG_ID_SET_MODE:
+
+			break;
+
+		case msg_param_request_read.MAVLINK_MSG_ID_PARAM_REQUEST_READ:
+
+			break;
+
+		case msg_param_request_list.MAVLINK_MSG_ID_PARAM_REQUEST_LIST:
+
+			break;
+
+		case msg_param_value.MAVLINK_MSG_ID_PARAM_VALUE:
+
+			break;
+
+		case msg_param_set.MAVLINK_MSG_ID_PARAM_SET:
+
+			break;
+
+		case msg_gps_raw_int.MAVLINK_MSG_ID_GPS_RAW_INT:
+
+			break;
+
+		case msg_gps_status.MAVLINK_MSG_ID_GPS_STATUS:
+
+			break;
+
+		case msg_scaled_imu.MAVLINK_MSG_ID_SCALED_IMU:
+
+			break;
+
+		case msg_raw_imu.MAVLINK_MSG_ID_RAW_IMU:
+
+			break;
+
+		case msg_raw_pressure.MAVLINK_MSG_ID_RAW_PRESSURE:
+
+			break;
+
+		case msg_scaled_pressure.MAVLINK_MSG_ID_SCALED_PRESSURE:
+
+			break;
+
+		case msg_attitude.MAVLINK_MSG_ID_ATTITUDE:
+
+			break;
+
+		case msg_attitude_quaternion.MAVLINK_MSG_ID_ATTITUDE_QUATERNION:
+
+			break;
+
+		case msg_local_position_ned.MAVLINK_MSG_ID_LOCAL_POSITION_NED:
+
+			break;
+
+		case msg_global_position_int.MAVLINK_MSG_ID_GLOBAL_POSITION_INT:
+
+			break;
+
+		case msg_rc_channels_scaled.MAVLINK_MSG_ID_RC_CHANNELS_SCALED:
+
+			break;
+
+		case msg_rc_channels_raw.MAVLINK_MSG_ID_RC_CHANNELS_RAW:
+
+			break;
+
+		case msg_servo_output_raw.MAVLINK_MSG_ID_SERVO_OUTPUT_RAW:
+
+			break;
+
+		case msg_mission_request_partial_list.MAVLINK_MSG_ID_MISSION_REQUEST_PARTIAL_LIST:
+
+			break;
+
+		case msg_mission_write_partial_list.MAVLINK_MSG_ID_MISSION_WRITE_PARTIAL_LIST:
+
+			break;
+
+		case msg_mission_item.MAVLINK_MSG_ID_MISSION_ITEM:
+
+			break;
+
+		case msg_mission_request.MAVLINK_MSG_ID_MISSION_REQUEST:
+
+			break;
+
+		case msg_mission_set_current.MAVLINK_MSG_ID_MISSION_SET_CURRENT:
+
+			break;
+
+		case msg_mission_current.MAVLINK_MSG_ID_MISSION_CURRENT:
+
+			break;
+
+		case msg_mission_request_list.MAVLINK_MSG_ID_MISSION_REQUEST_LIST:
+
+			break;
+
+		case msg_mission_count.MAVLINK_MSG_ID_MISSION_COUNT:
+
+			break;
+
+		case msg_mission_clear_all.MAVLINK_MSG_ID_MISSION_CLEAR_ALL:
+
+			break;
+
+		case msg_mission_item_reached.MAVLINK_MSG_ID_MISSION_ITEM_REACHED:
+
+			break;
+
+		case msg_mission_ack.MAVLINK_MSG_ID_MISSION_ACK:
+
+			break;
+
+		case msg_set_gps_global_origin.MAVLINK_MSG_ID_SET_GPS_GLOBAL_ORIGIN:
+
+			break;
+
+		case msg_gps_global_origin.MAVLINK_MSG_ID_GPS_GLOBAL_ORIGIN:
+
+			break;
+
+		case msg_param_map_rc.MAVLINK_MSG_ID_PARAM_MAP_RC:
+
+			break;
+
+		case msg_safety_set_allowed_area.MAVLINK_MSG_ID_SAFETY_SET_ALLOWED_AREA:
+
+			break;
+
+		case msg_safety_allowed_area.MAVLINK_MSG_ID_SAFETY_ALLOWED_AREA:
+
+			break;
+
+		case msg_attitude_quaternion_cov.MAVLINK_MSG_ID_ATTITUDE_QUATERNION_COV:
+
+			break;
+
+		case msg_nav_controller_output.MAVLINK_MSG_ID_NAV_CONTROLLER_OUTPUT:
+
+			break;
+
+		case msg_global_position_int_cov.MAVLINK_MSG_ID_GLOBAL_POSITION_INT_COV:
+
+			break;
+
+		case msg_local_position_ned_cov.MAVLINK_MSG_ID_LOCAL_POSITION_NED_COV:
+
+			break;
+
+		case msg_rc_channels.MAVLINK_MSG_ID_RC_CHANNELS:
+
+			break;
+
+		case msg_request_data_stream.MAVLINK_MSG_ID_REQUEST_DATA_STREAM:
+
+			break;
+
+		case msg_data_stream.MAVLINK_MSG_ID_DATA_STREAM:
+
+			break;
+
+		case msg_manual_control.MAVLINK_MSG_ID_MANUAL_CONTROL:
+
+			break;
+
+		case msg_rc_channels_override.MAVLINK_MSG_ID_RC_CHANNELS_OVERRIDE:
+
+			break;
+
+		case msg_mission_item_int.MAVLINK_MSG_ID_MISSION_ITEM_INT:
+
+			break;
+
+		case msg_vfr_hud.MAVLINK_MSG_ID_VFR_HUD:
+
+			break;
+
+		case msg_command_int.MAVLINK_MSG_ID_COMMAND_INT:
+
+			break;
+
+		case msg_command_long.MAVLINK_MSG_ID_COMMAND_LONG:
+
+			break;
+
+		case msg_command_ack.MAVLINK_MSG_ID_COMMAND_ACK:
+
+			break;
+
+		case msg_manual_setpoint.MAVLINK_MSG_ID_MANUAL_SETPOINT:
+
+			break;
+
+		case msg_set_attitude_target.MAVLINK_MSG_ID_SET_ATTITUDE_TARGET:
+
+			break;
+
+		case msg_attitude_target.MAVLINK_MSG_ID_ATTITUDE_TARGET:
+
+			break;
+
+		case msg_set_position_target_local_ned.MAVLINK_MSG_ID_SET_POSITION_TARGET_LOCAL_NED:
+
+			break;
+
+		case msg_position_target_local_ned.MAVLINK_MSG_ID_POSITION_TARGET_LOCAL_NED:
+
+			break;
+
+		case msg_set_position_target_global_int.MAVLINK_MSG_ID_SET_POSITION_TARGET_GLOBAL_INT:
+
+			break;
+
+		case msg_position_target_global_int.MAVLINK_MSG_ID_POSITION_TARGET_GLOBAL_INT:
+
+			break;
+
+		case msg_local_position_ned_system_global_offset.MAVLINK_MSG_ID_LOCAL_POSITION_NED_SYSTEM_GLOBAL_OFFSET:
+
+			break;
+
+		case msg_hil_state.MAVLINK_MSG_ID_HIL_STATE:
+
+			break;
+
+		case msg_hil_controls.MAVLINK_MSG_ID_HIL_CONTROLS:
+
+			break;
+
+		case msg_hil_rc_inputs_raw.MAVLINK_MSG_ID_HIL_RC_INPUTS_RAW:
+
+			break;
+
+		case msg_optical_flow.MAVLINK_MSG_ID_OPTICAL_FLOW:
+
+			break;
+
+		case msg_global_vision_position_estimate.MAVLINK_MSG_ID_GLOBAL_VISION_POSITION_ESTIMATE:
+
+			break;
+
+		case msg_vision_position_estimate.MAVLINK_MSG_ID_VISION_POSITION_ESTIMATE:
+
+			break;
+
+		case msg_vision_speed_estimate.MAVLINK_MSG_ID_VISION_SPEED_ESTIMATE:
+
+			break;
+
+		case msg_vicon_position_estimate.MAVLINK_MSG_ID_VICON_POSITION_ESTIMATE:
+
+			break;
+
+		case msg_highres_imu.MAVLINK_MSG_ID_HIGHRES_IMU:
+
+			break;
+
+		case msg_optical_flow_rad.MAVLINK_MSG_ID_OPTICAL_FLOW_RAD:
+
+			break;
+
+		case msg_hil_sensor.MAVLINK_MSG_ID_HIL_SENSOR:
+
+			break;
+
+		case msg_sim_state.MAVLINK_MSG_ID_SIM_STATE:
+
+			break;
+
+		case msg_radio_status.MAVLINK_MSG_ID_RADIO_STATUS:
+
+			break;
+
+		case msg_file_transfer_protocol.MAVLINK_MSG_ID_FILE_TRANSFER_PROTOCOL:
+
+			break;
+
+		case msg_timesync.MAVLINK_MSG_ID_TIMESYNC:
+
+			break;
+
+		case msg_camera_trigger.MAVLINK_MSG_ID_CAMERA_TRIGGER:
+
+			break;
+
+		case msg_hil_gps.MAVLINK_MSG_ID_HIL_GPS:
+
+			break;
+
+		case msg_hil_optical_flow.MAVLINK_MSG_ID_HIL_OPTICAL_FLOW:
+
+			break;
+
+		case msg_hil_state_quaternion.MAVLINK_MSG_ID_HIL_STATE_QUATERNION:
+
+			break;
+
+		case msg_scaled_imu2.MAVLINK_MSG_ID_SCALED_IMU2:
+
+			break;
+
+		case msg_log_request_list.MAVLINK_MSG_ID_LOG_REQUEST_LIST:
+
+			break;
+
+		case msg_log_entry.MAVLINK_MSG_ID_LOG_ENTRY:
+
+			break;
+
+		case msg_log_request_data.MAVLINK_MSG_ID_LOG_REQUEST_DATA:
+
+			break;
+
+		case msg_log_data.MAVLINK_MSG_ID_LOG_DATA:
+
+			break;
+
+		case msg_log_erase.MAVLINK_MSG_ID_LOG_ERASE:
+
+			break;
+
+		case msg_log_request_end.MAVLINK_MSG_ID_LOG_REQUEST_END:
+
+			break;
+
+		case msg_gps_inject_data.MAVLINK_MSG_ID_GPS_INJECT_DATA:
+
+			break;
+
+		case msg_gps2_raw.MAVLINK_MSG_ID_GPS2_RAW:
+
+			break;
+
+		case msg_power_status.MAVLINK_MSG_ID_POWER_STATUS:
+
+			break;
+
+		case msg_serial_control.MAVLINK_MSG_ID_SERIAL_CONTROL:
+
+			break;
+
+		case msg_gps_rtk.MAVLINK_MSG_ID_GPS_RTK:
+
+			break;
+
+		case msg_gps2_rtk.MAVLINK_MSG_ID_GPS2_RTK:
+
+			break;
+
+		case msg_scaled_imu3.MAVLINK_MSG_ID_SCALED_IMU3:
+
+			break;
+
+		case msg_data_transmission_handshake.MAVLINK_MSG_ID_DATA_TRANSMISSION_HANDSHAKE:
+
+			break;
+
+		case msg_encapsulated_data.MAVLINK_MSG_ID_ENCAPSULATED_DATA:
+
+			break;
+
+		case msg_distance_sensor.MAVLINK_MSG_ID_DISTANCE_SENSOR:
+
+			break;
+
+		case msg_terrain_request.MAVLINK_MSG_ID_TERRAIN_REQUEST:
+
+			break;
+
+		case msg_terrain_data.MAVLINK_MSG_ID_TERRAIN_DATA:
+
+			break;
+
+		case msg_terrain_check.MAVLINK_MSG_ID_TERRAIN_CHECK:
+
+			break;
+
+		case msg_terrain_report.MAVLINK_MSG_ID_TERRAIN_REPORT:
+
+			break;
+
+		case msg_scaled_pressure2.MAVLINK_MSG_ID_SCALED_PRESSURE2:
+
+			break;
+
+		case msg_att_pos_mocap.MAVLINK_MSG_ID_ATT_POS_MOCAP:
+
+			break;
+
+		case msg_set_actuator_control_target.MAVLINK_MSG_ID_SET_ACTUATOR_CONTROL_TARGET:
+
+			break;
+
+		case msg_actuator_control_target.MAVLINK_MSG_ID_ACTUATOR_CONTROL_TARGET:
+
+			break;
+
+		case msg_battery_status.MAVLINK_MSG_ID_BATTERY_STATUS:
+
+			break;
+
+		case msg_autopilot_version.MAVLINK_MSG_ID_AUTOPILOT_VERSION:
+
+			break;
+
+		case msg_landing_target.MAVLINK_MSG_ID_LANDING_TARGET:
+
+			break;
+
+		case msg_v2_extension.MAVLINK_MSG_ID_V2_EXTENSION:
+
+			break;
+
+		case msg_memory_vect.MAVLINK_MSG_ID_MEMORY_VECT:
+
+			break;
+
+		case msg_debug_vect.MAVLINK_MSG_ID_DEBUG_VECT:
+
+			break;
+
+		case msg_named_value_float.MAVLINK_MSG_ID_NAMED_VALUE_FLOAT:
+
+			break;
+
+		case msg_named_value_int.MAVLINK_MSG_ID_NAMED_VALUE_INT:
+
+			break;
+
+		case msg_statustext.MAVLINK_MSG_ID_STATUSTEXT:
+
+			break;
+
+		case msg_debug.MAVLINK_MSG_ID_DEBUG:
+
 			break;
 
 		default:
