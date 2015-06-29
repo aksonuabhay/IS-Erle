@@ -25,12 +25,12 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
 	private BufferedReader br;
 	
 	private String currentLine;
-	private int waypointCount;
+	private short waypointCount;
 	
     @Override
     public void onActivitySetup() {
         getLog().info("Activity is.erle.waypoint.generator setup");
-        int lineCount=1;
+        short lineCount=1;
         try 
         {
 			br = new BufferedReader(new FileReader(CONFIGURATION_FILE_NAME));
@@ -39,7 +39,7 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
 				if (lineCount != 1) 
 				{
 					currentLine =currentLine.trim();
-					waypointCount = Integer.parseInt(currentLine.substring(0,currentLine.indexOf(SEPARATOR) )); // Not sure that tab is the separator 
+					waypointCount = Short.parseShort(currentLine.substring(0,currentLine.indexOf(SEPARATOR) )); // Not sure that tab is the separator 
 				}
 
 				lineCount++;
@@ -52,12 +52,10 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
 		} 
         catch (FileNotFoundException e) 
         {
-			// TODO Auto-generated catch block
 			getLog().error(e);
 		} 
         catch (IOException e) 
 		{
-			// TODO Auto-generated catch block
 			getLog().error(e);
 		}
         
@@ -77,7 +75,7 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
     public void onActivityActivate() {
         getLog().info("Activity is.erle.waypoint.generator activate");
 			Map<String, Object> temp = Maps.newHashMap();
-			String temps="START-" + Integer.toString(waypointCount);
+			String temps="START-" + Short.toString(waypointCount);
 			temp.put("mission", temps);
 			sendOutputJson(getConfiguration().getRequiredPropertyString(CONFIGURATION_PUBLISHER_NAME), temp);
     }
@@ -131,7 +129,6 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
 			} 
     		catch (IOException e) 
     		{
-				// TODO Auto-generated catch block
     			getLog().error(e);
 			}
 		}
