@@ -2,12 +2,12 @@ package is.erle.mavlink;
 
 import java.util.Map;
 
-
 import interactivespaces.activity.impl.ros.BaseRoutableRosActivity;
 
 import com.MAVLink.*;
 import com.MAVLink.Messages.MAVLinkMessage;
 import com.MAVLink.common.*;
+import com.MAVLink.enums.MAV_MISSION_RESULT;
 import com.MAVLink.pixhawk.*;
 import com.google.common.collect.Maps;
 /**
@@ -80,6 +80,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
     @Override
     public void onNewInputJson(String channelName, Map <String , Object> message)
     {
+        getLog().debug("Got message on input channel " + channelName);
+        getLog().debug(message);
     	if (channelName == subscribers[0]) 
     	{
     		//Data from drone handled here
@@ -113,8 +115,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
     			missionStart.count = missionCount;
     			missionStart.target_system = targetSystem;
     			missionStart.target_component = targetComponent;
-    			MAVLinkPacket tempPacket = missionStart.pack();
-    			byte tempByte[] = tempPacket.encodePacket();
+    			byte tempByte[] = missionStart.pack().encodePacket();
     			Map<String, Object> tempMapMission = Maps.newHashMap();
     			tempMapMission.put("mission", tempByte);
     			sendOutputJson(publishers[0], tempMapMission);
@@ -122,8 +123,38 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
     		
     		else
     		{
-    			// Rest of the messages about the waypoint data
+				
+    			/*
+				 * Format
+				 * QGC WPL <VERSION> 
+				 * <INDEX> <CURRENT WP> <COORD FRAME><COMMAND> <PARAM1> <PARAM2> <PARAM3> <PARAM4><PARAM5/X/LONGITUDE> <PARAM6/Y/LATITUDE> <PARAM7/Z/ALTITUDE><AUTOCONTINUE> 
+				 * 
+				 * Example
+				 * QGC WPL 110 
+				 * 0 1 0 16 0.149999999999999994 0 0 0 8.54800000000000004 47.3759999999999977 550 1 
+				 * 1 0 0 16 0.149999999999999994 0 0 0 8.54800000000000004 47.3759999999999977 550 1 
+				 * 2 0 0 16 0.149999999999999994 0 0 0 8.54800000000000004 47.3759999999999977 550 1
+				 */
     			
+    			// Rest of the messages about the waypoint data
+				String missionWP[] = (String[]) message.get("mission");
+				msg_mission_item missionItem = new msg_mission_item();
+				missionItem.seq = Short.parseShort(missionWP[0]);
+				missionItem.current = Byte.parseByte(missionWP[1]);
+				missionItem.frame = Byte.parseByte(missionWP[2]);
+				missionItem.command = Short.parseShort(missionWP[3]);
+				missionItem.param1 = Float.parseFloat(missionWP[4]);
+				missionItem.param2 = Float.parseFloat(missionWP[5]);
+				missionItem.param3 = Float.parseFloat(missionWP[6]);
+				missionItem.param4 = Float.parseFloat(missionWP[7]);
+				missionItem.x = Float.parseFloat(missionWP[8]);
+				missionItem.y = Float.parseFloat(missionWP[9]);
+				missionItem.z = Float.parseFloat(missionWP[10]);
+				missionItem.autocontinue = Byte.parseByte(missionWP[11]);
+				byte tempByte[] = missionItem.pack().encodePacket();
+				Map<String, Object> tempMapMission = Maps.newHashMap();
+				tempMapMission.put("mission", tempByte);
+				sendOutputJson(publishers[0], tempMapMission);
     		}
     		
     	}
@@ -327,7 +358,19 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_mission_request.MAVLINK_MSG_ID_MISSION_REQUEST:
-
+			/*
+			 * This mavlink message is sent on receipt of waypoint count and 
+			 * when asking for the next waypoint 
+			 */
+			msg_mission_request mavMissionRequest;
+			if (mavMessage2 instanceof msg_mission_request) 
+			{
+				mavMissionRequest = (msg_mission_request) mavMessage2;
+				String tempStringRequest = "MISSION_REQUEST-" + Short.toString(mavMissionRequest.seq);
+				Map<String, Object> tempMapMissionRequest = Maps.newHashMap();
+				tempMapMissionRequest.put("mission", tempStringRequest);
+				sendOutputJson(publishers[1], tempMapMissionRequest);
+			}
 			break;
 
 		case msg_mission_set_current.MAVLINK_MSG_ID_MISSION_SET_CURRENT:
@@ -355,7 +398,121 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_mission_ack.MAVLINK_MSG_ID_MISSION_ACK:
+			msg_mission_ack mavMissionAck;
+			if (mavMessage2 instanceof msg_mission_ack) 
+			{
+				mavMissionAck = (msg_mission_ack) mavMessage2;
+				switch (mavMissionAck.type) 
+				{
+				case MAV_MISSION_RESULT.MAV_MISSION_ACCEPTED:
+					/*
+					 *  mission accepted OK | 
+					 *  */
+					
+					break;
 
+				case MAV_MISSION_RESULT.MAV_MISSION_ERROR:
+					/* 
+					 * generic error / not accepting mission commands at all right now | 
+					 * */
+					
+					break;
+
+				case MAV_MISSION_RESULT.MAV_MISSION_UNSUPPORTED_FRAME:
+					/* 
+					 * coordinate frame is not supported | 
+					 * */
+					
+					break;
+
+				case MAV_MISSION_RESULT.MAV_MISSION_UNSUPPORTED:
+					/* 
+					 * command is not supported | 
+					 * */
+					
+					break;
+
+				case MAV_MISSION_RESULT.MAV_MISSION_NO_SPACE:
+					/* 
+					 * mission item exceeds storage space | 
+					 * */
+					
+					break;
+
+				case MAV_MISSION_RESULT.MAV_MISSION_INVALID:
+					/* 
+					 * one of the parameters has an invalid value | 
+					 * */
+					
+					break;
+
+				case MAV_MISSION_RESULT.MAV_MISSION_INVALID_PARAM1:
+					/* 
+					 * param1 has an invalid value | 
+					 * */
+					
+					break;
+
+				case MAV_MISSION_RESULT.MAV_MISSION_INVALID_PARAM2:
+					/* 
+					 * param2 has an invalid value | 
+					 * */
+					
+					break;
+
+				case MAV_MISSION_RESULT.MAV_MISSION_INVALID_PARAM3:
+					/* 
+					 * param3 has an invalid value | 
+					 * */
+					
+					break;
+
+				case MAV_MISSION_RESULT.MAV_MISSION_INVALID_PARAM4:
+					/* 
+					 * param4 has an invalid value | 
+					 * */
+					
+					break;
+
+				case MAV_MISSION_RESULT.MAV_MISSION_INVALID_PARAM5_X:
+					/* 
+					 * x/param5 has an invalid value | 
+					 * */
+					
+					break;
+
+				case MAV_MISSION_RESULT.MAV_MISSION_INVALID_PARAM6_Y:
+					/* 
+					 * y/param6 has an invalid value | 
+					 * */
+					
+					break;
+
+				case MAV_MISSION_RESULT.MAV_MISSION_INVALID_PARAM7:
+					/* 
+					 * param7 has an invalid value | 
+					 * */
+					
+					break;
+
+				case MAV_MISSION_RESULT.MAV_MISSION_INVALID_SEQUENCE :
+					/* 
+					 * received waypoint out of sequence | 
+					 * */
+					
+					break;
+
+				case MAV_MISSION_RESULT.MAV_MISSION_RESULT_ENUM_END:
+					/* 
+					 * not accepting any mission commands from this communication partner | 
+					 * */
+					
+					break;
+
+				default:
+					break;
+				}
+			}
 			break;
 
 		case msg_set_gps_global_origin.MAVLINK_MSG_ID_SET_GPS_GLOBAL_ORIGIN:
