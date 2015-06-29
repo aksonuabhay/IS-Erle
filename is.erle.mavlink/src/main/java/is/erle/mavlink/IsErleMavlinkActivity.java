@@ -25,6 +25,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	private Parser mavParser;
 	private MAVLinkMessage mavMessage;
 	
+	private static byte targetSystem = 0; // TO DO : Get this from the current drone
+	private static byte targetComponent = 0; // TO DO : Get this from the current drone
+	
 	private byte responseGlobal[];
 	
     @Override
@@ -51,7 +54,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		Map<String, Object> temp = Maps.newHashMap();
 		temp.put("mission", "START");
 		//sendOutputJson(getConfiguration().getRequiredPropertyString(CONFIGURATION_PUBLISHER_NAME), temp);
-		sendOutputJson("outputCOM_M", temp);
+		//sendOutputJson("outputCOM_M", temp);
     }
 
     @Override
@@ -100,7 +103,29 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
     	
     	else if (channelName == subscribers[1])
     	{
+    		
     		//Waypoint generator message handling here
+			String tempString[] = message.get("mission").toString().split("-");
+    		if (tempString[0] == "START") 
+    		{
+    			short missionCount = Short.parseShort(tempString[1]);
+    			msg_mission_count missionStart = new msg_mission_count();
+    			missionStart.count = missionCount;
+    			missionStart.target_system = targetSystem;
+    			missionStart.target_component = targetComponent;
+    			MAVLinkPacket tempPacket = missionStart.pack();
+    			byte tempByte[] = tempPacket.encodePacket();
+    			Map<String, Object> tempMapMission = Maps.newHashMap();
+    			tempMapMission.put("mission", tempByte);
+    			sendOutputJson(publishers[0], tempMapMission);
+			}
+    		
+    		else
+    		{
+    			// Rest of the messages about the waypoint data
+    			
+    		}
+    		
     	}
     	
     	else if (channelName == subscribers[2])
