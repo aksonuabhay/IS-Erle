@@ -10,6 +10,7 @@ import com.MAVLink.common.*;
 import com.MAVLink.enums.MAV_MISSION_RESULT;
 import com.MAVLink.pixhawk.*;
 import com.google.common.collect.Maps;
+
 /**
  * A simple Interactive Spaces Java-based activity.
  */
@@ -17,126 +18,127 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 
 	private static final String CONFIGURATION_PUBLISHER_NAME = "space.activity.routes.outputs";
 	private static final String CONFIGURATION_SUBSCRIBER_NAME = "space.activity.routes.inputs";
-	
+
 	private static String publishers[];
 	private static String subscribers[];
-	
+
 	private MAVLinkPacket mavPacket;
 	private Parser mavParser;
 	private MAVLinkMessage mavMessage;
-	
-	private static byte targetSystem = 0; // TO DO : Get this from the current drone
-	private static byte targetComponent = 0; // TO DO : Get this from the current drone
-	
+
+	private static byte targetSystem = 0; // TO DO : Get this from the current
+											// drone
+	private static byte targetComponent = 0; // TO DO : Get this from the
+												// current drone
+
 	private byte responseGlobal[];
-	
-    @Override
-    public void onActivitySetup() {
-        getLog().info("Activity is.erle.mavlink setup");
-        publishers = getConfiguration().getRequiredPropertyString(CONFIGURATION_PUBLISHER_NAME).split(":");
-        subscribers = getConfiguration().getRequiredPropertyString(CONFIGURATION_SUBSCRIBER_NAME).split(":");
-        responseGlobal = new byte[1000];
-    }
 
-    @Override
-    public void onActivityStartup() {
-        getLog().info("Activity is.erle.mavlink startup");
-    }
+	@Override
+	public void onActivitySetup() {
+		getLog().info("Activity is.erle.mavlink setup");
+		publishers = getConfiguration().getRequiredPropertyString(
+				CONFIGURATION_PUBLISHER_NAME).split(":");
+		subscribers = getConfiguration().getRequiredPropertyString(
+				CONFIGURATION_SUBSCRIBER_NAME).split(":");
+		responseGlobal = new byte[1000];
+	}
 
-    @Override
-    public void onActivityPostStartup() {
-        getLog().info("Activity is.erle.mavlink post startup");
-    }
+	@Override
+	public void onActivityStartup() {
+		getLog().info("Activity is.erle.mavlink startup");
+	}
 
-    @Override
-    public void onActivityActivate() {
-        getLog().info("Activity is.erle.mavlink activate");
+	@Override
+	public void onActivityPostStartup() {
+		getLog().info("Activity is.erle.mavlink post startup");
+	}
+
+	@Override
+	public void onActivityActivate() {
+		getLog().info("Activity is.erle.mavlink activate");
 		Map<String, Object> temp = Maps.newHashMap();
 		temp.put("mission", "START");
-		//sendOutputJson(getConfiguration().getRequiredPropertyString(CONFIGURATION_PUBLISHER_NAME), temp);
-		//sendOutputJson("outputCOM_M", temp);
-    }
+		// sendOutputJson(getConfiguration().getRequiredPropertyString(CONFIGURATION_PUBLISHER_NAME),
+		// temp);
+		// sendOutputJson("outputCOM_M", temp);
+	}
 
-    @Override
-    public void onActivityDeactivate() {
-        getLog().info("Activity is.erle.mavlink deactivate");
-    }
+	@Override
+	public void onActivityDeactivate() {
+		getLog().info("Activity is.erle.mavlink deactivate");
+	}
 
-    @Override
-    public void onActivityPreShutdown() {
-        getLog().info("Activity is.erle.mavlink pre shutdown");
-    }
+	@Override
+	public void onActivityPreShutdown() {
+		getLog().info("Activity is.erle.mavlink pre shutdown");
+	}
 
-    @Override
-    public void onActivityShutdown() {
-        getLog().info("Activity is.erle.mavlink shutdown");
-    }
+	@Override
+	public void onActivityShutdown() {
+		getLog().info("Activity is.erle.mavlink shutdown");
+	}
 
-    @Override
-    public void onActivityCleanup() {
-        getLog().info("Activity is.erle.mavlink cleanup");
-    }
-    
-    @Override
-    public void onNewInputJson(String channelName, Map <String , Object> message)
-    {
-        getLog().debug("Got message on input channel " + channelName);
-        getLog().debug(message);
-    	if (channelName == subscribers[0]) 
-    	{
-    		//Data from drone handled here
+	@Override
+	public void onActivityCleanup() {
+		getLog().info("Activity is.erle.mavlink cleanup");
+	}
+
+	@Override
+	public void onNewInputJson(String channelName, Map<String, Object> message) {
+		getLog().debug("Got message on input channel " + channelName);
+		getLog().debug(message);
+		if (channelName == subscribers[0]) {
+			// Data from drone handled here
 			responseGlobal = (byte[]) message.get("comm");
-			for (int i = 0; i < responseGlobal.length; i++) 
-			{
+			for (int i = 0; i < responseGlobal.length; i++) {
 				mavPacket = mavParser.mavlink_parse_char(responseGlobal[i]);
 			}
-			
-			if (mavPacket != null) 
-			{
+
+			if (mavPacket != null) {
 				mavMessage = mavPacket.unpack();
-				/*Map<String, Object> temp = Maps.newHashMap();
-				temp.put("mavMessage", mavMessage);
-				sendOutputJson(publishers[2], temp); */
+				/*
+				 * Map<String, Object> temp = Maps.newHashMap();
+				 * temp.put("mavMessage", mavMessage);
+				 * sendOutputJson(publishers[2], temp);
+				 */
 				hadnleMavMessage(mavMessage);
 				mavPacket = null;
 			}
 
 		}
-    	
-    	else if (channelName == subscribers[1])
-    	{
-    		
-    		//Waypoint generator message handling here
+
+		else if (channelName == subscribers[1]) {
+
+			// Waypoint generator message handling here
 			String tempString[] = message.get("mission").toString().split("-");
-    		if (tempString[0] == "START") 
-    		{
-    			short missionCount = Short.parseShort(tempString[1]);
-    			msg_mission_count missionStart = new msg_mission_count();
-    			missionStart.count = missionCount;
-    			missionStart.target_system = targetSystem;
-    			missionStart.target_component = targetComponent;
-    			byte tempByte[] = missionStart.pack().encodePacket();
-    			Map<String, Object> tempMapMission = Maps.newHashMap();
-    			tempMapMission.put("mission", tempByte);
-    			sendOutputJson(publishers[0], tempMapMission);
+			if (tempString[0] == "START") {
+				short missionCount = Short.parseShort(tempString[1]);
+				msg_mission_count missionStart = new msg_mission_count();
+				missionStart.count = missionCount;
+				missionStart.target_system = targetSystem;
+				missionStart.target_component = targetComponent;
+				byte tempByte[] = missionStart.pack().encodePacket();
+				Map<String, Object> tempMapMission = Maps.newHashMap();
+				tempMapMission.put("mission", tempByte);
+				sendOutputJson(publishers[0], tempMapMission);
 			}
-    		
-    		else
-    		{
-				
-    			/*
-				 * Format
-				 * QGC WPL <VERSION> 
-				 * <INDEX> <CURRENT WP> <COORD FRAME><COMMAND> <PARAM1> <PARAM2> <PARAM3> <PARAM4><PARAM5/X/LONGITUDE> <PARAM6/Y/LATITUDE> <PARAM7/Z/ALTITUDE><AUTOCONTINUE> 
+
+			else {
+
+				/*
+				 * Format QGC WPL <VERSION> <INDEX> <CURRENT WP> <COORD
+				 * FRAME><COMMAND> <PARAM1> <PARAM2> <PARAM3>
+				 * <PARAM4><PARAM5/X/LONGITUDE> <PARAM6/Y/LATITUDE>
+				 * <PARAM7/Z/ALTITUDE><AUTOCONTINUE>
 				 * 
-				 * Example
-				 * QGC WPL 110 
-				 * 0 1 0 16 0.149999999999999994 0 0 0 8.54800000000000004 47.3759999999999977 550 1 
-				 * 1 0 0 16 0.149999999999999994 0 0 0 8.54800000000000004 47.3759999999999977 550 1 
-				 * 2 0 0 16 0.149999999999999994 0 0 0 8.54800000000000004 47.3759999999999977 550 1
+				 * Example QGC WPL 110 0 1 0 16 0.149999999999999994 0 0 0
+				 * 8.54800000000000004 47.3759999999999977 550 1 1 0 0 16
+				 * 0.149999999999999994 0 0 0 8.54800000000000004
+				 * 47.3759999999999977 550 1 2 0 0 16 0.149999999999999994 0 0 0
+				 * 8.54800000000000004 47.3759999999999977 550 1
 				 */
-    			
-    			// Rest of the messages about the waypoint data
+
+				// Rest of the messages about the waypoint data
 				String missionWP[] = (String[]) message.get("mission");
 				msg_mission_item missionItem = new msg_mission_item();
 				missionItem.seq = Short.parseShort(missionWP[0]);
@@ -155,19 +157,17 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				Map<String, Object> tempMapMission = Maps.newHashMap();
 				tempMapMission.put("mission", tempByte);
 				sendOutputJson(publishers[0], tempMapMission);
-    		}
-    		
-    	}
-    	
-    	else if (channelName == subscribers[2])
-    	{
-    		//Captain message handling here
-    	}
-    }
+			}
 
-	private void hadnleMavMessage(MAVLinkMessage mavMessage2) 
-	{
-		//To Do
+		}
+
+		else if (channelName == subscribers[2]) {
+			// Captain message handling here
+		}
+	}
+
+	private void hadnleMavMessage(MAVLinkMessage mavMessage2) {
+		// To Do
 		switch (mavMessage2.msgid) {
 		case msg_set_cam_shutter.MAVLINK_MSG_ID_SET_CAM_SHUTTER:
 
@@ -359,14 +359,14 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 
 		case msg_mission_request.MAVLINK_MSG_ID_MISSION_REQUEST:
 			/*
-			 * This mavlink message is sent on receipt of waypoint count and 
-			 * when asking for the next waypoint 
+			 * This mavlink message is sent on receipt of waypoint count and
+			 * when asking for the next waypoint
 			 */
 			msg_mission_request mavMissionRequest;
-			if (mavMessage2 instanceof msg_mission_request) 
-			{
+			if (mavMessage2 instanceof msg_mission_request) {
 				mavMissionRequest = (msg_mission_request) mavMessage2;
-				String tempStringRequest = "MISSION_REQUEST-" + Short.toString(mavMissionRequest.seq);
+				String tempStringRequest = "MISSION_REQUEST-"
+						+ Short.toString(mavMissionRequest.seq);
 				Map<String, Object> tempMapMissionRequest = Maps.newHashMap();
 				tempMapMissionRequest.put("mission", tempStringRequest);
 				sendOutputJson(publishers[1], tempMapMissionRequest);
@@ -399,117 +399,139 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 
 		case msg_mission_ack.MAVLINK_MSG_ID_MISSION_ACK:
 			msg_mission_ack mavMissionAck;
-			if (mavMessage2 instanceof msg_mission_ack) 
-			{
+			if (mavMessage2 instanceof msg_mission_ack) {
+				Map<String, Object> tempMapMissionAck = Maps.newHashMap();
 				mavMissionAck = (msg_mission_ack) mavMessage2;
-				switch (mavMissionAck.type) 
-				{
+				switch (mavMissionAck.type) {
 				case MAV_MISSION_RESULT.MAV_MISSION_ACCEPTED:
 					/*
-					 *  mission accepted OK | 
-					 *  */
-					
+					 * mission accepted OK |
+					 */
+					tempMapMissionAck.put("mission", "MISSION_ACCEPTED");
+					sendOutputJson(publishers[1], tempMapMissionAck);
 					break;
 
 				case MAV_MISSION_RESULT.MAV_MISSION_ERROR:
-					/* 
-					 * generic error / not accepting mission commands at all right now | 
-					 * */
-					
+					/*
+					 * generic error / not accepting mission commands at all
+					 * right now |
+					 */
+					tempMapMissionAck.put("mission", "MISSION_ERROR");
+					sendOutputJson(publishers[1], tempMapMissionAck);
 					break;
 
 				case MAV_MISSION_RESULT.MAV_MISSION_UNSUPPORTED_FRAME:
-					/* 
-					 * coordinate frame is not supported | 
-					 * */
-					
+					/*
+					 * coordinate frame is not supported |
+					 */
+					tempMapMissionAck.put("mission",
+							"MISSION_UNSUPPORTED_FRAME");
+					sendOutputJson(publishers[1], tempMapMissionAck);
 					break;
 
 				case MAV_MISSION_RESULT.MAV_MISSION_UNSUPPORTED:
-					/* 
-					 * command is not supported | 
-					 * */
-					
+					/*
+					 * command is not supported |
+					 */
+					tempMapMissionAck.put("mission", "MISSION_UNSUPPORTED");
+					sendOutputJson(publishers[1], tempMapMissionAck);
 					break;
 
 				case MAV_MISSION_RESULT.MAV_MISSION_NO_SPACE:
-					/* 
-					 * mission item exceeds storage space | 
-					 * */
-					
+					/*
+					 * mission item exceeds storage space |
+					 */
+					tempMapMissionAck.put("mission", "MISSION_NO_SPACE");
+					sendOutputJson(publishers[1], tempMapMissionAck);
 					break;
 
 				case MAV_MISSION_RESULT.MAV_MISSION_INVALID:
-					/* 
-					 * one of the parameters has an invalid value | 
-					 * */
-					
+					/*
+					 * one of the parameters has an invalid value |
+					 */
+					tempMapMissionAck.put("mission", "MISSION_INVALID");
+					sendOutputJson(publishers[1], tempMapMissionAck);
 					break;
 
 				case MAV_MISSION_RESULT.MAV_MISSION_INVALID_PARAM1:
-					/* 
-					 * param1 has an invalid value | 
-					 * */
-					
+					/*
+					 * param1 has an invalid value |
+					 */
+					tempMapMissionAck.put("mission", "MISSION_INVALID_PARAM1");
+					sendOutputJson(publishers[1], tempMapMissionAck);
 					break;
 
 				case MAV_MISSION_RESULT.MAV_MISSION_INVALID_PARAM2:
-					/* 
-					 * param2 has an invalid value | 
-					 * */
-					
+					/*
+					 * param2 has an invalid value |
+					 */
+					tempMapMissionAck.put("mission", "MISSION_INVALID_PARAM2");
+					sendOutputJson(publishers[1], tempMapMissionAck);
 					break;
 
 				case MAV_MISSION_RESULT.MAV_MISSION_INVALID_PARAM3:
-					/* 
-					 * param3 has an invalid value | 
-					 * */
-					
+					/*
+					 * param3 has an invalid value |
+					 */
+					tempMapMissionAck.put("mission", "MISSION_INVALID_PARAM3");
+					sendOutputJson(publishers[1], tempMapMissionAck);
 					break;
 
 				case MAV_MISSION_RESULT.MAV_MISSION_INVALID_PARAM4:
-					/* 
-					 * param4 has an invalid value | 
-					 * */
-					
+					/*
+					 * param4 has an invalid value |
+					 */
+					tempMapMissionAck.put("mission", "MISSION_INVALID_PARAM4");
+					sendOutputJson(publishers[1], tempMapMissionAck);
 					break;
 
 				case MAV_MISSION_RESULT.MAV_MISSION_INVALID_PARAM5_X:
-					/* 
-					 * x/param5 has an invalid value | 
-					 * */
-					
+					/*
+					 * x/param5 has an invalid value |
+					 */
+					tempMapMissionAck
+							.put("mission", "MISSION_INVALID_PARAM5_X");
+					sendOutputJson(publishers[1], tempMapMissionAck);
 					break;
 
 				case MAV_MISSION_RESULT.MAV_MISSION_INVALID_PARAM6_Y:
-					/* 
-					 * y/param6 has an invalid value | 
-					 * */
-					
+					/*
+					 * y/param6 has an invalid value |
+					 */
+					tempMapMissionAck
+							.put("mission", "MISSION_INVALID_PARAM6_Y");
+					sendOutputJson(publishers[1], tempMapMissionAck);
 					break;
 
 				case MAV_MISSION_RESULT.MAV_MISSION_INVALID_PARAM7:
-					/* 
-					 * param7 has an invalid value | 
-					 * */
-					
+					/*
+					 * param7 has an invalid value |
+					 */
+					tempMapMissionAck.put("mission", "MISSION_INVALID_PARAM7");
+					sendOutputJson(publishers[1], tempMapMissionAck);
 					break;
 
-				case MAV_MISSION_RESULT.MAV_MISSION_INVALID_SEQUENCE :
-					/* 
-					 * received waypoint out of sequence | 
-					 * */
-					
+				case MAV_MISSION_RESULT.MAV_MISSION_INVALID_SEQUENCE:
+					/*
+					 * received waypoint out of sequence |
+					 */
+					tempMapMissionAck
+							.put("mission", "MISSION_INVALID_SEQUENCE");
+					sendOutputJson(publishers[1], tempMapMissionAck);
 					break;
 
 				case MAV_MISSION_RESULT.MAV_MISSION_RESULT_ENUM_END:
-					/* 
-					 * not accepting any mission commands from this communication partner | 
-					 * */
-					
+					/*
+					 * not accepting any mission commands from this
+					 * communication partner |
+					 */
+					tempMapMissionAck.put("mission", "MISSION_RESULT_ENUM_END");
+					sendOutputJson(publishers[1], tempMapMissionAck);
 					break;
 
 				default:
+					tempMapMissionAck.put("mission", "MISSION_RESULT_UNKNOWN");
+					sendOutputJson(publishers[1], tempMapMissionAck);
 					break;
 				}
 			}
@@ -842,6 +864,6 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		default:
 			break;
 		}
-		
+
 	}
 }

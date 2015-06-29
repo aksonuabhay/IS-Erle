@@ -133,14 +133,15 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
 			}
 		}
     	
-    	else if (msgFromDrone[0] == "WAYPOINT_ACK")
+    	else if (msgFromDrone[0] == "MISSION_ACCEPTED")
     	{
     		getLog().info("Mission successfully uploaded on the drone");
     	}
     	
     	else
     	{
-    		getLog().info("Invalid request");
+    		getLog().error("Mission upload failure");
+    		getLog().error("REASON : " + msgFromDrone[0]);
     	}
     }
 }
