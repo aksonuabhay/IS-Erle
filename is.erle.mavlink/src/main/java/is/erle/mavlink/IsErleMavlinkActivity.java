@@ -1,6 +1,5 @@
 package is.erle.mavlink;
 
-import java.util.Iterator;
 import java.util.Map;
 
 import interactivespaces.activity.impl.ros.BaseRoutableRosActivity;
@@ -13,8 +12,6 @@ import com.MAVLink.pixhawk.*;
 import com.google.common.collect.Maps;
 import java.lang.Class;
 import java.lang.reflect.Field;
-
-import org.joda.time.chrono.AssembledChronology.Fields;
 /**
  * A simple Interactive Spaces Java-based activity.
  */
@@ -317,7 +314,29 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_heartbeat.MAVLINK_MSG_ID_HEARTBEAT:
-
+			msg_heartbeat mavHeartbeat;
+			if (mavMessage2 instanceof msg_heartbeat) 
+			{
+				mavHeartbeat = (msg_heartbeat) mavMessage2;
+				Map<String, Object> tempMavHeartbeat = Maps.newHashMap();
+				String tempHeartbeat = "TYPE : "
+						+ getVariableName("MAV_TYPE", mavHeartbeat.type)
+						+ ","
+						+ "AUTOPILOT : "
+						+ getVariableName("MAV_MODE_FLAG",
+								mavHeartbeat.autopilot)
+						+ "BASE MODE : "
+						+ getVariableName("MA_MODE_FLAG",
+								mavHeartbeat.base_mode)
+						+ "STATUS : "
+						+ getVariableName("MAV_STATE",
+								mavHeartbeat.system_status)
+						+ "MAVLINK VERSION : "
+						+ Byte.toString(mavHeartbeat.mavlink_version);
+				tempMavHeartbeat.put("heartbeat", tempHeartbeat);
+				sendOutputJson(publishers[2], tempMavHeartbeat);
+				getLog().info(tempHeartbeat);
+			}
 			break;
 
 		case msg_sys_status.MAVLINK_MSG_ID_SYS_STATUS:
