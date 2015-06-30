@@ -19,10 +19,10 @@
       <property name="space.activity.ros.node.name" value="mavlink" />
       
       
-      <property name="space.activity.routes.outputs" value="outputCOM_M:outputWP_M:outputC_M" />
+      <property name="space.activity.routes.outputs" value="outputCOM_M:outputWP_M:outputGeneral_M" />
       <property name="space.activity.route.output.outputCOM_M" value="comms/input" />
       
-      <property name="space.activity.routes.inputs" value="inputCOM_M:inputWP_M:inputC_M"/>
+      <property name="space.activity.routes.inputs" value="inputCOM_M:inputWP_M:inputGeneral_M"/>
       <property name="space.activity.route.input.inputCOM_M" value="comms/output"/>
       
       
@@ -31,9 +31,9 @@
       <property name="space.activity.route.input.inputWP_M" value="waypoint/output"/>
       
       
-      <property name="space.activity.route.output.outputC_M" value="mavlink/output" />
+      <property name="space.activity.route.output.outputGeneral_M" value="mavlink/output" />
       
-      <property name="space.activity.route.input.inputC_M" value="captain/output" />
+      <property name="space.activity.route.input.inputGeneral_M" value="captain/output" />
       
       <property name="space.activity.log.level" required="false">
         <value>info</value>

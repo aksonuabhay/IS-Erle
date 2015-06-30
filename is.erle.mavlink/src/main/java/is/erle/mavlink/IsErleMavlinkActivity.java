@@ -1,5 +1,6 @@
 package is.erle.mavlink;
 
+import java.util.Iterator;
 import java.util.Map;
 
 import interactivespaces.activity.impl.ros.BaseRoutableRosActivity;
@@ -10,6 +11,10 @@ import com.MAVLink.common.*;
 import com.MAVLink.enums.MAV_MISSION_RESULT;
 import com.MAVLink.pixhawk.*;
 import com.google.common.collect.Maps;
+import java.lang.Class;
+import java.lang.reflect.Field;
+
+import org.joda.time.chrono.AssembledChronology.Fields;
 /**
  * A simple Interactive Spaces Java-based activity.
  */
@@ -107,6 +112,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
     	{
     		
     		//Waypoint generator message handling here
+    		/* 
+    		 * Details : http://qgroundcontrol.org/mavlink/waypoint_protocol
+    		 * */
 			String tempString[] = message.get("mission").toString().split("-");
     		if (tempString[0] == "START") 
     		{
@@ -164,7 +172,70 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
     		//Captain message handling here
     	}
     }
+    
+    /*
+     * Use this function to get a variable name which is equal to certain value
+     * Intended for getting variables in the enum folder of mavlink package
+     */
+    private String getVariableName(String className , int matchVar)
+    {
+		String variableName = null;
+    	Class classVar = null;
+		try 
+		{
+			classVar = Class.forName(className);
+		} 
+		catch (ClassNotFoundException e) 
+		{
+			e.printStackTrace();
+		}
+    	Field[] fields = classVar.getFields();
+		try {
+			for (int i = 0; i < fields.length; i++) 
+			{
+				if (matchVar == fields[i].getInt(classVar)) 
+				{
+					variableName =  fields[i].getName();
+					break;
+				}
+			}
+		} 
+		catch (IllegalArgumentException e) 
+		{
+			e.printStackTrace();
+		} 
+		catch (IllegalAccessException e) 
+		{
+				e.printStackTrace();
+		}
+		return variableName;
+    }
 
+    /*
+     * Use this function to get all the variables of a specified class
+     * Intended for getting values from mavlink package
+     */
+    private String [] getVariableNames(String className )
+    {
+    	String variableNames [];
+		Class<?> classVar = null;
+    	try 
+    	{
+    		classVar= Class.forName(className);
+		} 
+    	catch (ClassNotFoundException e) 
+		{
+			e.printStackTrace();
+		}
+    	Field [] fields = classVar.getFields();
+    	variableNames = new String[fields.length];
+    	for (int i = 0; i < fields.length; i++) 
+    	{
+			variableNames[i] = fields[i].getName();
+		}
+		return variableNames;
+    }
+    
 	private void hadnleMavMessage(MAVLinkMessage mavMessage2) 
 	{
 		//To Do
