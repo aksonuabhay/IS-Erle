@@ -324,16 +324,16 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ ","
 						+ "AUTOPILOT : "
 						+ getVariableName("MAV_MODE_FLAG",
-								mavHeartbeat.autopilot)
+								mavHeartbeat.autopilot) + ","
 						+ "BASE MODE : "
 						+ getVariableName("MA_MODE_FLAG",
-								mavHeartbeat.base_mode)
+								mavHeartbeat.base_mode) + ","
 						+ "STATUS : "
 						+ getVariableName("MAV_STATE",
-								mavHeartbeat.system_status)
+								mavHeartbeat.system_status)+ ","
 						+ "MAVLINK VERSION : "
 						+ Byte.toString(mavHeartbeat.mavlink_version);
-				tempMavHeartbeat.put("heartbeat", tempHeartbeat);
+				tempMavHeartbeat.put("gps", tempHeartbeat);
 				sendOutputJson(publishers[2], tempMavHeartbeat);
 				getLog().info(tempHeartbeat);
 			}
@@ -384,11 +384,28 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_gps_raw_int.MAVLINK_MSG_ID_GPS_RAW_INT:
-
+			msg_gps_raw_int mavGps;
+			if (mavMessage2 instanceof msg_gps_raw_int) 
+			{
+				mavGps = (msg_gps_raw_int) mavMessage2 ;
+				Map<String, Object> tempMavGps = Maps.newHashMap();
+				String tempGps = "[" + mavGps.time_usec + "] ," + "LATITUDE : "
+						+ mavGps.lat/10000000.0 + "," + "LONGITUDE : " + mavGps.lon/10000000.0 + ","
+						+ "ALTITUDE : " + mavGps.alt/1000.0 + ","
+						+ "HORIZONTAL DILUTION : " + mavGps.eph/100.0 + ","
+						+ "VERTICAL DILUTION : " + mavGps.epv/100.0 + ","
+						+ "VELOCITY : " + mavGps.vel/100.0 + ","
+						+ "COURSE OVER GROUND : " + mavGps.cog/100.0 + ","
+						+ "FIX TYPE : " + mavGps.fix_type + ","
+						+ "SATELLITES VISIBLE : " + mavGps.satellites_visible;
+				tempMavGps.put("heartbeat", tempGps);
+				sendOutputJson(publishers[2], tempMavGps);
+				getLog().info(tempGps);
+			}
 			break;
 
 		case msg_gps_status.MAVLINK_MSG_ID_GPS_STATUS:
-
+			getLog().info(((msg_gps_status) mavMessage2).toString());
 			break;
 
 		case msg_scaled_imu.MAVLINK_MSG_ID_SCALED_IMU:
@@ -628,7 +645,20 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_gps_global_origin.MAVLINK_MSG_ID_GPS_GLOBAL_ORIGIN:
-
+			msg_gps_global_origin mavGpsGlobalOrigin;
+			if (mavMessage2 instanceof msg_gps_global_origin) 
+			{
+				mavGpsGlobalOrigin = (msg_gps_global_origin) mavMessage2 ;
+				Map<String, Object> tempMavGpsGlobalOrigin = Maps.newHashMap();
+				String tempGpsGlobalOrigin = "LATITUDE : "
+						+ mavGpsGlobalOrigin.latitude / 10000000.0 + ","
+						+ "LONGITUDE : " + mavGpsGlobalOrigin.longitude
+						/ 10000000.0 + "," + "ALTITUDE : "
+						+ mavGpsGlobalOrigin.altitude / 1000.0;
+				tempMavGpsGlobalOrigin.put("gps" , tempGpsGlobalOrigin);
+				sendOutputJson(publishers[2], tempMavGpsGlobalOrigin);
+				getLog().info(tempGpsGlobalOrigin);
+			}
 			break;
 
 		case msg_param_map_rc.MAVLINK_MSG_ID_PARAM_MAP_RC:
