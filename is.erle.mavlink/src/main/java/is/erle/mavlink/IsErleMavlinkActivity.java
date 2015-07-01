@@ -1,5 +1,6 @@
 package is.erle.mavlink;
 
+import java.util.Arrays;
 import java.util.Map;
 
 import interactivespaces.activity.impl.ros.BaseRoutableRosActivity;
@@ -396,15 +397,15 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				mavGps = (msg_gps_raw_int) mavMessage2 ;
 				Map<String, Object> tempMavGps = Maps.newHashMap();
 				String tempGps = "[" + mavGps.time_usec + "] ," + "LATITUDE : "
-						+ mavGps.lat/10000000.0 + "," + "LONGITUDE : " + mavGps.lon/10000000.0 + ","
-						+ "ALTITUDE : " + mavGps.alt/1000.0 + ","
-						+ "HORIZONTAL DILUTION : " + mavGps.eph/100.0 + ","
-						+ "VERTICAL DILUTION : " + mavGps.epv/100.0 + ","
-						+ "VELOCITY : " + mavGps.vel/100.0 + ","
-						+ "COURSE OVER GROUND : " + mavGps.cog/100.0 + ","
-						+ "FIX TYPE : " + mavGps.fix_type + ","
+						+ mavGps.lat/10000000.0 + "degrees , " + "LONGITUDE : " + mavGps.lon/10000000.0 + "degrees , "
+						+ "ALTITUDE : " + mavGps.alt/1000.0 + "metres , "
+						+ "HORIZONTAL DILUTION : " + mavGps.eph/100.0 + "metres , "
+						+ "VERTICAL DILUTION : " + mavGps.epv/100.0 + "metres , "
+						+ "VELOCITY : " + mavGps.vel/100.0 + "m/s , "
+						+ "COURSE OVER GROUND : " + mavGps.cog/100.0 + "degrees , "
+						+ "FIX TYPE : " + mavGps.fix_type + "D , "
 						+ "SATELLITES VISIBLE : " + mavGps.satellites_visible;
-				tempMavGps.put("heartbeat", tempGps);
+				tempMavGps.put("data", tempGps);
 				sendOutputJson(publishers[2], tempMavGps);
 				getLog().info(tempGps);
 			}
@@ -415,27 +416,54 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_scaled_imu.MAVLINK_MSG_ID_SCALED_IMU:
-
+			msg_scaled_imu mavScaledImu;
+			if (mavMessage2 instanceof msg_scaled_imu) 
+			{
+				mavScaledImu = (msg_scaled_imu) mavMessage2 ;
+				
+			}
 			break;
 
 		case msg_raw_imu.MAVLINK_MSG_ID_RAW_IMU:
-
+			msg_raw_imu mavRawImu;
+			if (mavMessage2 instanceof msg_raw_imu) 
+			{
+				mavRawImu = (msg_raw_imu) mavMessage2 ;
+				
+			}
 			break;
 
 		case msg_raw_pressure.MAVLINK_MSG_ID_RAW_PRESSURE:
-
+			msg_raw_pressure mavRawPressure;
+			if (mavMessage2 instanceof msg_raw_pressure) 
+			{
+				mavRawPressure = (msg_raw_pressure) mavMessage2 ;
+				
+			}
 			break;
 
 		case msg_scaled_pressure.MAVLINK_MSG_ID_SCALED_PRESSURE:
-
+			msg_scaled_pressure  mavScaledPressure;
+			if (mavMessage2 instanceof msg_scaled_pressure) 
+			{
+				mavScaledPressure = (msg_scaled_pressure) mavMessage2 ;
+			}
 			break;
 
 		case msg_attitude.MAVLINK_MSG_ID_ATTITUDE:
-
+			msg_attitude  mavAttitude;
+			if (mavMessage2 instanceof msg_attitude) 
+			{
+				mavAttitude = (msg_attitude) mavMessage2 ;
+			}
 			break;
 
 		case msg_attitude_quaternion.MAVLINK_MSG_ID_ATTITUDE_QUATERNION:
-
+			msg_attitude_quaternion  mavAttitudeQuaternion;
+			if (mavMessage2 instanceof msg_attitude_quaternion) 
+			{
+				mavAttitudeQuaternion = (msg_attitude_quaternion) mavMessage2 ;
+			}
 			break;
 
 		case msg_local_position_ned.MAVLINK_MSG_ID_LOCAL_POSITION_NED:
@@ -449,15 +477,18 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				mavGlobalPosition = (msg_global_position_int) mavMessage2;
 				String tempGlobalPosition = "["
 						+ mavGlobalPosition.time_boot_ms + "]," + "LATITUDE : "
-						+ mavGlobalPosition.lat / 10000000.0 + ","
+						+ mavGlobalPosition.lat / 10000000.0 + "degrees , "
 						+ "LONGITUDE : " + mavGlobalPosition.lon / 10000000.0
-						+ "," + "ALTITUDE : " + mavGlobalPosition.alt / 1000.0
-						+ "," + "RELATIVE ALTITUDE : "
-						+ mavGlobalPosition.relative_alt / 1000.0 + ","
-						+ "VELOCITY X : " + mavGlobalPosition.vx / 100.0 + ","
-						+ "VELOCITY Y : " + mavGlobalPosition.vy / 100.0 + ","
-						+ "VELOCITY Z : " + mavGlobalPosition.vz / 100.0 + ","
-						+ "HEADING : " + mavGlobalPosition.hdg / 100.0;
+						+ "degrees , " + "ALTITUDE : "
+						+ mavGlobalPosition.alt / 1000.0 + "metres , "
+						+ "RELATIVE ALTITUDE : "
+						+ mavGlobalPosition.relative_alt / 1000.0 + "metres , "
+						+ "VELOCITY X : " + mavGlobalPosition.vx / 100.0
+						+ "m/s , " + "VELOCITY Y : "
+						+ mavGlobalPosition.vy / 100.0 + "m/s , "
+						+ "VELOCITY Z : " + mavGlobalPosition.vz / 100.0
+						+ "m/s , " + "HEADING : " + mavGlobalPosition.hdg
+						/ 100.0 + "degrees";
 				Map<String, Object> tempMavGlobalPosition = Maps.newHashMap();
 				tempMavGlobalPosition.put("data", tempGlobalPosition);
 				sendOutputJson(publishers[2], tempMavGlobalPosition);
@@ -676,10 +707,11 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				mavGpsGlobalOrigin = (msg_gps_global_origin) mavMessage2 ;
 				Map<String, Object> tempMavGpsGlobalOrigin = Maps.newHashMap();
 				String tempGpsGlobalOrigin = "LATITUDE : "
-						+ mavGpsGlobalOrigin.latitude / 10000000.0 + ","
-						+ "LONGITUDE : " + mavGpsGlobalOrigin.longitude
-						/ 10000000.0 + "," + "ALTITUDE : "
-						+ mavGpsGlobalOrigin.altitude / 1000.0;
+						+ mavGpsGlobalOrigin.latitude / 10000000.0
+						+ "degrees , " + "LONGITUDE : "
+						+ mavGpsGlobalOrigin.longitude / 10000000.0
+						+ "degrees , " + "ALTITUDE : "
+						+ mavGpsGlobalOrigin.altitude / 1000.0 + "metres";
 				tempMavGpsGlobalOrigin.put("gps" , tempGpsGlobalOrigin);
 				sendOutputJson(publishers[2], tempMavGpsGlobalOrigin);
 				getLog().info(tempGpsGlobalOrigin);
@@ -963,7 +995,30 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_battery_status.MAVLINK_MSG_ID_BATTERY_STATUS:
-
+			msg_battery_status mavBatteryStatus;
+			if (mavMessage2 instanceof msg_battery_status) 
+			{
+				mavBatteryStatus = (msg_battery_status) mavMessage2;
+				String tempBatteryStatus = "CHARGE CONSUMED : "
+						+ mavBatteryStatus.current_consumed + " mAh , "
+						+ "ENERGY CONSUMED : "
+						+ mavBatteryStatus.energy_consumed / 100.0
+						+ "Joules , " + "TEMPERATURE : "
+						+ mavBatteryStatus.temperature + "degree Celsius , "
+						+ "VOLTAGES : "
+						+ Arrays.toString(mavBatteryStatus.voltages) + "mV , "
+						+ "BATTERY CURRENT : "
+						+ mavBatteryStatus.current_battery / 10.0 + "mA , "
+						+ "BATTERY ID : " + mavBatteryStatus.id
+						+ "BATTERY FUNCTION : "
+						+ mavBatteryStatus.battery_function + "BATTERY TYPE : "
+						+ mavBatteryStatus.type + "REMAINING BATTERY : "
+						+ mavBatteryStatus.battery_remaining + "%";
+				Map<String, Object> tempMavBatteryStatus = Maps.newHashMap();
+				tempMavBatteryStatus.put("data" , tempBatteryStatus);
+				sendOutputJson(publishers[2], tempMavBatteryStatus);
+				getLog().info(tempBatteryStatus);
+			}
 			break;
 
 		case msg_autopilot_version.MAVLINK_MSG_ID_AUTOPILOT_VERSION:
