@@ -177,7 +177,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
     private String getVariableName(String className , int matchVar)
     {
 		String variableName = null;
-    	Class classVar = null;
+    	Class<?> classVar = null;
 		try 
 		{
 			classVar = Class.forName(className);
@@ -340,11 +340,17 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_sys_status.MAVLINK_MSG_ID_SYS_STATUS:
-
+			Map<String,	Object> tempMavSysStatus = Maps.newHashMap();
+			tempMavSysStatus.put("status", mavMessage2.toString());
+			sendOutputJson(publishers[2], tempMavSysStatus);
+			getLog().info(mavMessage2.toString());
 			break;
 
 		case msg_system_time.MAVLINK_MSG_ID_SYSTEM_TIME:
-
+			Map<String,	Object> tempMavSysTime = Maps.newHashMap();
+			tempMavSysTime.put("status", mavMessage2.toString());
+			sendOutputJson(publishers[2], tempMavSysTime);
+			getLog().info(mavMessage2.toString());
 			break;
 
 		case msg_ping.MAVLINK_MSG_ID_PING:
@@ -437,7 +443,26 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_global_position_int.MAVLINK_MSG_ID_GLOBAL_POSITION_INT:
-
+			msg_global_position_int mavGlobalPosition;
+			if (mavMessage2 instanceof msg_global_position_int) 
+			{
+				mavGlobalPosition = (msg_global_position_int) mavMessage2;
+				String tempGlobalPosition = "["
+						+ mavGlobalPosition.time_boot_ms + "]," + "LATITUDE : "
+						+ mavGlobalPosition.lat / 10000000.0 + ","
+						+ "LONGITUDE : " + mavGlobalPosition.lon / 10000000.0
+						+ "," + "ALTITUDE : " + mavGlobalPosition.alt / 1000.0
+						+ "," + "RELATIVE ALTITUDE : "
+						+ mavGlobalPosition.relative_alt / 1000.0 + ","
+						+ "VELOCITY X : " + mavGlobalPosition.vx / 100.0 + ","
+						+ "VELOCITY Y : " + mavGlobalPosition.vy / 100.0 + ","
+						+ "VELOCITY Z : " + mavGlobalPosition.vz / 100.0 + ","
+						+ "HEADING : " + mavGlobalPosition.hdg / 100.0;
+				Map<String, Object> tempMavGlobalPosition = Maps.newHashMap();
+				tempMavGlobalPosition.put("data", tempGlobalPosition);
+				sendOutputJson(publishers[2], tempMavGlobalPosition);
+				getLog().info(tempGlobalPosition);
+			}
 			break;
 
 		case msg_rc_channels_scaled.MAVLINK_MSG_ID_RC_CHANNELS_SCALED:
