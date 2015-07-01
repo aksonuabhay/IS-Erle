@@ -419,8 +419,26 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			msg_scaled_imu mavScaledImu;
 			if (mavMessage2 instanceof msg_scaled_imu) 
 			{
-				mavScaledImu = (msg_scaled_imu) mavMessage2 ;
-				
+				mavScaledImu = (msg_scaled_imu) mavMessage2;
+				String tempScaledImu = "[" + mavScaledImu.time_boot_ms + "] , "
+						+ "ACCELARATION X : " + mavScaledImu.xacc / 100000.0
+						+ "metres/sec2 , " + "ACCELARATION Y : "
+						+ mavScaledImu.yacc / 100000.0 + "metres/sec2 , "
+						+ "ACCELARATION Z : " + mavScaledImu.zacc / 100000.0
+						+ "metres/sec2 , " + "OMEGA X : "
+						+ mavScaledImu.xgyro / 1000.0 + "rad/s , "
+						+ "OMEGA Y : " + mavScaledImu.ygyro / 1000.0
+						+ "rad/s , " + "OMEGA Z : "
+						+ mavScaledImu.zgyro / 1000.0 + "rad/s , "
+						+ "MAGNETIC FIELD X : " + mavScaledImu.xmag / 1000.0
+						+ "Tesla , " + "MAGNETIC FIELD Y : "
+						+ mavScaledImu.ymag / 1000.0 + "Tesla , "
+						+ "MAGNETIC FIELD Z : " + mavScaledImu.zmag / 1000.0
+						+ "Tesla";
+				Map<String , Object> tempMavScaledImu = Maps.newHashMap();
+				tempMavScaledImu.put("data", tempScaledImu);
+				sendOutputJson(publishers[2], tempMavScaledImu);
+				getLog().info(tempScaledImu);
 			}
 			break;
 
@@ -429,7 +447,20 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			if (mavMessage2 instanceof msg_raw_imu) 
 			{
 				mavRawImu = (msg_raw_imu) mavMessage2 ;
-				
+				String tempRawImu = "[" + mavRawImu.time_usec + "] , "
+						+ "ACCELARATION X : " + mavRawImu.xacc + "raw , "
+						+ "ACCELARATION Y : " + mavRawImu.yacc + "raw , "
+						+ "ACCELARATION Z : " + mavRawImu.zacc + "raw , "
+						+ "OMEGA X : " + mavRawImu.xgyro + "raw , "
+						+ "OMEGA Y : " + mavRawImu.ygyro + "raw , "
+						+ "OMEGA Z : " + mavRawImu.zgyro + "raw , "
+						+ "MAGNETIC FIELD X : " + mavRawImu.xmag + "raw , "
+						+ "MAGNETIC FIELD Y : " + mavRawImu.ymag + "raw , "
+						+ "MAGNETIC FIELD Z : " + mavRawImu.zmag + "raw";
+				Map<String , Object> tempMavRawImu = Maps.newHashMap();
+				tempMavRawImu.put("data", tempRawImu);
+				sendOutputJson(publishers[2], tempMavRawImu);
+				getLog().info(tempRawImu);
 			}
 			break;
 
@@ -455,6 +486,17 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			if (mavMessage2 instanceof msg_attitude) 
 			{
 				mavAttitude = (msg_attitude) mavMessage2 ;
+				String tempAttitude = "[" + mavAttitude.time_boot_ms + "] , "
+						+ "ROLL : " + mavAttitude.roll + "rad , " + "PITCH : "
+						+ mavAttitude.pitch + "rad , " + "YAW : "
+						+ mavAttitude.yaw + "rad , " + "ROLL SPEED : "
+						+ mavAttitude.rollspeed + "rad/s , " + "PITCH SPEED : "
+						+ mavAttitude.pitchspeed + "rad/s , " + "YAW SPEED : "
+						+ mavAttitude.yawspeed + "rad/s";
+				Map<String , Object> tempmavAttitude = Maps.newHashMap();
+				tempmavAttitude.put("data", tempAttitude);
+				sendOutputJson(publishers[2], tempmavAttitude);
+				getLog().info(tempAttitude);
 			}
 			break;
 
@@ -895,7 +937,30 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_scaled_imu2.MAVLINK_MSG_ID_SCALED_IMU2:
-
+			msg_scaled_imu2 mavScaledImu2;
+			if (mavMessage2 instanceof msg_scaled_imu2) 
+			{
+				mavScaledImu2 = (msg_scaled_imu2) mavMessage2;
+				String tempScaledImu2 = "[" + mavScaledImu2.time_boot_ms + "] , "
+						+ "ACCELARATION X : " + mavScaledImu2.xacc / 100000.0
+						+ "metres/sec2 , " + "ACCELARATION Y : "
+						+ mavScaledImu2.yacc / 100000.0 + "metres/sec2 , "
+						+ "ACCELARATION Z : " + mavScaledImu2.zacc / 100000.0
+						+ "metres/sec2 , " + "OMEGA X : "
+						+ mavScaledImu2.xgyro / 1000.0 + "rad/s , "
+						+ "OMEGA Y : " + mavScaledImu2.ygyro / 1000.0
+						+ "rad/s , " + "OMEGA Z : "
+						+ mavScaledImu2.zgyro / 1000.0 + "rad/s , "
+						+ "MAGNETIC FIELD X : " + mavScaledImu2.xmag / 1000.0
+						+ "Tesla , " + "MAGNETIC FIELD Y : "
+						+ mavScaledImu2.ymag / 1000.0 + "Tesla , "
+						+ "MAGNETIC FIELD Z : " + mavScaledImu2.zmag / 1000.0
+						+ "Tesla";
+				Map<String , Object> tempMavScaledImu2 = Maps.newHashMap();
+				tempMavScaledImu2.put("data", tempScaledImu2);
+				sendOutputJson(publishers[2], tempMavScaledImu2);
+				getLog().info(tempScaledImu2);
+			}
 			break;
 
 		case msg_log_request_list.MAVLINK_MSG_ID_LOG_REQUEST_LIST:
@@ -947,7 +1012,30 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_scaled_imu3.MAVLINK_MSG_ID_SCALED_IMU3:
-
+			msg_scaled_imu3 mavScaledImu3;
+			if (mavMessage2 instanceof msg_scaled_imu3) 
+			{
+				mavScaledImu3 = (msg_scaled_imu3) mavMessage2;
+				String tempScaledImu3 = "[" + mavScaledImu3.time_boot_ms + "] , "
+						+ "ACCELARATION X : " + mavScaledImu3.xacc / 100000.0
+						+ "metres/sec2 , " + "ACCELARATION Y : "
+						+ mavScaledImu3.yacc / 100000.0 + "metres/sec2 , "
+						+ "ACCELARATION Z : " + mavScaledImu3.zacc / 100000.0
+						+ "metres/sec2 , " + "OMEGA X : "
+						+ mavScaledImu3.xgyro / 1000.0 + "rad/s , "
+						+ "OMEGA Y : " + mavScaledImu3.ygyro / 1000.0
+						+ "rad/s , " + "OMEGA Z : "
+						+ mavScaledImu3.zgyro / 1000.0 + "rad/s , "
+						+ "MAGNETIC FIELD X : " + mavScaledImu3.xmag / 1000.0
+						+ "Tesla , " + "MAGNETIC FIELD Y : "
+						+ mavScaledImu3.ymag / 1000.0 + "Tesla , "
+						+ "MAGNETIC FIELD Z : " + mavScaledImu3.zmag / 1000.0
+						+ "Tesla";
+				Map<String , Object> tempMavScaledImu3 = Maps.newHashMap();
+				tempMavScaledImu3.put("data", tempScaledImu3);
+				sendOutputJson(publishers[2], tempMavScaledImu3);
+				getLog().info(tempScaledImu3);
+			}
 			break;
 
 		case msg_data_transmission_handshake.MAVLINK_MSG_ID_DATA_TRANSMISSION_HANDSHAKE:
