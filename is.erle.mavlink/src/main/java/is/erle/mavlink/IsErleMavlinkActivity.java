@@ -435,7 +435,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ mavScaledImu.ymag / 1000.0 + "Tesla , "
 						+ "MAGNETIC FIELD Z : " + mavScaledImu.zmag / 1000.0
 						+ "Tesla";
-				Map<String , Object> tempMavScaledImu = Maps.newHashMap();
+				Map<String, Object> tempMavScaledImu = Maps.newHashMap();
 				tempMavScaledImu.put("data", tempScaledImu);
 				sendOutputJson(publishers[2], tempMavScaledImu);
 				getLog().info(tempScaledImu);
@@ -446,7 +446,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			msg_raw_imu mavRawImu;
 			if (mavMessage2 instanceof msg_raw_imu) 
 			{
-				mavRawImu = (msg_raw_imu) mavMessage2 ;
+				mavRawImu = (msg_raw_imu) mavMessage2;
 				String tempRawImu = "[" + mavRawImu.time_usec + "] , "
 						+ "ACCELARATION X : " + mavRawImu.xacc + "raw , "
 						+ "ACCELARATION Y : " + mavRawImu.yacc + "raw , "
@@ -457,7 +457,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ "MAGNETIC FIELD X : " + mavRawImu.xmag + "raw , "
 						+ "MAGNETIC FIELD Y : " + mavRawImu.ymag + "raw , "
 						+ "MAGNETIC FIELD Z : " + mavRawImu.zmag + "raw";
-				Map<String , Object> tempMavRawImu = Maps.newHashMap();
+				Map<String, Object> tempMavRawImu = Maps.newHashMap();
 				tempMavRawImu.put("data", tempRawImu);
 				sendOutputJson(publishers[2], tempMavRawImu);
 				getLog().info(tempRawImu);
@@ -516,9 +516,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ mavAttitude.rollspeed + "rad/s , " + "PITCH SPEED : "
 						+ mavAttitude.pitchspeed + "rad/s , " + "YAW SPEED : "
 						+ mavAttitude.yawspeed + "rad/s";
-				Map<String , Object> tempmavAttitude = Maps.newHashMap();
-				tempmavAttitude.put("data", tempAttitude);
-				sendOutputJson(publishers[2], tempmavAttitude);
+				Map<String , Object> tempMavAttitude = Maps.newHashMap();
+				tempMavAttitude.put("data", tempAttitude);
+				sendOutputJson(publishers[2], tempMavAttitude);
 				getLog().info(tempAttitude);
 			}
 			break;
@@ -528,6 +528,24 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			if (mavMessage2 instanceof msg_attitude_quaternion) 
 			{
 				mavAttitudeQuaternion = (msg_attitude_quaternion) mavMessage2 ;
+				String tempAttitudeQuaternion = "["
+						+ mavAttitudeQuaternion.time_boot_ms + "] , "
+						+ "QUATERNION COMPONENT 1 : "
+						+ mavAttitudeQuaternion.q1 + " , "
+						+ "QUATERNION COMPONENT 2 : "
+						+ mavAttitudeQuaternion.q2 + " , "
+						+ "QUATERNION COMPONENT 3 : "
+						+ mavAttitudeQuaternion.q3 + " , "
+						+ "QUATERNION COMPONENT 4 : "
+						+ mavAttitudeQuaternion.q4 + " , " + "ROLL SPEED : "
+						+ mavAttitudeQuaternion.rollspeed + "rad/s , "
+						+ "PITCH SPEED : " + mavAttitudeQuaternion.pitchspeed
+						+ "rad/s , " + "YAW SPEED : "
+						+ mavAttitudeQuaternion.yawspeed + "rad/s";
+				Map<String , Object> tempMavAttitudeQuaternion = Maps.newHashMap();
+				tempMavAttitudeQuaternion.put("data", tempAttitudeQuaternion);
+				sendOutputJson(publishers[2], tempMavAttitudeQuaternion);
+				getLog().info(tempAttitudeQuaternion);
 			}
 			break;
 
@@ -796,7 +814,31 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_attitude_quaternion_cov.MAVLINK_MSG_ID_ATTITUDE_QUATERNION_COV:
-
+			msg_attitude_quaternion_cov  mavAttitudeQuaternionCov;
+			if (mavMessage2 instanceof msg_attitude_quaternion_cov) 
+			{
+				mavAttitudeQuaternionCov = (msg_attitude_quaternion_cov) mavMessage2 ;
+				String tempAttitudeQuaternionCov = "["
+						+ mavAttitudeQuaternionCov.time_boot_ms + "] , "
+						+ "QUATERNION COMPONENT 1 : "
+						+ mavAttitudeQuaternionCov.q[1] + " , "
+						+ "QUATERNION COMPONENT 2 : "
+						+ mavAttitudeQuaternionCov.q[2] + " , "
+						+ "QUATERNION COMPONENT 3 : "
+						+ mavAttitudeQuaternionCov.q[3] + " , "
+						+ "QUATERNION COMPONENT 4 : "
+						+ mavAttitudeQuaternionCov.q[4] + " , "
+						+ "ROLL SPEED : " + mavAttitudeQuaternionCov.rollspeed
+						+ "rad/s , " + "PITCH SPEED : "
+						+ mavAttitudeQuaternionCov.pitchspeed + "rad/s , "
+						+ "YAW SPEED : " + mavAttitudeQuaternionCov.yawspeed
+						+ "rad/s" + "COVARIANCE MATRIX : "
+						+ Arrays.toString(mavAttitudeQuaternionCov.covariance);
+				Map<String , Object> tempMavAttitudeQuaternionCov = Maps.newHashMap();
+				tempMavAttitudeQuaternionCov.put("data", tempAttitudeQuaternionCov);
+				sendOutputJson(publishers[2], tempMavAttitudeQuaternionCov);
+				getLog().info(tempAttitudeQuaternionCov);
+			}
 			break;
 
 		case msg_nav_controller_output.MAVLINK_MSG_ID_NAV_CONTROLLER_OUTPUT:
@@ -916,7 +958,59 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_highres_imu.MAVLINK_MSG_ID_HIGHRES_IMU:
-
+			msg_highres_imu mavHighresImu;
+			if (mavMessage2 instanceof msg_highres_imu) 
+			{
+				mavHighresImu = (msg_highres_imu) mavMessage2;
+				String tempHighresImu = "["
+						+ mavHighresImu.time_usec
+						+ "] , "
+						+ "ACCELARATION X : "
+						+ mavHighresImu.xacc
+						+ "metres/sec2 , "
+						+ "ACCELARATION Y : "
+						+ mavHighresImu.yacc
+						+ "metres/sec2 , "
+						+ "ACCELARATION Z : "
+						+ mavHighresImu.zacc
+						+ "metres/sec2 , "
+						+ "OMEGA X : "
+						+ mavHighresImu.xgyro
+						+ "rad/s , "
+						+ "OMEGA Y : "
+						+ mavHighresImu.ygyro
+						+ "rad/s , "
+						+ "OMEGA Z : "
+						+ mavHighresImu.zgyro
+						+ "rad/s , "
+						+ "MAGNETIC FIELD X : "
+						+ mavHighresImu.xmag
+						+ "Gauss , "
+						+ "MAGNETIC FIELD Y : "
+						+ mavHighresImu.ymag
+						+ "Gauss , "
+						+ "MAGNETIC FIELD Z : "
+						+ mavHighresImu.zmag
+						+ "Gauss , "
+						+ "ABSOLUTE PRESSURE : "
+						+ mavHighresImu.abs_pressure
+						+ "millibar , "
+						+ "DIFFERENTIAL PRESSURE : "
+						+ mavHighresImu.diff_pressure
+						+ "millibar , "
+						+ "ALTITUDE FROM PRESSURE : "
+						+ mavHighresImu.pressure_alt
+						+ "metres , "
+						+ "TEMPERATURE : "
+						+ mavHighresImu.temperature
+						+ "degree Celsius , "
+						+ "UPDATED FIELDS : "
+						+ Integer.toBinaryString(0xFFFF & mavHighresImu.fields_updated);
+				Map<String, Object> tempMavHighresImu = Maps.newHashMap();
+				tempMavHighresImu.put("data", tempHighresImu);
+				sendOutputJson(publishers[2], tempMavHighresImu);
+				getLog().info(tempHighresImu);
+			}
 			break;
 
 		case msg_optical_flow_rad.MAVLINK_MSG_ID_OPTICAL_FLOW_RAD:
