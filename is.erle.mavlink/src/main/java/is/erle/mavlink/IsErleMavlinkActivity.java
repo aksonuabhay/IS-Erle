@@ -468,8 +468,20 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			msg_raw_pressure mavRawPressure;
 			if (mavMessage2 instanceof msg_raw_pressure) 
 			{
-				mavRawPressure = (msg_raw_pressure) mavMessage2 ;
-				
+				mavRawPressure = (msg_raw_pressure) mavMessage2;
+				String tempRawPressure = "[" + mavRawPressure.time_usec
+						+ "] , " + "ABSOLUTE PRESSURE : "
+						+ mavRawPressure.press_abs + "raw , "
+						+ "DIFFERENTIAL PRESSURE 1 : "
+						+ mavRawPressure.press_diff1 + "raw , "
+						+ "DIFFERENTIAL PRESSURE 2 : "
+						+ mavRawPressure.press_diff2 + "raw , "
+						+ "TEMPERATURE : " + mavRawPressure.temperature
+						+ "raw ";
+				Map<String, Object> tempMavRawPressure = Maps.newHashMap();
+				tempMavRawPressure.put("data", tempRawPressure);
+				sendOutputJson(publishers[2], tempMavRawPressure);
+				getLog().info(tempRawPressure);
 			}
 			break;
 
@@ -477,7 +489,18 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			msg_scaled_pressure  mavScaledPressure;
 			if (mavMessage2 instanceof msg_scaled_pressure) 
 			{
-				mavScaledPressure = (msg_scaled_pressure) mavMessage2 ;
+				mavScaledPressure = (msg_scaled_pressure) mavMessage2;
+				String tempScaledPressure = "["
+						+ mavScaledPressure.time_boot_ms + "] , "
+						+ "ABSOLUTE PRESSURE : " + mavScaledPressure.press_abs
+						* 100.0 + "Pascal , " + "DIFFERENTIAL PRESSURE 1 : "
+						+ mavScaledPressure.press_diff * 100 + "Pascal , "
+						+ "TEMPERATURE : " + mavScaledPressure.temperature
+						/ 100.0 + "degree Cesius ";
+				Map<String, Object> tempMavScaledPressure = Maps.newHashMap();
+				tempMavScaledPressure.put("data", tempScaledPressure);
+				sendOutputJson(publishers[2], tempMavScaledPressure);
+				getLog().info(tempScaledPressure);
 			}
 			break;
 
@@ -1067,7 +1090,22 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_scaled_pressure2.MAVLINK_MSG_ID_SCALED_PRESSURE2:
-
+			msg_scaled_pressure2  mavScaledPressure2;
+			if (mavMessage2 instanceof msg_scaled_pressure2) 
+			{
+				mavScaledPressure2 = (msg_scaled_pressure2) mavMessage2;
+				String tempScaledPressure2 = "["
+						+ mavScaledPressure2.time_boot_ms + "] , "
+						+ "ABSOLUTE PRESSURE : " + mavScaledPressure2.press_abs
+						* 100.0 + "Pascal , " + "DIFFERENTIAL PRESSURE 1 : "
+						+ mavScaledPressure2.press_diff * 100 + "Pascal , "
+						+ "TEMPERATURE : " + mavScaledPressure2.temperature
+						/ 100.0 + "degree Cesius ";
+				Map<String, Object> tempMavScaledPressure2 = Maps.newHashMap();
+				tempMavScaledPressure2.put("data", tempScaledPressure2);
+				sendOutputJson(publishers[2], tempMavScaledPressure2);
+				getLog().info(tempScaledPressure2);
+			}
 			break;
 
 		case msg_att_pos_mocap.MAVLINK_MSG_ID_ATT_POS_MOCAP:
