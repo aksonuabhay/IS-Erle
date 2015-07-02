@@ -902,7 +902,35 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_attitude_target.MAVLINK_MSG_ID_ATTITUDE_TARGET:
-
+			msg_attitude_target  mavAttitudeTarget;
+			if (mavMessage2 instanceof msg_attitude_target) 
+			{
+				mavAttitudeTarget = (msg_attitude_target) mavMessage2;
+				String tempAttitudeTarget = "["
+						+ mavAttitudeTarget.time_boot_ms + "] , "
+						+ "QUATERNION COMPONENT 1 : " + mavAttitudeTarget.q[1]
+						+ " , " + "QUATERNION COMPONENT 2 : "
+						+ mavAttitudeTarget.q[2] + " , "
+						+ "QUATERNION COMPONENT 3 : " + mavAttitudeTarget.q[3]
+						+ " , " + "QUATERNION COMPONENT 4 : "
+						+ mavAttitudeTarget.q[4] + " , " + "BODY ROLL SPEED : "
+						+ mavAttitudeTarget.body_roll_rate + "rad/s , "
+						+ "BODY PITCH SPEED : "
+						+ mavAttitudeTarget.body_pitch_rate + "rad/s , "
+						+ "BODY YAW SPEED : " + mavAttitudeTarget.body_yaw_rate
+						+ "rad/s" + "THRUST : " + mavAttitudeTarget.thrust;
+				/**
+				 * mavAttitudeTarget.type_mask
+				 * Mappings: If any of these bits are set, the corresponding
+				 * input should be ignored: bit 1: body roll rate, bit 2: body
+				 * pitch rate, bit 3: body yaw rate. bit 4-bit 7: reserved, bit
+				 * 8: attitude
+				 */
+				Map<String , Object> tempMavAttitudeTarget = Maps.newHashMap();
+				tempMavAttitudeTarget.put("data", tempAttitudeTarget);
+				sendOutputJson(publishers[2], tempMavAttitudeTarget);
+				getLog().info(tempAttitudeTarget);
+			}
 			break;
 
 		case msg_set_position_target_local_ned.MAVLINK_MSG_ID_SET_POSITION_TARGET_LOCAL_NED:
@@ -1203,7 +1231,25 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_att_pos_mocap.MAVLINK_MSG_ID_ATT_POS_MOCAP:
-
+			msg_att_pos_mocap  mavAttPosMocap;
+			if (mavMessage2 instanceof msg_att_pos_mocap) 
+			{
+				mavAttPosMocap = (msg_att_pos_mocap) mavMessage2;
+				String tempAttPosMocap = "[" + mavAttPosMocap.time_usec
+						+ "] , " + "QUATERNION COMPONENT 1 : "
+						+ mavAttPosMocap.q[1] + " , "
+						+ "QUATERNION COMPONENT 2 : " + mavAttPosMocap.q[2]
+						+ " , " + "QUATERNION COMPONENT 3 : "
+						+ mavAttPosMocap.q[3] + " , "
+						+ "QUATERNION COMPONENT 4 : " + mavAttPosMocap.q[4]
+						+ " , " + "X : " + mavAttPosMocap.x + "metres , "
+						+ "Y : " + mavAttPosMocap.y + "metres , " + "Z : "
+						+ mavAttPosMocap.z + "metres";
+				Map<String, Object> tempMavAttPosMocap = Maps.newHashMap();
+				tempMavAttPosMocap.put("data", tempAttPosMocap);
+				sendOutputJson(publishers[2], tempMavAttPosMocap);
+				getLog().info(tempAttPosMocap);
+			}
 			break;
 
 		case msg_set_actuator_control_target.MAVLINK_MSG_ID_SET_ACTUATOR_CONTROL_TARGET:
@@ -1242,7 +1288,10 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_autopilot_version.MAVLINK_MSG_ID_AUTOPILOT_VERSION:
-
+			Map<String,	Object> tempMavAutopilotVersion= Maps.newHashMap();
+			tempMavAutopilotVersion.put("status", mavMessage2.toString());
+			sendOutputJson(publishers[2], tempMavAutopilotVersion);
+			getLog().info(mavMessage2.toString());
 			break;
 
 		case msg_landing_target.MAVLINK_MSG_ID_LANDING_TARGET:
@@ -1262,11 +1311,17 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_named_value_float.MAVLINK_MSG_ID_NAMED_VALUE_FLOAT:
-
+			Map<String,	Object> tempMavNamedValueFloat= Maps.newHashMap();
+			tempMavNamedValueFloat.put("data", mavMessage2.toString());
+			sendOutputJson(publishers[2], tempMavNamedValueFloat);
+			getLog().info(mavMessage2.toString());
 			break;
 
 		case msg_named_value_int.MAVLINK_MSG_ID_NAMED_VALUE_INT:
-
+			Map<String,	Object> tempMavNamedValueInt= Maps.newHashMap();
+			tempMavNamedValueInt.put("data", mavMessage2.toString());
+			sendOutputJson(publishers[2], tempMavNamedValueInt);
+			getLog().info(mavMessage2.toString());
 			break;
 
 		case msg_statustext.MAVLINK_MSG_ID_STATUSTEXT:
