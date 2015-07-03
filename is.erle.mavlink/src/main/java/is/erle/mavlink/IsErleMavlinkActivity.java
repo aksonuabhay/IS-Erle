@@ -553,7 +553,22 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_local_position_ned.MAVLINK_MSG_ID_LOCAL_POSITION_NED:
-
+			msg_local_position_ned mavLocalPosition;
+			if (mavMessage2 instanceof msg_local_position_ned) 
+			{
+				mavLocalPosition = (msg_local_position_ned) mavMessage2;
+				String tempLocalPosition = "[" + mavLocalPosition.time_boot_ms
+						+ "]," + "X : " + mavLocalPosition.x + "metres , "
+						+ "Y : " + mavLocalPosition.y + "metres , " + "Z : "
+						+ mavLocalPosition.z + "metres , " + "VELOCITY X : "
+						+ mavLocalPosition.vx + "m/s , " + "VELOCITY Y : "
+						+ mavLocalPosition.vy + "m/s , " + "VELOCITY Z : "
+						+ mavLocalPosition.vz + "m/s ";
+				Map<String, Object> tempMavLocalPosition = Maps.newHashMap();
+				tempMavLocalPosition.put("data", tempLocalPosition);
+				sendOutputJson(publishers[2], tempMavLocalPosition);
+				getLog().info(tempLocalPosition);
+			}
 			break;
 
 		case msg_global_position_int.MAVLINK_MSG_ID_GLOBAL_POSITION_INT:
@@ -849,11 +864,71 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_global_position_int_cov.MAVLINK_MSG_ID_GLOBAL_POSITION_INT_COV:
-
+			msg_global_position_int_cov mavGlobalPositionIntCov;
+			if (mavMessage2 instanceof msg_global_position_int_cov) 
+			{
+				mavGlobalPositionIntCov = (msg_global_position_int_cov) mavMessage2;
+				String tempGlobalPositionIntCov = "["
+						+ mavGlobalPositionIntCov.time_boot_ms + "],"
+						+ "LATITUDE : " + mavGlobalPositionIntCov.lat
+						+ "degrees , " + "LONGITUDE : "
+						+ mavGlobalPositionIntCov.lon + "degrees , "
+						+ "ALTITUDE : " + mavGlobalPositionIntCov.alt
+						+ "metres , " + "RELATIVE ALTITUDE : "
+						+ mavGlobalPositionIntCov.relative_alt + "metres , "
+						+ "VELOCITY X : " + mavGlobalPositionIntCov.vx
+						+ "m/s , " + "VELOCITY Y : "
+						+ mavGlobalPositionIntCov.vy + "m/s , "
+						+ "VELOCITY Z : " + mavGlobalPositionIntCov.vz
+						+ "m/s , " + "COVARIANCE : "
+						+ Arrays.toString(mavGlobalPositionIntCov.covariance)
+						+ " , " + "TYPE : "
+						+ mavGlobalPositionIntCov.estimator_type
+						+ "UTC TIME : " + mavGlobalPositionIntCov.time_utc;
+				/**
+				 * Covariance matrix (first six entries are the first ROW, next
+				 * six entries are the second row, etc.)
+				 */
+				Map<String, Object> tempMavGlobalPositionIntCov = Maps
+						.newHashMap();
+				tempMavGlobalPositionIntCov.put("data",
+						tempGlobalPositionIntCov);
+				sendOutputJson(publishers[2], tempMavGlobalPositionIntCov);
+				getLog().info(tempGlobalPositionIntCov);
+			}
 			break;
 
 		case msg_local_position_ned_cov.MAVLINK_MSG_ID_LOCAL_POSITION_NED_COV:
-
+			msg_local_position_ned_cov mavLocalPositionCov;
+			if (mavMessage2 instanceof msg_local_position_ned_cov) 
+			{
+				mavLocalPositionCov = (msg_local_position_ned_cov) mavMessage2;
+				String tempLocalPositionCov = "["
+						+ mavLocalPositionCov.time_boot_ms + "]," + "X : "
+						+ mavLocalPositionCov.x + "metres , " + "Y : "
+						+ mavLocalPositionCov.y + "metres , " + "Z : "
+						+ mavLocalPositionCov.z + "metres , " + "VELOCITY X : "
+						+ mavLocalPositionCov.vx + "m/s , " + "VELOCITY Y : "
+						+ mavLocalPositionCov.vy + "m/s , " + "VELOCITY Z : "
+						+ mavLocalPositionCov.vz + "m/s , "
+						+ "ACCELARATION X : " + mavLocalPositionCov.ax
+						+ "m/s2 , " + "ACCELARATION Y : "
+						+ mavLocalPositionCov.ay + "m/s2 , "
+						+ "ACCELARATION Z : " + mavLocalPositionCov.az
+						+ "m/s2 , " + "COVARIANCE : "
+						+ Arrays.toString(mavLocalPositionCov.covariance)
+						+ " , " + "TYPE : "
+						+ mavLocalPositionCov.estimator_type;
+				/**
+				 * Covariance matrix upper right triangular (first nine entries
+				 * are the first ROW, next eight entries are the second row,
+				 * etc.)
+				 */
+				Map<String, Object> tempMavLocalPositionCov = Maps.newHashMap();
+				tempMavLocalPositionCov.put("data", tempLocalPositionCov);
+				sendOutputJson(publishers[2], tempMavLocalPositionCov);
+				getLog().info(tempLocalPositionCov);
+			}
 			break;
 
 		case msg_rc_channels.MAVLINK_MSG_ID_RC_CHANNELS:
@@ -941,7 +1016,42 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_position_target_local_ned.MAVLINK_MSG_ID_POSITION_TARGET_LOCAL_NED:
-
+			msg_position_target_local_ned mavPositionTargetLocalNed;
+			if (mavMessage2 instanceof msg_position_target_local_ned) 
+			{
+				mavPositionTargetLocalNed = (msg_position_target_local_ned) mavMessage2;
+				String tempPositionTargetLocalNed = "["
+						+ mavPositionTargetLocalNed.time_boot_ms + "],"
+						+ "X : " + mavPositionTargetLocalNed.x + "metres , "
+						+ "Y : " + mavPositionTargetLocalNed.y + "metres , "
+						+ "Z : " + mavPositionTargetLocalNed.z + "metres , "
+						+ "VELOCITY X : " + mavPositionTargetLocalNed.vx
+						+ "m/s , " + "VELOCITY Y : "
+						+ mavPositionTargetLocalNed.vy + "m/s , "
+						+ "VELOCITY Z : " + mavPositionTargetLocalNed.vz
+						+ "m/s , " + "ACCELARATION X : "
+						+ mavPositionTargetLocalNed.afx + "m/s2 , "
+						+ "ACCELARATION Y : " + mavPositionTargetLocalNed.afy
+						+ "m/s2 , " + "ACCELARATION Z : "
+						+ mavPositionTargetLocalNed.afz + "m/s2 , " + "YAW : "
+						+ mavPositionTargetLocalNed.yaw + "rad , "
+						+ "YAW RATE : " + mavPositionTargetLocalNed.yaw_rate
+						+ "rad/s , " + "TYPE MASK : " + " , "
+						+ mavPositionTargetLocalNed.type_mask
+						+ "COORDINATE FRAME : "
+						+ mavPositionTargetLocalNed.coordinate_frame;
+				/**
+				 * Coordinate Frame Options Valid options are:
+				 * MAV_FRAME_LOCAL_NED = 1, MAV_FRAME_LOCAL_OFFSET_NED = 7,
+				 * MAV_FRAME_BODY_NED = 8, MAV_FRAME_BODY_OFFSET_NED = 9
+				 */
+				Map<String, Object> tempMavPositionTargetLocalNed = Maps
+						.newHashMap();
+				tempMavPositionTargetLocalNed.put("data",
+						tempPositionTargetLocalNed);
+				sendOutputJson(publishers[2], tempMavPositionTargetLocalNed);
+				getLog().info(tempPositionTargetLocalNed);
+			}
 			break;
 
 		case msg_set_position_target_global_int.MAVLINK_MSG_ID_SET_POSITION_TARGET_GLOBAL_INT:
@@ -949,11 +1059,71 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_position_target_global_int.MAVLINK_MSG_ID_POSITION_TARGET_GLOBAL_INT:
-
+			msg_position_target_global_int mavPositionTargetGlobalInt;
+			if (mavMessage2 instanceof msg_position_target_global_int) 
+			{
+				mavPositionTargetGlobalInt = (msg_position_target_global_int) mavMessage2;
+				String tempPositionTargetGlobalInt = "["
+						+ mavPositionTargetGlobalInt.time_boot_ms + "],"
+						+ "LATITUDE : "
+						+ mavPositionTargetGlobalInt.lat_int / 10000000.0
+						+ "degrees , " + "LONGITUDE : "
+						+ mavPositionTargetGlobalInt.lon_int / 10000000.0
+						+ "degrees , " + "ALTITUDE : "
+						+ mavPositionTargetGlobalInt.alt + "metres , "
+						+ "VELOCITY X : " + mavPositionTargetGlobalInt.vx
+						+ "m/s , " + "VELOCITY Y : "
+						+ mavPositionTargetGlobalInt.vy + "m/s , "
+						+ "VELOCITY Z : " + mavPositionTargetGlobalInt.vz
+						+ "m/s , " + "ACCELARATION X : "
+						+ mavPositionTargetGlobalInt.afx + "m/s2 , "
+						+ "ACCELARATION Y : " + mavPositionTargetGlobalInt.afy
+						+ "m/s2 , " + "ACCELARATION Z : "
+						+ mavPositionTargetGlobalInt.afz + "m/s2 , " + "YAW : "
+						+ mavPositionTargetGlobalInt.yaw + "rad , "
+						+ "YAW RATE : " + mavPositionTargetGlobalInt.yaw_rate
+						+ "rad/s , " + "TYPE MASK : " + " , "
+						+ mavPositionTargetGlobalInt.type_mask
+						+ "COORDINATE FRAME : "
+						+ mavPositionTargetGlobalInt.coordinate_frame;
+				/**
+				 * Valid options are: MAV_FRAME_GLOBAL_INT = 5,
+				 * MAV_FRAME_GLOBAL_RELATIVE_ALT_INT = 6,
+				 * MAV_FRAME_GLOBAL_TERRAIN_ALT_INT = 11
+				 */
+				Map<String, Object> tempMavPositionTargetGlobalInt = Maps
+						.newHashMap();
+				tempMavPositionTargetGlobalInt.put("data",
+						tempPositionTargetGlobalInt);
+				sendOutputJson(publishers[2], tempMavPositionTargetGlobalInt);
+				getLog().info(tempPositionTargetGlobalInt);
+			}
 			break;
 
 		case msg_local_position_ned_system_global_offset.MAVLINK_MSG_ID_LOCAL_POSITION_NED_SYSTEM_GLOBAL_OFFSET:
-
+			msg_local_position_ned_system_global_offset mavOffsetPositionLocalGlobal;
+			if (mavMessage2 instanceof msg_local_position_ned_system_global_offset) 
+			{
+				mavOffsetPositionLocalGlobal = (msg_local_position_ned_system_global_offset) mavMessage2;
+				String tempOffsetPositionLocalGlobal = "["
+						+ mavOffsetPositionLocalGlobal.time_boot_ms + "],"
+						+ "OFFSET X : " + mavOffsetPositionLocalGlobal.x
+						+ "metres , " + "OFFSET Y : "
+						+ mavOffsetPositionLocalGlobal.y + "metres , "
+						+ "OFFSET Z : " + mavOffsetPositionLocalGlobal.z
+						+ "metres , " + "OFFSET ROLL : "
+						+ mavOffsetPositionLocalGlobal.roll + "rad , "
+						+ "OFFSET PITCH : "
+						+ mavOffsetPositionLocalGlobal.pitch + "rad , "
+						+ "OFFSET YAW : " + mavOffsetPositionLocalGlobal.yaw
+						+ "rad ";
+				Map<String, Object> tempMavOffsetPositionLocalGlobal = Maps
+						.newHashMap();
+				tempMavOffsetPositionLocalGlobal.put("data",
+						tempOffsetPositionLocalGlobal);
+				sendOutputJson(publishers[2], tempMavOffsetPositionLocalGlobal);
+				getLog().info(tempOffsetPositionLocalGlobal);
+			}
 			break;
 
 		case msg_hil_state.MAVLINK_MSG_ID_HIL_STATE:
@@ -973,19 +1143,93 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_global_vision_position_estimate.MAVLINK_MSG_ID_GLOBAL_VISION_POSITION_ESTIMATE:
-
+			msg_global_vision_position_estimate mavGlobalVisionPositionEstimate;
+			if (mavMessage2 instanceof msg_global_vision_position_estimate) 
+			{
+				mavGlobalVisionPositionEstimate = (msg_global_vision_position_estimate) mavMessage2;
+				String tempGlobalVisionPositionEstimate = "["
+						+ mavGlobalVisionPositionEstimate.usec + "]," + "X : "
+						+ mavGlobalVisionPositionEstimate.x + "metres , "
+						+ "Y : " + mavGlobalVisionPositionEstimate.y
+						+ "metres , " + "Z : "
+						+ mavGlobalVisionPositionEstimate.z + "metres , "
+						+ "ROLL : " + mavGlobalVisionPositionEstimate.roll
+						+ "rad , " + "PITCH : "
+						+ mavGlobalVisionPositionEstimate.pitch + "rad , "
+						+ "YAW : " + mavGlobalVisionPositionEstimate.yaw
+						+ "rad ";
+				Map<String, Object> tempMavGlobalVisionPositionEstimate = Maps
+						.newHashMap();
+				tempMavGlobalVisionPositionEstimate.put("data",
+						tempGlobalVisionPositionEstimate);
+				sendOutputJson(publishers[2],
+						tempMavGlobalVisionPositionEstimate);
+				getLog().info(tempGlobalVisionPositionEstimate);
+			}
 			break;
 
 		case msg_vision_position_estimate.MAVLINK_MSG_ID_VISION_POSITION_ESTIMATE:
-
+			msg_vision_position_estimate mavVisionPositionEstimate;
+			if (mavMessage2 instanceof msg_vision_position_estimate) 
+			{
+				mavVisionPositionEstimate = (msg_vision_position_estimate) mavMessage2;
+				String tempVisionPositionEstimate = "["
+						+ mavVisionPositionEstimate.usec + "]," + "X : "
+						+ mavVisionPositionEstimate.x + "metres , " + "Y : "
+						+ mavVisionPositionEstimate.y + "metres , " + "Z : "
+						+ mavVisionPositionEstimate.z + "metres , " + "ROLL : "
+						+ mavVisionPositionEstimate.roll + "rad , "
+						+ "PITCH : " + mavVisionPositionEstimate.pitch
+						+ "rad , " + "YAW : " + mavVisionPositionEstimate.yaw
+						+ "rad ";
+				Map<String, Object> tempMavVisionPositionEstimate = Maps
+						.newHashMap();
+				tempMavVisionPositionEstimate.put("data",
+						tempVisionPositionEstimate);
+				sendOutputJson(publishers[2], tempMavVisionPositionEstimate);
+				getLog().info(tempVisionPositionEstimate);
+			}
 			break;
 
 		case msg_vision_speed_estimate.MAVLINK_MSG_ID_VISION_SPEED_ESTIMATE:
-
+			msg_vision_speed_estimate mavVisionSpeedEstimate;
+			if (mavMessage2 instanceof msg_vision_speed_estimate) 
+			{
+				mavVisionSpeedEstimate = (msg_vision_speed_estimate) mavMessage2;
+				String tempVisionSpeedEstimate = "["
+						+ mavVisionSpeedEstimate.usec + "]," + "SPEED X : "
+						+ mavVisionSpeedEstimate.x + "m/s , " + "SPEED Y : "
+						+ mavVisionSpeedEstimate.y + "m/s , " + "SPEED Z : "
+						+ mavVisionSpeedEstimate.z + "m/s , ";
+				Map<String, Object> tempMavVisionSpeedEstimate = Maps
+						.newHashMap();
+				tempMavVisionSpeedEstimate.put("data", tempVisionSpeedEstimate);
+				sendOutputJson(publishers[2], tempMavVisionSpeedEstimate);
+				getLog().info(tempVisionSpeedEstimate);
+			}
 			break;
 
 		case msg_vicon_position_estimate.MAVLINK_MSG_ID_VICON_POSITION_ESTIMATE:
-
+			msg_vicon_position_estimate mavViconPositionEstimate;
+			if (mavMessage2 instanceof msg_vicon_position_estimate) 
+			{
+				mavViconPositionEstimate = (msg_vicon_position_estimate) mavMessage2;
+				String tempViconPositionEstimate = "["
+						+ mavViconPositionEstimate.usec + "]," + "X : "
+						+ mavViconPositionEstimate.x + "metres , " + "Y : "
+						+ mavViconPositionEstimate.y + "metres , " + "Z : "
+						+ mavViconPositionEstimate.z + "metres , " + "ROLL : "
+						+ mavViconPositionEstimate.roll + "rad , "
+						+ "PITCH : " + mavViconPositionEstimate.pitch
+						+ "rad , " + "YAW : " + mavViconPositionEstimate.yaw
+						+ "rad ";
+				Map<String, Object> tempMavViconPositionEstimate = Maps
+						.newHashMap();
+				tempMavViconPositionEstimate.put("data",
+						tempViconPositionEstimate);
+				sendOutputJson(publishers[2], tempMavViconPositionEstimate);
+				getLog().info(tempViconPositionEstimate);
+			}
 			break;
 
 		case msg_highres_imu.MAVLINK_MSG_ID_HIGHRES_IMU:
