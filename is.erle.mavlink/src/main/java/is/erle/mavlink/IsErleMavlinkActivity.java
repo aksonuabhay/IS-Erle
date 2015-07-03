@@ -394,17 +394,20 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			msg_gps_raw_int mavGps;
 			if (mavMessage2 instanceof msg_gps_raw_int) 
 			{
-				mavGps = (msg_gps_raw_int) mavMessage2 ;
+				mavGps = (msg_gps_raw_int) mavMessage2;
 				Map<String, Object> tempMavGps = Maps.newHashMap();
 				String tempGps = "[" + mavGps.time_usec + "] ," + "LATITUDE : "
-						+ mavGps.lat/10000000.0 + "degrees , " + "LONGITUDE : " + mavGps.lon/10000000.0 + "degrees , "
-						+ "ALTITUDE : " + mavGps.alt/1000.0 + "metres , "
-						+ "HORIZONTAL DILUTION : " + mavGps.eph/100.0 + "metres , "
-						+ "VERTICAL DILUTION : " + mavGps.epv/100.0 + "metres , "
-						+ "VELOCITY : " + mavGps.vel/100.0 + "m/s , "
-						+ "COURSE OVER GROUND : " + mavGps.cog/100.0 + "degrees , "
-						+ "FIX TYPE : " + mavGps.fix_type + "D , "
-						+ "SATELLITES VISIBLE : " + mavGps.satellites_visible;
+						+ mavGps.lat / 10000000.0 + "degrees , "
+						+ "LONGITUDE : " + mavGps.lon / 10000000.0
+						+ "degrees , " + "ALTITUDE : " + mavGps.alt / 1000.0
+						+ "metres , " + "HORIZONTAL DILUTION : "
+						+ mavGps.eph / 100.0 + "metres , "
+						+ "VERTICAL DILUTION : " + mavGps.epv / 100.0
+						+ "metres , " + "VELOCITY : " + mavGps.vel / 100.0
+						+ "m/s , " + "COURSE OVER GROUND : " + mavGps.cog
+						/ 100.0 + "degrees , " + "FIX TYPE : "
+						+ mavGps.fix_type + "D , " + "SATELLITES VISIBLE : "
+						+ mavGps.satellites_visible;
 				tempMavGps.put("data", tempGps);
 				sendOutputJson(publishers[2], tempMavGps);
 				getLog().info(tempGps);
@@ -1070,7 +1073,30 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_hil_gps.MAVLINK_MSG_ID_HIL_GPS:
-
+			msg_hil_gps mavHilGps;
+			if (mavMessage2 instanceof msg_hil_gps) 
+			{
+				mavHilGps = (msg_hil_gps) mavMessage2;
+				Map<String, Object> tempMavHilGps = Maps.newHashMap();
+				String tempHilGps = "[" + mavHilGps.time_usec + "] ,"
+						+ "LATITUDE : " + mavHilGps.lat / 10000000.0
+						+ "degrees , " + "LONGITUDE : "
+						+ mavHilGps.lon / 10000000.0 + "degrees , "
+						+ "ALTITUDE : " + mavHilGps.alt / 1000.0 + "metres , "
+						+ "HORIZONTAL DILUTION : " + mavHilGps.eph / 100.0
+						+ "metres , " + "VERTICAL DILUTION : "
+						+ mavHilGps.epv / 100.0 + "metres , " + "VELOCITY : "
+						+ mavHilGps.vel / 100.0 + "m/s , "
+						+ "COURSE OVER GROUND : " + mavHilGps.cog / 100.0
+						+ "degrees , " + "FIX TYPE : " + mavHilGps.fix_type
+						+ "D , " + "SATELLITES VISIBLE : "
+						+ mavHilGps.satellites_visible + "VELOCITY NORTH : "
+						+ mavHilGps.vn + "VELOCITY EAST : " + mavHilGps.ve
+						+ "VELOCITY DOWN : " + mavHilGps.vd;
+				tempMavHilGps.put("data", tempHilGps);
+				sendOutputJson(publishers[2], tempMavHilGps);
+				getLog().info(tempHilGps);
+			}
 			break;
 
 		case msg_hil_optical_flow.MAVLINK_MSG_ID_HIL_OPTICAL_FLOW:
@@ -1137,11 +1163,37 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_gps2_raw.MAVLINK_MSG_ID_GPS2_RAW:
-
+			msg_gps2_raw mavGps2;
+			if (mavMessage2 instanceof msg_gps2_raw) 
+			{
+				mavGps2 = (msg_gps2_raw) mavMessage2;
+				Map<String, Object> tempMavGps2 = Maps.newHashMap();
+				String tempGps2 = "[" + mavGps2.time_usec + "] ,"
+						+ "LATITUDE : " + mavGps2.lat / 10000000.0
+						+ "degrees , " + "LONGITUDE : "
+						+ mavGps2.lon / 10000000.0 + "degrees , "
+						+ "ALTITUDE : " + mavGps2.alt / 1000.0 + "metres , "
+						+ "HORIZONTAL DILUTION : " + mavGps2.eph / 100.0
+						+ "metres , " + "VERTICAL DILUTION : "
+						+ mavGps2.epv / 100.0 + "metres , " + "VELOCITY : "
+						+ mavGps2.vel / 100.0 + "m/s , "
+						+ "COURSE OVER GROUND : " + mavGps2.cog / 100.0
+						+ "degrees , " + "FIX TYPE : " + mavGps2.fix_type
+						+ "D , " + "SATELLITES VISIBLE : "
+						+ mavGps2.satellites_visible + "DGPS INFO AGE : "
+						+ mavGps2.dgps_age + "DGPS SATELLITE NUMBER : "
+						+ mavGps2.dgps_numch;
+				tempMavGps2.put("data", tempGps2);
+				sendOutputJson(publishers[2], tempMavGps2);
+				getLog().info(tempGps2);
+			}
 			break;
 
 		case msg_power_status.MAVLINK_MSG_ID_POWER_STATUS:
-
+			Map<String,	Object> tempMavPowerStatus= Maps.newHashMap();
+			tempMavPowerStatus.put("status", mavMessage2.toString());
+			sendOutputJson(publishers[2], tempMavPowerStatus);
+			getLog().info(mavMessage2.toString());
 			break;
 
 		case msg_serial_control.MAVLINK_MSG_ID_SERIAL_CONTROL:
@@ -1192,7 +1244,36 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_distance_sensor.MAVLINK_MSG_ID_DISTANCE_SENSOR:
-
+			msg_distance_sensor mavDistanceSensor;
+			if (mavMessage2 instanceof msg_distance_sensor) 
+			{
+				mavDistanceSensor = (msg_distance_sensor) mavMessage2;
+				String tempDistanceSensor = "["
+						+ mavDistanceSensor.time_boot_ms
+						+ "] , "
+						+ "MINIMUM DISTANCE : "
+						+ mavDistanceSensor.min_distance
+						+ "cm , "
+						+ "MAXIMUM DISTANCE : "
+						+ mavDistanceSensor.max_distance
+						+ "cm , "
+						+ "CURRENT DISTANCE : "
+						+ mavDistanceSensor.current_distance
+						+ "cm , "
+						+ "SENSOR TYPE : "
+						+ getVariableName("MAV_DISTANCE_SENSOR",
+								mavDistanceSensor.type)
+						+ "SENSOR ID : "
+						+ mavDistanceSensor.id
+						+ "SENSOR ORIENTATION : "
+						+ getVariableName("MAV_SENSOR_ORIENTATION",
+								mavDistanceSensor.orientation)
+						+ "COVARIANCE : " + mavDistanceSensor.covariance + "cm";
+				Map<String , Object> tempMavDistanceSensor = Maps.newHashMap();
+				tempMavDistanceSensor.put("data", tempDistanceSensor);
+				sendOutputJson(publishers[2], tempMavDistanceSensor);
+				getLog().info(tempDistanceSensor);
+			}
 			break;
 
 		case msg_terrain_request.MAVLINK_MSG_ID_TERRAIN_REQUEST:
