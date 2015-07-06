@@ -598,11 +598,76 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_rc_channels_scaled.MAVLINK_MSG_ID_RC_CHANNELS_SCALED:
+			msg_rc_channels_scaled mavRcChannelScaled;
+			if (mavMessage2 instanceof msg_rc_channels_scaled) 
+			{
+				mavRcChannelScaled = (msg_rc_channels_scaled) mavMessage2;
+				String tempRcChannelScaled = "["
+						+ mavRcChannelScaled.time_boot_ms + "],"
+						+ "CHANNEL 1 : " + mavRcChannelScaled.chan1_scaled
+						+ " , " + "CHANNEL 2 : "
+						+ mavRcChannelScaled.chan2_scaled + " , "
+						+ "CHANNEL 3 : " + mavRcChannelScaled.chan3_scaled
+						+ " , " + "CHANNEL 4 : "
+						+ mavRcChannelScaled.chan4_scaled + " , "
+						+ "CHANNEL 5 : " + mavRcChannelScaled.chan5_scaled
+						+ " , " + "CHANNEL 6 : "
+						+ mavRcChannelScaled.chan6_scaled + " , "
+						+ "CHANNEL 7 : " + mavRcChannelScaled.chan7_scaled
+						+ " , " + "CHANNEL 8 : "
+						+ mavRcChannelScaled.chan8_scaled + " , " + "PORT : "
+						+ mavRcChannelScaled.port + " , "
+						+ "SIGNAL STRENGTH : " + mavRcChannelScaled.rssi;
 
+				/**
+				 * RC channels value scaled, (-100%) -10000, (0%) 0, (100%)
+				 * 10000, (invalid) INT16_MAX.
+				 */
+
+				/**
+				 * Receive signal strength indicator, 0: 0%, 100: 100%, 255:
+				 * invalid/unknown.
+				 */
+
+				Map<String, Object> tempMavRcChannelScaled = Maps.newHashMap();
+				tempMavRcChannelScaled.put("data", tempRcChannelScaled);
+				sendOutputJson(publishers[2], tempMavRcChannelScaled);
+				getLog().info(tempRcChannelScaled);
+			}
 			break;
 
 		case msg_rc_channels_raw.MAVLINK_MSG_ID_RC_CHANNELS_RAW:
+			msg_rc_channels_raw mavRcChannelRaw;
+			if (mavMessage2 instanceof msg_rc_channels_raw) 
+			{
+				mavRcChannelRaw = (msg_rc_channels_raw) mavMessage2;
+				String tempRcChannelRaw = "[" + mavRcChannelRaw.time_boot_ms
+						+ "] ," + "CHANNEL 1 : " + mavRcChannelRaw.chan1_raw
+						+ " , " + "CHANNEL 2 : " + mavRcChannelRaw.chan2_raw
+						+ " , " + "CHANNEL 3 : " + mavRcChannelRaw.chan3_raw
+						+ " , " + "CHANNEL 4 : " + mavRcChannelRaw.chan4_raw
+						+ " , " + "CHANNEL 5 : " + mavRcChannelRaw.chan5_raw
+						+ " , " + "CHANNEL 6 : " + mavRcChannelRaw.chan6_raw
+						+ " , " + "CHANNEL 7 : " + mavRcChannelRaw.chan7_raw
+						+ " , " + "CHANNEL 8 : " + mavRcChannelRaw.chan8_raw
+						+ " , " + "PORT : " + mavRcChannelRaw.port + " , "
+						+ "SIGNAL STRENGTH : " + mavRcChannelRaw.rssi;
 
+				/**
+				 * RC channels value in microseconds. A value of UINT16_MAX
+				 * implies the channel is unused.
+				 */
+
+				/**
+				 * Receive signal strength indicator, 0: 0%, 100: 100%, 255:
+				 * invalid/unknown.
+				 */
+
+				Map<String, Object> tempMavRcChannelRaw = Maps.newHashMap();
+				tempMavRcChannelRaw.put("data", tempRcChannelRaw);
+				sendOutputJson(publishers[2], tempMavRcChannelRaw);
+				getLog().info(tempRcChannelRaw);
+			}
 			break;
 
 		case msg_servo_output_raw.MAVLINK_MSG_ID_SERVO_OUTPUT_RAW:
@@ -932,7 +997,47 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_rc_channels.MAVLINK_MSG_ID_RC_CHANNELS:
+			msg_rc_channels mavRcChannels;
+			if (mavMessage2 instanceof msg_rc_channels) 
+			{
+				mavRcChannels = (msg_rc_channels) mavMessage2;
+				String tempRcChannels = "[" + mavRcChannels.time_boot_ms
+						+ "] ," + "CHANNEL 1 : " + mavRcChannels.chan1_raw
+						+ " , " + "CHANNEL 2 : " + mavRcChannels.chan2_raw
+						+ " , " + "CHANNEL 3 : " + mavRcChannels.chan3_raw
+						+ " , " + "CHANNEL 4 : " + mavRcChannels.chan4_raw
+						+ " , " + "CHANNEL 5 : " + mavRcChannels.chan5_raw
+						+ " , " + "CHANNEL 6 : " + mavRcChannels.chan6_raw
+						+ " , " + "CHANNEL 7 : " + mavRcChannels.chan7_raw
+						+ " , " + "CHANNEL 8 : " + mavRcChannels.chan8_raw
+						+ " , " + "CHANNEL 9 : " + mavRcChannels.chan9_raw
+						+ " , " + "CHANNEL 10 : " + mavRcChannels.chan10_raw
+						+ " , " + "CHANNEL 12 : " + mavRcChannels.chan12_raw
+						+ " , " + "CHANNEL 13 : " + mavRcChannels.chan13_raw
+						+ " , " + "CHANNEL 14 : " + mavRcChannels.chan14_raw
+						+ " , " + "CHANNEL 15 : " + mavRcChannels.chan15_raw
+						+ " , " + "CHANNEL 16 : " + mavRcChannels.chan16_raw
+						+ " , " + "CHANNEL 17 : " + mavRcChannels.chan17_raw
+						+ " , " + "CHANNEL 18 : " + mavRcChannels.chan18_raw
+						+ " , " + "CHANNEL COUNT : "
+						+ mavRcChannels.chancount + " , "
+						+ "SIGNAL STRENGTH : " + mavRcChannels.rssi;
 
+				/**
+				 * RC channels value in microseconds. A value of UINT16_MAX
+				 * implies the channel is unused.
+				 */
+
+				/**
+				 * Receive signal strength indicator, 0: 0%, 100: 100%, 255:
+				 * invalid/unknown.
+				 */
+
+				Map<String, Object> tempMavRcChannels = Maps.newHashMap();
+				tempMavRcChannels.put("data", tempRcChannels);
+				sendOutputJson(publishers[2], tempMavRcChannels);
+				getLog().info(tempRcChannels);
+			}
 			break;
 
 		case msg_request_data_stream.MAVLINK_MSG_ID_REQUEST_DATA_STREAM:
@@ -1135,7 +1240,39 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_hil_rc_inputs_raw.MAVLINK_MSG_ID_HIL_RC_INPUTS_RAW:
+			msg_hil_rc_inputs_raw mavHilRcInputRaw;
+			if (mavMessage2 instanceof msg_hil_rc_inputs_raw) 
+			{
+				mavHilRcInputRaw = (msg_hil_rc_inputs_raw) mavMessage2;
+				String tempHilRcInputRaw = "[" + mavHilRcInputRaw.time_usec
+						+ "] ," + "CHANNEL 1 : " + mavHilRcInputRaw.chan1_raw
+						+ " , " + "CHANNEL 2 : " + mavHilRcInputRaw.chan2_raw
+						+ " , " + "CHANNEL 3 : " + mavHilRcInputRaw.chan3_raw
+						+ " , " + "CHANNEL 4 : " + mavHilRcInputRaw.chan4_raw
+						+ " , " + "CHANNEL 5 : " + mavHilRcInputRaw.chan5_raw
+						+ " , " + "CHANNEL 6 : " + mavHilRcInputRaw.chan6_raw
+						+ " , " + "CHANNEL 7 : " + mavHilRcInputRaw.chan7_raw
+						+ " , " + "CHANNEL 8 : " + mavHilRcInputRaw.chan8_raw
+						+ " , " + "CHANNEL 9 : " + mavHilRcInputRaw.chan9_raw
+						+ " , " + "CHANNEL 10 : " + mavHilRcInputRaw.chan10_raw
+						+ " , " + "CHANNEL 12 : " + mavHilRcInputRaw.chan12_raw
+						+ " , " + "SIGNAL STRENGTH : " + mavHilRcInputRaw.rssi;
 
+				/**
+				 * RC channels value in microseconds. A value of UINT16_MAX
+				 * implies the channel is unused.
+				 */
+
+				/**
+				 * Receive signal strength indicator, 0: 0%, 100: 100%, 255:
+				 * invalid/unknown.
+				 */
+
+				Map<String, Object> tempMavHilRcInputRaw = Maps.newHashMap();
+				tempMavHilRcInputRaw.put("data", tempHilRcInputRaw);
+				sendOutputJson(publishers[2], tempMavHilRcInputRaw);
+				getLog().info(tempHilRcInputRaw);
+			}
 			break;
 
 		case msg_optical_flow.MAVLINK_MSG_ID_OPTICAL_FLOW:
