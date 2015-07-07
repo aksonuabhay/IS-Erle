@@ -66,17 +66,17 @@ public class IsErleCommsActivity extends BaseRoutableRosActivity {
     public void onActivityActivate() {
         getLog().info("Activity is.erle.comms activate");
         jsonOutputCounter = 0;
-        Map<String,Object> temp=Maps.newHashMap();
-        temp.put(Long.toString(jsonOutputCounter++), "ACTIVATE");
-        sendOutputJson("output", temp);
+//        Map<String,Object> temp=Maps.newHashMap();
+//        temp.put(Long.toString(jsonOutputCounter++), "ACTIVATE");
+//        sendOutputJson("output", temp);
     }
 
     @Override
     public void onActivityDeactivate() {
         getLog().info("Activity is.erle.comms deactivate");
-        Map<String,Object> temp=Maps.newHashMap();
-        temp.put(Long.toString(jsonOutputCounter), "DEACTIVATE");
-        sendOutputJson("output", temp);
+//        Map<String,Object> temp=Maps.newHashMap();
+//        temp.put(Long.toString(jsonOutputCounter), "DEACTIVATE");
+//        sendOutputJson("output", temp);
     }
 
     @Override
@@ -97,8 +97,8 @@ public class IsErleCommsActivity extends BaseRoutableRosActivity {
     @Override
     public void onNewInputJson(String channelName, Map <String , Object> message)
     {
-    	String temp = message.get(Long.toString(jsonInputCounter)).toString();
-    	udpDroneClient.write(udpDroneServerAddress, temp.getBytes());
+    	byte [] temp = (byte[]) message.get("comm");
+    	udpDroneClient.write(udpDroneServerAddress, temp);
     	jsonInputCounter++;
     }
     

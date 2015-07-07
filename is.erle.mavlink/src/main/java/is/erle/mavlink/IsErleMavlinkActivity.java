@@ -18,6 +18,10 @@ import java.lang.reflect.Field;
  */
 public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 
+	/*
+	 * Note - In communication between this activity and any other comms activity, the
+	 * message type being used is byte []
+	 */
 	private static final String CONFIGURATION_PUBLISHER_NAME = "space.activity.routes.outputs";
 	private static final String CONFIGURATION_SUBSCRIBER_NAME = "space.activity.routes.inputs";
 	
@@ -54,10 +58,10 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
     @Override
     public void onActivityActivate() {
         getLog().info("Activity is.erle.mavlink activate");
-		Map<String, Object> temp = Maps.newHashMap();
-		temp.put("mission", "START");
-		//sendOutputJson(getConfiguration().getRequiredPropertyString(CONFIGURATION_PUBLISHER_NAME), temp);
-		//sendOutputJson("outputCOM_M", temp);
+//		Map<String, Object> temp = Maps.newHashMap();
+//		temp.put("mission", "START");
+//		sendOutputJson(getConfiguration().getRequiredPropertyString(CONFIGURATION_PUBLISHER_NAME), temp);
+//		sendOutputJson("outputCOM_M", temp);
     }
 
     @Override
@@ -123,7 +127,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
     			missionStart.target_component = targetComponent;
     			byte tempByte[] = missionStart.pack().encodePacket();
     			Map<String, Object> tempMapMission = Maps.newHashMap();
-    			tempMapMission.put("mission", tempByte);
+    			tempMapMission.put("comm", tempByte);
     			sendOutputJson(publishers[0], tempMapMission);
 			}
     		
@@ -159,7 +163,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				missionItem.autocontinue = Byte.parseByte(missionWP[11]);
 				byte tempByte[] = missionItem.pack().encodePacket();
 				Map<String, Object> tempMapMission = Maps.newHashMap();
-				tempMapMission.put("mission", tempByte);
+				tempMapMission.put("comm", tempByte);
 				sendOutputJson(publishers[0], tempMapMission);
     		}
     		
