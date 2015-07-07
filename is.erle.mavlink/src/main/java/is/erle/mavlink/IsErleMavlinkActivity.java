@@ -11,6 +11,8 @@ import com.MAVLink.common.*;
 import com.MAVLink.enums.MAV_MISSION_RESULT;
 import com.MAVLink.pixhawk.*;
 import com.google.common.collect.Maps;
+
+import java.io.UnsupportedEncodingException;
 import java.lang.Class;
 import java.lang.reflect.Field;
 /**
@@ -36,6 +38,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	private static byte targetComponent = 0; // TO DO : Get this from the current drone
 	
 	private byte responseGlobal[];
+	
 	
     @Override
     public void onActivitySetup() {
@@ -247,7 +250,29 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_image_triggered.MAVLINK_MSG_ID_IMAGE_TRIGGERED:
-
+			msg_image_triggered mavImageTriggered;
+			if (mavMessage2 instanceof msg_image_triggered) 
+			{
+				mavImageTriggered = (msg_image_triggered) mavMessage2;
+				Map<String, Object> tempMavImageTriggered = Maps.newHashMap();
+				String tempImageTriggered = "[" + mavImageTriggered.timestamp
+						+ "] , " + "SEQUENCE : " + mavImageTriggered.seq
+						+ " , " + "ROLL : " + mavImageTriggered.roll + "rad , "
+						+ "PITCH : " + mavImageTriggered.pitch + "rad , "
+						+ "YAW : " + mavImageTriggered.yaw + "rad , "
+						+ "LOCAL HEIGHT : " + mavImageTriggered.local_z
+						+ "metres , " + "LATITUDE : " + mavImageTriggered.lat
+						+ "degrees , " + "LONGITUDE : " + mavImageTriggered.lon
+						+ "degrees , " + "GLOBAL ALTITUDE : "
+						+ mavImageTriggered.alt + "metres , "
+						+ "GROUND TRUTH X : " + mavImageTriggered.ground_x
+						+ " , " + "GROUND TRUTH Y : "
+						+ mavImageTriggered.ground_y + " , "
+						+ "GROUND TRUTH Z : " + mavImageTriggered.ground_z;
+				tempMavImageTriggered.put("data", tempImageTriggered);
+				sendOutputJson(publishers[2], tempMavImageTriggered);
+				getLog().info(tempImageTriggered);
+			}
 			break;
 
 		case msg_image_trigger_control.MAVLINK_MSG_ID_IMAGE_TRIGGER_CONTROL:
@@ -263,27 +288,141 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_position_control_setpoint.MAVLINK_MSG_ID_POSITION_CONTROL_SETPOINT:
-
+			msg_position_control_setpoint mavPositionControlSetpoint;
+			if (mavMessage2 instanceof msg_position_control_setpoint) 
+			{
+				mavPositionControlSetpoint = (msg_position_control_setpoint) mavMessage2;
+				String tempPositionControlSetpoint = "X : "
+						+ mavPositionControlSetpoint.x + "metres , " + "Y : "
+						+ mavPositionControlSetpoint.y + "metres , " + "Z : "
+						+ mavPositionControlSetpoint.z + "metres , " + "YAW : "
+						+ mavPositionControlSetpoint.yaw + "rad , " + "ID : "
+						+ mavPositionControlSetpoint.id;
+				Map<String, Object> tempMavPositionControlSetpoint = Maps
+						.newHashMap();
+				tempMavPositionControlSetpoint.put("data",
+						tempPositionControlSetpoint);
+				sendOutputJson(publishers[2], tempMavPositionControlSetpoint);
+				getLog().info(tempPositionControlSetpoint);
+			}
 			break;
 
 		case msg_marker.MAVLINK_MSG_ID_MARKER:
-
+			msg_marker mavMarker;
+			if (mavMessage2 instanceof msg_marker) 
+			{
+				mavMarker = (msg_marker) mavMessage2;
+				String tempMarker = "X : " + mavMarker.x + "metres , " + "Y : "
+						+ mavMarker.y + "metres , " + "Z : " + mavMarker.z
+						+ "metres , " + "ROLL : " + mavMarker.roll + "rad , "
+						+ "PITCH : " + mavMarker.pitch + "rad , " + "YAW : "
+						+ mavMarker.yaw + "rad , " + "ID : " + mavMarker.id;
+				Map<String, Object> tempMavMarker = Maps.newHashMap();
+				tempMavMarker.put("data", tempMarker);
+				sendOutputJson(publishers[2], tempMavMarker);
+				getLog().info(tempMarker);
+			}
 			break;
 
 		case msg_raw_aux.MAVLINK_MSG_ID_RAW_AUX:
-
+			msg_raw_aux mavRawAux;
+			if (mavMessage2 instanceof msg_raw_aux) 
+			{
+				mavRawAux = (msg_raw_aux) mavMessage2;
+				String tempRawAux = "PRESSURE : " + mavRawAux.baro * 100.0
+						+ "Pascal , " + "ADC1 (AD0.6) : " + mavRawAux.adc1
+						+ " , " + "ADC2 (AD0.2) : " + mavRawAux.adc2 + " , "
+						+ "ADC3 (AD0.1) : " + mavRawAux.adc3 + " , "
+						+ "ADC4 (AD1.3) : " + mavRawAux.adc4 + " , "
+						+ "BATTERY VOLTAGE : " + mavRawAux.vbat + " , "
+						+ "TEMPERATURE : " + mavRawAux.temp;
+				Map<String, Object> tempMavRawAux = Maps.newHashMap();
+				tempMavRawAux.put("data", tempRawAux);
+				sendOutputJson(publishers[2], tempMavRawAux);
+				getLog().info(tempRawAux);
+			}
 			break;
 
 		case msg_watchdog_heartbeat.MAVLINK_MSG_ID_WATCHDOG_HEARTBEAT:
-
+			msg_watchdog_heartbeat mavWatchdogHeartbeat;
+			if (mavMessage2 instanceof msg_watchdog_heartbeat) 
+			{
+				mavWatchdogHeartbeat = (msg_watchdog_heartbeat) mavMessage2;
+				String tempWatchdogHeartbeat = "WATCHDOG ID : "
+						+ mavWatchdogHeartbeat.watchdog_id + " , "
+						+ "PROCESS COUNT : "
+						+ mavWatchdogHeartbeat.process_count;
+				Map<String, Object> tempMavWatchdogHeartbeat = Maps
+						.newHashMap();
+				tempMavWatchdogHeartbeat.put("data", tempWatchdogHeartbeat);
+				sendOutputJson(publishers[2], tempMavWatchdogHeartbeat);
+				getLog().info(tempWatchdogHeartbeat);
+			}
 			break;
 
 		case msg_watchdog_process_info.MAVLINK_MSG_ID_WATCHDOG_PROCESS_INFO:
+			msg_watchdog_process_info mavWatchdogProcessInfo;
+			if (mavMessage2 instanceof msg_watchdog_process_info) 
+			{
+				mavWatchdogProcessInfo = (msg_watchdog_process_info) mavMessage2;
 
+				String processName = null;
+				String processArguments = null;
+				try 
+				{
+					processName = new String(mavWatchdogProcessInfo.name,
+							"UTF-8");
+					processArguments = new String(
+							mavWatchdogProcessInfo.arguments, "UTF-8");
+				} 
+				catch (UnsupportedEncodingException e) 
+				{
+					getLog().error(e);
+				}
+				String tempWatchdogProcessInfo = "TIMEOUT : "
+						+ mavWatchdogProcessInfo.timeout + " , "
+						+ "WATCHDOG ID : " + mavWatchdogProcessInfo.watchdog_id
+						+ " , " + "PROCESS ID : "
+						+ mavWatchdogProcessInfo.process_id + " , "
+						+ "PROCESS NAME : " + processName + " , "
+						+ "PROCESS ARGUMENTS : " + processArguments;
+				Map<String, Object> tempMavWatchdogProcessInfo = Maps
+						.newHashMap();
+				tempMavWatchdogProcessInfo.put("data", tempWatchdogProcessInfo);
+				sendOutputJson(publishers[2], tempMavWatchdogProcessInfo);
+				getLog().info(tempWatchdogProcessInfo);
+			}
 			break;
 
 		case msg_watchdog_process_status.MAVLINK_MSG_ID_WATCHDOG_PROCESS_STATUS:
-
+			msg_watchdog_process_status mavWatchdogProcessStatus;
+			if (mavMessage2 instanceof msg_watchdog_process_status) 
+			{
+				mavWatchdogProcessStatus = (msg_watchdog_process_status) mavMessage2;
+				String[] processStatus = { "RUNNING", "FINISHED", "SUSPENDED",
+						"CRASHED" };
+				String tempWatchdogProcessStatus = "PID : "
+						+ mavWatchdogProcessStatus.pid + " , "
+						+ "WATCHDOG ID : "
+						+ mavWatchdogProcessStatus.watchdog_id + " , "
+						+ "PROCESS ID : " + mavWatchdogProcessStatus.process_id
+						+ " , " + "CRASH COUNT : "
+						+ mavWatchdogProcessStatus.crashes + " , "
+						+ "PRESENT STATE : " + processStatus[mavWatchdogProcessStatus.state]
+						+ " , " + "IS MUTED : "
+						+ mavWatchdogProcessStatus.muted;
+				
+				/**
+				 * State : Is running / finished / suspended / crashed
+				 */
+				
+				Map<String, Object> tempMavWatchdogProcessStatus = Maps
+						.newHashMap();
+				tempMavWatchdogProcessStatus.put("data",
+						tempWatchdogProcessStatus);
+				sendOutputJson(publishers[2], tempMavWatchdogProcessStatus);
+				getLog().info(tempWatchdogProcessStatus);
+			}
 			break;
 
 		case msg_watchdog_command.MAVLINK_MSG_ID_WATCHDOG_COMMAND:
@@ -291,15 +430,130 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_pattern_detected.MAVLINK_MSG_ID_PATTERN_DETECTED:
+			msg_pattern_detected mavPatternDetected;
+			if (mavMessage2 instanceof msg_pattern_detected) {
+				mavPatternDetected = (msg_pattern_detected) mavMessage2;
 
+				String fileName = null;
+				try 
+				{
+					fileName = new String(mavPatternDetected.file, "UTF-8");
+				} 
+				catch (UnsupportedEncodingException e) 
+				{
+					getLog().error(e);
+				}
+				String tempPatternDetected = "CONFIDENCE : "
+						+ mavPatternDetected.confidence + " , " + "TYPE : "
+						+ mavPatternDetected.type + " , " + "FILE NAME : "
+						+ fileName + " , " + "DETECTED : "
+						+ mavPatternDetected.detected;
+				Map<String, Object> tempMavPatternDetected = Maps.newHashMap();
+				tempMavPatternDetected.put("data", tempPatternDetected);
+				sendOutputJson(publishers[2], tempMavPatternDetected);
+				getLog().info(tempPatternDetected);
+			}
 			break;
 
 		case msg_point_of_interest.MAVLINK_MSG_ID_POINT_OF_INTEREST:
-
+			msg_point_of_interest mavPointOfInterest;
+			if (mavMessage2 instanceof msg_point_of_interest) {
+				mavPointOfInterest = (msg_point_of_interest) mavMessage2;
+				String[] PoiColor = { "BLUE", "YELLOW", "RED", "ORANGE",
+						"GREEN", "MAGNETA" };
+				String[] PoiType = { "NOTICE", "WARNING", "CRITICAL",
+						"EMERGENCY", "DEBUG" };
+				String[] PoiCoordinateSystem = { "GLOBAL", "LOCAL" };
+				String poiName = null;
+				try 
+				{
+					poiName = new String(mavPointOfInterest.name, "UTF-8");
+				} 
+				catch (UnsupportedEncodingException e)
+				{
+					getLog().error(e);
+				}
+				String tempPointOfInterest = "X : "
+						+ mavPointOfInterest.x
+						+ "metres , "
+						+ "Y : "
+						+ mavPointOfInterest.y
+						+ "metres , "
+						+ "Z : "
+						+ mavPointOfInterest.z
+						+ "metres , "
+						+ "TIMEOUT : "
+						+ mavPointOfInterest.timeout
+						+ "s , "
+						+ "TYPE : "
+						+ PoiType[mavPointOfInterest.type]
+						+ " , "
+						+ "COLOR : "
+						+ PoiColor[mavPointOfInterest.color]
+						+ " , "
+						+ "COORDINATE SYSTEM : "
+						+ PoiCoordinateSystem[mavPointOfInterest.coordinate_system]
+						+ " , " + "POI NAME : " + poiName;
+				Map<String, Object> tempMavPointOfInterest = Maps.newHashMap();
+				tempMavPointOfInterest.put("data", tempPointOfInterest);
+				sendOutputJson(publishers[2], tempMavPointOfInterest);
+				getLog().info(tempPointOfInterest);
+			}
 			break;
 
 		case msg_point_of_interest_connection.MAVLINK_MSG_ID_POINT_OF_INTEREST_CONNECTION:
-
+			msg_point_of_interest_connection mavPointOfInterestConnection;
+			if (mavMessage2 instanceof msg_point_of_interest_connection) {
+				mavPointOfInterestConnection = (msg_point_of_interest_connection) mavMessage2;
+				String[] PoiColor = { "BLUE", "YELLOW", "RED", "ORANGE",
+						"GREEN", "MAGNETA" };
+				String[] PoiType = { "NOTICE", "WARNING", "CRITICAL",
+						"EMERGENCY", "DEBUG" };
+				String[] PoiCoordinateSystem = { "GLOBAL", "LOCAL" };
+				String poiName = null;
+				try 
+				{
+					poiName = new String(mavPointOfInterestConnection.name, "UTF-8");
+				} 
+				catch (UnsupportedEncodingException e)
+				{
+					getLog().error(e);
+				}
+				String tempPointOfInterestConnection = "X1 : "
+						+ mavPointOfInterestConnection.xp1
+						+ "metres , "
+						+ "Y1 : "
+						+ mavPointOfInterestConnection.yp1
+						+ "metres , "
+						+ "Z1 : "
+						+ mavPointOfInterestConnection.zp1
+						+ "metres , "
+						+ "X2 : "
+						+ mavPointOfInterestConnection.xp2
+						+ "metres , "
+						+ "Y2 : "
+						+ mavPointOfInterestConnection.yp2
+						+ "metres , "
+						+ "Z2 : "
+						+ mavPointOfInterestConnection.zp2
+						+ "metres , "
+						+ "TIMEOUT : "
+						+ mavPointOfInterestConnection.timeout
+						+ "s , "
+						+ "TYPE : "
+						+ PoiType[mavPointOfInterestConnection.type]
+						+ " , "
+						+ "COLOR : "
+						+ PoiColor[mavPointOfInterestConnection.color]
+						+ " , "
+						+ "COORDINATE SYSTEM : "
+						+ PoiCoordinateSystem[mavPointOfInterestConnection.coordinate_system]
+						+ " , " + "POI NAME : " + poiName;
+				Map<String, Object> tempMavPointOfInterestConnection = Maps.newHashMap();
+				tempMavPointOfInterestConnection.put("data", tempPointOfInterestConnection);
+				sendOutputJson(publishers[2], tempMavPointOfInterestConnection);
+				getLog().info(tempPointOfInterestConnection);
+			}
 			break;
 
 		case msg_brief_feature.MAVLINK_MSG_ID_BRIEF_FEATURE:
@@ -338,7 +592,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 								mavHeartbeat.system_status)+ ","
 						+ "MAVLINK VERSION : "
 						+ Byte.toString(mavHeartbeat.mavlink_version);
-				tempMavHeartbeat.put("gps", tempHeartbeat);
+				tempMavHeartbeat.put("data", tempHeartbeat);
 				sendOutputJson(publishers[2], tempMavHeartbeat);
 				getLog().info(tempHeartbeat);
 			}
