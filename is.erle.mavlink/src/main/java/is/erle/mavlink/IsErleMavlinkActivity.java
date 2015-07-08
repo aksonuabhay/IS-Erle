@@ -557,7 +557,35 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_brief_feature.MAVLINK_MSG_ID_BRIEF_FEATURE:
-
+			msg_brief_feature mavBriefFeature;
+			if (mavMessage2 instanceof msg_brief_feature) 
+			{
+				mavBriefFeature = (msg_brief_feature) mavMessage2;
+				String featureDescriptor = null;
+				try 
+				{
+					featureDescriptor = new String(mavBriefFeature.descriptor,
+							"UTF-8");
+				} 
+				catch (UnsupportedEncodingException e) 
+				{
+					getLog().error(e);
+				}
+				String tempBriefFeature = "X : " + mavBriefFeature.x
+						+ "metres , " + "Y : " + mavBriefFeature.y
+						+ "metres , " + "Z : " + mavBriefFeature.z
+						+ "metres , " + "RESPONSE : "
+						+ mavBriefFeature.response + " , " + "SIZE : "
+						+ mavBriefFeature.size + "pixels , " + "ORIENTATION : "
+						+ mavBriefFeature.orientation + " , "
+						+ "ORIENTATION ASSIGNMENT : "
+						+ mavBriefFeature.orientation_assignment + " , "
+						+ "DESCRIPTOR : " + featureDescriptor;
+				Map<String, Object> tempMavBriefFeature = Maps.newHashMap();
+				tempMavBriefFeature.put("data", tempBriefFeature);
+				sendOutputJson(publishers[2], tempMavBriefFeature);
+				getLog().info(tempBriefFeature);
+			}
 			break;
 
 		case msg_attitude_control.MAVLINK_MSG_ID_ATTITUDE_CONTROL:
@@ -565,11 +593,71 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_detection_stats.MAVLINK_MSG_ID_DETECTION_STATS:
-
+			msg_detection_stats mavDetectionStats;
+			if (mavMessage2 instanceof msg_detection_stats) 
+			{
+				mavDetectionStats = (msg_detection_stats) mavMessage2;
+				Map<String, Object> tempMavDetectionStats = Maps.newHashMap();
+				String tempDetectionStats = "NUMBER OF DETECTIONS : "
+						+ mavDetectionStats.detections + " ,"
+						+ "NUMBER OF CLUSTER ITERATIONS : "
+						+ mavDetectionStats.cluster_iters + " , "
+						+ "BEST SCORE : " + mavDetectionStats.best_score
+						+ " , " + "BEST LATITUDE : "
+						+ mavDetectionStats.best_lat / 10000000.0
+						+ "degrees , " + "BEST LONGITUDE : "
+						+ mavDetectionStats.best_lon / 10000000.0
+						+ "degrees , " + "BEST ALTITUDE : "
+						+ mavDetectionStats.best_alt / 1000.0 + "metres , "
+						+ "BEST DETECTION ID : "
+						+ mavDetectionStats.best_detection_id + " , "
+						+ "BEST CLUSTER ID : "
+						+ mavDetectionStats.best_cluster_id + " , "
+						+ "BEST CLUSTER ITERATION ID : "
+						+ mavDetectionStats.best_cluster_iter_id + " , "
+						+ "NUMBER OF IMAGE PROCESSED : "
+						+ mavDetectionStats.images_done + " , "
+						+ "NUMBER OF IMAGES TO PROCESS : "
+						+ mavDetectionStats.images_todo + " , " + "FPS : "
+						+ mavDetectionStats.fps;
+				tempMavDetectionStats.put("data", tempDetectionStats);
+				sendOutputJson(publishers[2], tempMavDetectionStats);
+				getLog().info(tempDetectionStats);
+			}
 			break;
 
 		case msg_onboard_health.MAVLINK_MSG_ID_ONBOARD_HEALTH:
-
+			msg_onboard_health mavOnboardHealth;
+			if (mavMessage2 instanceof msg_onboard_health) 
+			{
+				mavOnboardHealth = (msg_onboard_health) mavMessage2;
+				String[] tempDiskHealth = { "N/A", "ERROR", "READ ONLY",
+						"READ WRITE" };
+				Map<String, Object> tempMavOnboardHealth = Maps.newHashMap();
+				String tempOnboardHealth = "UPTIME : "
+						+ mavOnboardHealth.uptime + "s , " + "TOTAL RAM : "
+						+ mavOnboardHealth.ram_total + "GB , "
+						+ "TOTAL SWAP : " + mavOnboardHealth.swap_total
+						+ "GB , " + "TOTAL DISK : "
+						+ mavOnboardHealth.disk_total + "GB , "
+						+ "TEMPERATURE : " + mavOnboardHealth.temp
+						+ "degree Celsius , " + "SUPPLY VOLTAGE : "
+						+ mavOnboardHealth.voltage + "V , "
+						+ "NETWORK INBOUND : "
+						+ mavOnboardHealth.network_load_in + "KB/s , "
+						+ "NETWORK OUTBOUND : "
+						+ mavOnboardHealth.network_load_out + "KB/s , "
+						+ "CPU FREQUENCY : " + mavOnboardHealth.cpu_freq
+						+ "MHz , " + "CPU LOAD : " + mavOnboardHealth.cpu_load
+						+ "% , " + "RAM USED : " + mavOnboardHealth.ram_usage
+						+ "% , " + "SWAP USED : " + mavOnboardHealth.swap_usage
+						+ "% , " + "DISK HEALTH : "
+						+ tempDiskHealth[mavOnboardHealth.disk_health] + " , "
+						+ "DISK USED : " + mavOnboardHealth.disk_usage + "% ";
+				tempMavOnboardHealth.put("data", tempOnboardHealth);
+				sendOutputJson(publishers[2], tempMavOnboardHealth);
+				getLog().info(tempOnboardHealth);
+			}
 			break;
 
 		case msg_heartbeat.MAVLINK_MSG_ID_HEARTBEAT:
