@@ -1622,7 +1622,26 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_optical_flow.MAVLINK_MSG_ID_OPTICAL_FLOW:
-
+			msg_optical_flow mavOpticalFlow;
+			if (mavMessage2 instanceof msg_optical_flow) 
+			{
+				mavOpticalFlow = (msg_optical_flow) mavMessage2;
+				String tempOpticalFlow = "[" + mavOpticalFlow.time_usec
+						+ "] , " + "FLOW X : " + mavOpticalFlow.flow_comp_m_x
+						+ "metres , " + "FLOW Y : "
+						+ mavOpticalFlow.flow_comp_m_y + "metres , "
+						+ "DISTANCE : " + mavOpticalFlow.ground_distance
+						+ "metres , " + "FLOW PIXELS X : "
+						+ mavOpticalFlow.flow_x + "metres , "
+						+ "FLOW PIXELS Y : " + mavOpticalFlow.flow_y
+						+ "metres , " + "SENSOR ID : "
+						+ mavOpticalFlow.sensor_id + " , " + "QUALITY : "
+						+ mavOpticalFlow.quality;
+				Map<String, Object> tempMavOpticalFlow = Maps.newHashMap();
+				tempMavOpticalFlow.put("data", tempOpticalFlow);
+				sendOutputJson(publishers[2], tempMavOpticalFlow);
+				getLog().info(tempOpticalFlow);
+			}
 			break;
 
 		case msg_global_vision_position_estimate.MAVLINK_MSG_ID_GLOBAL_VISION_POSITION_ESTIMATE:
@@ -1772,11 +1791,91 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_optical_flow_rad.MAVLINK_MSG_ID_OPTICAL_FLOW_RAD:
-
+			msg_optical_flow_rad mavOpticalFlowRad;
+			if (mavMessage2 instanceof msg_optical_flow_rad) 
+			{
+				mavOpticalFlowRad = (msg_optical_flow_rad) mavMessage2;
+				String tempOpticalFlowRad = "[" + mavOpticalFlowRad.time_usec
+						+ "] , " + "INTEGRATION TIME : "
+						+ mavOpticalFlowRad.integration_time_us
+						+ "micro seconds , " + "FLOW X : "
+						+ mavOpticalFlowRad.integrated_x + "rad , "
+						+ "FLOW Y : " + mavOpticalFlowRad.integrated_y
+						+ "rad , " + "RH ROTATION X : "
+						+ mavOpticalFlowRad.integrated_xgyro + "rad , "
+						+ "RH ROTATION Y : "
+						+ mavOpticalFlowRad.integrated_ygyro + "rad , "
+						+ "RH ROTATION Z : "
+						+ mavOpticalFlowRad.integrated_zgyro + "rad , "
+						+ "DELTA TIME : "
+						+ mavOpticalFlowRad.time_delta_distance_us
+						+ "micro seconds , " + "DISTANCE : "
+						+ mavOpticalFlowRad.distance + "metres , "
+						+ "TEMPERATURE : " + mavOpticalFlowRad.temperature
+						/ 100.0 + "degree Celsius , " + "SENSOR ID : "
+						+ mavOpticalFlowRad.sensor_id + " , " + "QUALITY : "
+						+ mavOpticalFlowRad.quality;
+				Map<String, Object> tempMavOpticalFlowRad = Maps.newHashMap();
+				tempMavOpticalFlowRad.put("data", tempOpticalFlowRad);
+				sendOutputJson(publishers[2], tempMavOpticalFlowRad);
+				getLog().info(tempOpticalFlowRad);
+			}
 			break;
 
 		case msg_hil_sensor.MAVLINK_MSG_ID_HIL_SENSOR:
-
+			msg_hil_sensor mavHilSensor;
+			if (mavMessage2 instanceof msg_hil_sensor) 
+			{
+				mavHilSensor = (msg_hil_sensor) mavMessage2;
+				String tempHilSensor = "["
+						+ mavHilSensor.time_usec
+						+ "] , "
+						+ "ACCELARATION X : "
+						+ mavHilSensor.xacc
+						+ "metres/sec2 , "
+						+ "ACCELARATION Y : "
+						+ mavHilSensor.yacc
+						+ "metres/sec2 , "
+						+ "ACCELARATION Z : "
+						+ mavHilSensor.zacc
+						+ "metres/sec2 , "
+						+ "OMEGA X : "
+						+ mavHilSensor.xgyro
+						+ "rad/s , "
+						+ "OMEGA Y : "
+						+ mavHilSensor.ygyro
+						+ "rad/s , "
+						+ "OMEGA Z : "
+						+ mavHilSensor.zgyro
+						+ "rad/s , "
+						+ "MAGNETIC FIELD X : "
+						+ mavHilSensor.xmag
+						+ "Gauss , "
+						+ "MAGNETIC FIELD Y : "
+						+ mavHilSensor.ymag
+						+ "Gauss , "
+						+ "MAGNETIC FIELD Z : "
+						+ mavHilSensor.zmag
+						+ "Gauss , "
+						+ "ABSOLUTE PRESSURE : "
+						+ mavHilSensor.abs_pressure
+						+ "millibar , "
+						+ "DIFFERENTIAL PRESSURE : "
+						+ mavHilSensor.diff_pressure
+						+ "millibar , "
+						+ "ALTITUDE FROM PRESSURE : "
+						+ mavHilSensor.pressure_alt
+						+ "metres , "
+						+ "TEMPERATURE : "
+						+ mavHilSensor.temperature
+						+ "degree Celsius , "
+						+ "UPDATED FIELDS : "
+						+ Integer.toBinaryString(0xFFFF & mavHilSensor.fields_updated);
+				Map<String, Object> tempMavHilSensor = Maps.newHashMap();
+				tempMavHilSensor.put("data", tempHilSensor);
+				sendOutputJson(publishers[2], tempMavHilSensor);
+				getLog().info(tempHilSensor);
+			}
 			break;
 
 		case msg_sim_state.MAVLINK_MSG_ID_SIM_STATE:
@@ -1827,7 +1926,37 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_hil_optical_flow.MAVLINK_MSG_ID_HIL_OPTICAL_FLOW:
-
+			msg_hil_optical_flow mavHilOpticalFlowRad;
+			if (mavMessage2 instanceof msg_hil_optical_flow) 
+			{
+				mavHilOpticalFlowRad = (msg_hil_optical_flow) mavMessage2;
+				String tempHilOpticalFlowRad = "["
+						+ mavHilOpticalFlowRad.time_usec + "] , "
+						+ "INTEGRATION TIME : "
+						+ mavHilOpticalFlowRad.integration_time_us
+						+ "micro seconds , " + "FLOW X : "
+						+ mavHilOpticalFlowRad.integrated_x + "rad , "
+						+ "FLOW Y : " + mavHilOpticalFlowRad.integrated_y
+						+ "rad , " + "RH ROTATION X : "
+						+ mavHilOpticalFlowRad.integrated_xgyro + "rad , "
+						+ "RH ROTATION Y : "
+						+ mavHilOpticalFlowRad.integrated_ygyro + "rad , "
+						+ "RH ROTATION Z : "
+						+ mavHilOpticalFlowRad.integrated_zgyro + "rad , "
+						+ "DELTA TIME : "
+						+ mavHilOpticalFlowRad.time_delta_distance_us
+						+ "micro seconds , " + "DISTANCE : "
+						+ mavHilOpticalFlowRad.distance + "metres , "
+						+ "TEMPERATURE : " + mavHilOpticalFlowRad.temperature
+						/ 100.0 + "degree Celsius , " + "SENSOR ID : "
+						+ mavHilOpticalFlowRad.sensor_id + " , " + "QUALITY : "
+						+ mavHilOpticalFlowRad.quality;
+				Map<String, Object> tempMavHilOpticalFlowRad = Maps
+						.newHashMap();
+				tempMavHilOpticalFlowRad.put("data", tempHilOpticalFlowRad);
+				sendOutputJson(publishers[2], tempMavHilOpticalFlowRad);
+				getLog().info(tempHilOpticalFlowRad);
+			}
 			break;
 
 		case msg_hil_state_quaternion.MAVLINK_MSG_ID_HIL_STATE_QUATERNION:
@@ -2065,7 +2194,47 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_actuator_control_target.MAVLINK_MSG_ID_ACTUATOR_CONTROL_TARGET:
-
+			/**
+			 * Actuator controls. Normed to -1..+1 where 0 is neutral position.
+			 * Throttle for single rotation direction motors is 0..1, negative
+			 * range for reverse direction. Standard mapping for attitude
+			 * controls (group 0): (index 0-7): roll, pitch, yaw, throttle,
+			 * flaps, spoilers, airbrakes, landing gear. Load a pass-through
+			 * mixer to repurpose them as generic outputs.
+			 */
+			msg_actuator_control_target mavActuatorControlTarget;
+			if (mavMessage2 instanceof msg_actuator_control_target) 
+			{
+				mavActuatorControlTarget = (msg_actuator_control_target) mavMessage2;
+				String[] actuatorMapping = { "ROLL", "PITCH", "YAW",
+						"THROTTLE", "FLAPS", "SPOILERS", "AIRBRAKES",
+						"LANDING GEAR" };
+				String tempActuatorControlTarget = "["
+						+ mavActuatorControlTarget.time_usec + " ] , "
+						+ actuatorMapping[0] + "CONTROL : "
+						+ mavActuatorControlTarget.controls[0] + " , "
+						+ actuatorMapping[1] + "CONTROL : "
+						+ mavActuatorControlTarget.controls[1] + " , "
+						+ actuatorMapping[2] + "CONTROL : "
+						+ mavActuatorControlTarget.controls[2] + " , "
+						+ actuatorMapping[3] + "CONTROL : "
+						+ mavActuatorControlTarget.controls[3] + " , "
+						+ actuatorMapping[4] + "CONTROL : "
+						+ mavActuatorControlTarget.controls[4] + " , "
+						+ actuatorMapping[5] + "CONTROL : "
+						+ mavActuatorControlTarget.controls[5] + " , "
+						+ actuatorMapping[6] + "CONTROL : "
+						+ mavActuatorControlTarget.controls[6] + " , "
+						+ actuatorMapping[7] + "CONTROL : "
+						+ mavActuatorControlTarget.controls[7] + " , "
+						+ "GROUP MIX : " + mavActuatorControlTarget.group_mlx;
+				Map<String, Object> tempMavActuatorControlTarget = Maps
+						.newHashMap();
+				tempMavActuatorControlTarget.put("data",
+						tempActuatorControlTarget);
+				sendOutputJson(publishers[2], tempMavActuatorControlTarget);
+				getLog().info(tempActuatorControlTarget);
+			}
 			break;
 
 		case msg_battery_status.MAVLINK_MSG_ID_BATTERY_STATUS:
@@ -2103,7 +2272,22 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_landing_target.MAVLINK_MSG_ID_LANDING_TARGET:
-
+			msg_landing_target mavLandingTarget;
+			if (mavMessage2 instanceof msg_landing_target) 
+			{
+				mavLandingTarget = (msg_landing_target) mavMessage2;
+				String tempLandingTarget = "ANGLE X : "
+						+ mavLandingTarget.angle_x + "rad , " + "ANGLE Y : "
+						+ mavLandingTarget.angle_y + "rad , " + "DISTANCE : "
+						+ mavLandingTarget.distance + "metres , "
+						+ "TARGET ID : " + mavLandingTarget.target_num + " , "
+						+ "FRAME : "
+						+ getVariableName("MAV_FRAME", mavLandingTarget.frame);
+				Map<String, Object> tempMavLandingTarget = Maps.newHashMap();
+				tempMavLandingTarget.put("data", tempLandingTarget);
+				sendOutputJson(publishers[2], tempMavLandingTarget);
+				getLog().info(tempLandingTarget);
+			}
 			break;
 
 		case msg_v2_extension.MAVLINK_MSG_ID_V2_EXTENSION:
