@@ -280,7 +280,43 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_image_available.MAVLINK_MSG_ID_IMAGE_AVAILABLE:
-
+			msg_image_available mavImageAvailable;
+			if (mavMessage2 instanceof msg_image_available) 
+			{
+				mavImageAvailable = (msg_image_available) mavMessage2;
+				Map<String, Object> tempMavImageAvailable = Maps.newHashMap();
+				String tempImageAvailable = "[" + mavImageAvailable.timestamp
+						+ "] , " + "CAM ID : " + mavImageAvailable.cam_id
+						+ " , " + "VALID UNTIL : "
+						+ mavImageAvailable.valid_until + " ,"
+						+ "IMAGE SEQUENCE : " + mavImageAvailable.img_seq
+						+ " , " + "IMAGE BUFFER INDEX : "
+						+ mavImageAvailable.img_buf_index + " , "
+						+ "SHARED MEMORY KEY : " + mavImageAvailable.key
+						+ " , " + "EXPOSURE : " + mavImageAvailable.exposure
+						+ "s , " + "GAIN : " + mavImageAvailable.gain + " , "
+						+ "ROLL : " + mavImageAvailable.roll + "rad , "
+						+ "PITCH : " + mavImageAvailable.pitch + "rad , "
+						+ "YAW : " + mavImageAvailable.yaw + "rad , "
+						+ "LOCAL HEIGHT : " + mavImageAvailable.local_z
+						+ "metres , " + "LATITUDE : " + mavImageAvailable.lat
+						+ "degrees , " + "LONGITUDE : " + mavImageAvailable.lon
+						+ "degrees , " + "GLOBAL ALTITUDE : "
+						+ mavImageAvailable.alt + "metres , "
+						+ "GROUND TRUTH X : " + mavImageAvailable.ground_x
+						+ " , " + "GROUND TRUTH Y : "
+						+ mavImageAvailable.ground_y + " , "
+						+ "GROUND TRUTH Z : " + mavImageAvailable.ground_z
+						+ " , " + "IMAGE WIDTH : " + mavImageAvailable.width
+						+ "pixels , " + "IMAGE HEIGHT : "
+						+ mavImageAvailable.height + "pixels , "
+						+ "IMAGE DEPTH : " + mavImageAvailable.depth + " , "
+						+ "CAMERA NUMBER : " + mavImageAvailable.cam_no + " , "
+						+ "IMAGE CHANNELS : " + mavImageAvailable.channels;
+				tempMavImageAvailable.put("data", tempImageAvailable);
+				sendOutputJson(publishers[2], tempMavImageAvailable);
+				getLog().info(tempImageAvailable);
+			}
 			break;
 
 		case msg_set_position_control_offset.MAVLINK_MSG_ID_SET_POSITION_CONTROL_OFFSET:
@@ -589,7 +625,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_attitude_control.MAVLINK_MSG_ID_ATTITUDE_CONTROL:
-
+			/*
+			 * Not a message receive case
+			 */
 			break;
 
 		case msg_detection_stats.MAVLINK_MSG_ID_DETECTION_STATS:
@@ -701,7 +739,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_ping.MAVLINK_MSG_ID_PING:
-
+			/*
+			 * Not a message receive case
+			 */
 			break;
 
 		case msg_change_operator_control.MAVLINK_MSG_ID_CHANGE_OPERATOR_CONTROL:
@@ -709,31 +749,67 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_change_operator_control_ack.MAVLINK_MSG_ID_CHANGE_OPERATOR_CONTROL_ACK:
-
+			/*
+			 * Not a message receive case
+			 */
 			break;
 
 		case msg_auth_key.MAVLINK_MSG_ID_AUTH_KEY:
-
+			Map<String,	Object> tempMavSAuthKey = Maps.newHashMap();
+			tempMavSAuthKey.put("status", mavMessage2.toString());
+			sendOutputJson(publishers[2], tempMavSAuthKey);
+			getLog().info(mavMessage2.toString());
 			break;
 
 		case msg_set_mode.MAVLINK_MSG_ID_SET_MODE:
-
+			/*
+			 * Not a message receive case
+			 */
 			break;
 
 		case msg_param_request_read.MAVLINK_MSG_ID_PARAM_REQUEST_READ:
-
+			/*
+			 * Not a message receive case
+			 */
 			break;
 
 		case msg_param_request_list.MAVLINK_MSG_ID_PARAM_REQUEST_LIST:
-
+			/*
+			 * Not a message receive case
+			 */
 			break;
 
 		case msg_param_value.MAVLINK_MSG_ID_PARAM_VALUE:
-
+			msg_param_value mavParamValue;
+			if (mavMessage2 instanceof msg_param_value) 
+			{
+				mavParamValue = (msg_param_value) mavMessage2;
+				Map<String, Object> tempMavParamValue = Maps.newHashMap();
+				String tempParamValue = "TOTAL NUMBER OF PARAMETERS : "
+						+ mavParamValue.param_count
+						+ " , "
+						+ "CURRENT PARAMETER INDEX : "
+						+ mavParamValue.param_index
+						+ " , "
+						+ "PARAMETER VALUE : "
+						+ mavParamValue.param_value
+						+ " , "
+						+ "PARAMETER ID : "
+						+ Arrays.toString(mavParamValue.param_id)
+						+ " , "
+						+ "PARAMETER TYPE : "
+						+ getVariableName("MAV_PARAM_TYPE",
+								mavParamValue.param_count);
+				tempMavParamValue.put("data", tempParamValue);
+				sendOutputJson(publishers[2], tempMavParamValue);
+				getLog().info(tempParamValue);
+			}
 			break;
 
 		case msg_param_set.MAVLINK_MSG_ID_PARAM_SET:
-
+			/*
+			 * Not a message receive case
+			 */
 			break;
 
 		case msg_gps_raw_int.MAVLINK_MSG_ID_GPS_RAW_INT:
