@@ -1578,7 +1578,34 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_hil_state.MAVLINK_MSG_ID_HIL_STATE:
-
+			msg_hil_state  mavHilState;
+			if (mavMessage2 instanceof msg_hil_state) 
+			{
+				mavHilState = (msg_hil_state) mavMessage2;
+				String tempHilState = "[" + mavHilState.time_usec + "] , "
+						+ "ROLL : " + mavHilState.roll + "rad , " + "PITCH : "
+						+ mavHilState.pitch + "rad , " + "YAW : "
+						+ mavHilState.yaw + "rad , " + "ROLL SPEED : "
+						+ mavHilState.rollspeed + "rad/s , " + "PITCH SPEED : "
+						+ mavHilState.pitchspeed + "rad/s , " + "YAW SPEED : "
+						+ mavHilState.yawspeed + "LATITUDE : "
+						+ mavHilState.lat / 10000000.0 + "degrees , "
+						+ "LONGITUDE : " + mavHilState.lon / 10000000.0
+						+ "degrees , " + "ALTITUDE : " + mavHilState.alt
+						/ 1000.0 + "metres , " + "VELOCITY X : "
+						+ mavHilState.vx / 100.0 + "m/s , " + "VELOCITY Y : "
+						+ mavHilState.vy / 100.0 + "m/s , " + "VELOCITY Z : "
+						+ mavHilState.vz / 100.0 + "m/s , "
+						+ "ACCELARATION X : " + mavHilState.xacc / 100000.0
+						+ "metres/sec2 , " + "ACCELARATION Y : "
+						+ mavHilState.yacc / 100000.0 + "metres/sec2 , "
+						+ "ACCELARATION Z : " + mavHilState.zacc / 100000.0
+						+ "metres/sec2";
+				Map<String, Object> tempMavHilState = Maps.newHashMap();
+				tempMavHilState.put("data", tempHilState);
+				sendOutputJson(publishers[2], tempMavHilState);
+				getLog().info(tempHilState);
+			}
 			break;
 
 		case msg_hil_controls.MAVLINK_MSG_ID_HIL_CONTROLS:
@@ -1917,8 +1944,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ "degrees , " + "FIX TYPE : " + mavHilGps.fix_type
 						+ "D , " + "SATELLITES VISIBLE : "
 						+ mavHilGps.satellites_visible + "VELOCITY NORTH : "
-						+ mavHilGps.vn + "VELOCITY EAST : " + mavHilGps.ve
-						+ "VELOCITY DOWN : " + mavHilGps.vd;
+						+ mavHilGps.vn + "m/s , " + "VELOCITY EAST : "
+						+ mavHilGps.ve + "m/s , " + "VELOCITY DOWN : "
+						+ mavHilGps.vd + "m/s ";
 				tempMavHilGps.put("data", tempHilGps);
 				sendOutputJson(publishers[2], tempMavHilGps);
 				getLog().info(tempHilGps);
@@ -1960,7 +1988,49 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_hil_state_quaternion.MAVLINK_MSG_ID_HIL_STATE_QUATERNION:
-
+			msg_hil_state_quaternion  mavHilStateQuaternion;
+			if (mavMessage2 instanceof msg_hil_state_quaternion) 
+			{
+				mavHilStateQuaternion = (msg_hil_state_quaternion) mavMessage2;
+				String tempHilStateQuaternion = "["
+						+ mavHilStateQuaternion.time_usec + "] , "
+						+ "QUATERNION COMPONENT 1 : "
+						+ mavHilStateQuaternion.attitude_quaternion[1] + " , "
+						+ "QUATERNION COMPONENT 2 : "
+						+ mavHilStateQuaternion.attitude_quaternion[2] + " , "
+						+ "QUATERNION COMPONENT 3 : "
+						+ mavHilStateQuaternion.attitude_quaternion[3] + " , "
+						+ "QUATERNION COMPONENT 4 : "
+						+ mavHilStateQuaternion.attitude_quaternion[4] + " , "
+						+ "ROLL SPEED : " + mavHilStateQuaternion.rollspeed
+						+ "rad/s , " + "PITCH SPEED : "
+						+ mavHilStateQuaternion.pitchspeed + "rad/s , "
+						+ "YAW SPEED : " + mavHilStateQuaternion.yawspeed
+						+ "LATITUDE : " + mavHilStateQuaternion.lat
+						/ 10000000.0 + "degrees , " + "LONGITUDE : "
+						+ mavHilStateQuaternion.lon / 10000000.0 + "degrees , "
+						+ "ALTITUDE : " + mavHilStateQuaternion.alt / 1000.0
+						+ "metres , " + "VELOCITY X : "
+						+ mavHilStateQuaternion.vx / 100.0 + "m/s , "
+						+ "VELOCITY Y : " + mavHilStateQuaternion.vy / 100.0
+						+ "m/s , " + "VELOCITY Z : " + mavHilStateQuaternion.vz
+						/ 100.0 + "m/s , " + "INDICATED AIRSPEED : "
+						+ mavHilStateQuaternion.ind_airspeed / 100.0 + "m/s , "
+						+ "TRUE AIRSPEED : "
+						+ mavHilStateQuaternion.true_airspeed / 100.0
+						+ "m/s , " + "ACCELARATION X : "
+						+ mavHilStateQuaternion.xacc / 100000.0
+						+ "metres/sec2 , " + "ACCELARATION Y : "
+						+ mavHilStateQuaternion.yacc / 100000.0
+						+ "metres/sec2 , " + "ACCELARATION Z : "
+						+ mavHilStateQuaternion.zacc / 100000.0
+						+ "metres/sec2";
+				Map<String, Object> tempMavHilStateQuaternion = Maps
+						.newHashMap();
+				tempMavHilStateQuaternion.put("data", tempHilStateQuaternion);
+				sendOutputJson(publishers[2], tempMavHilStateQuaternion);
+				getLog().info(tempHilStateQuaternion);
+			}
 			break;
 
 		case msg_scaled_imu2.MAVLINK_MSG_ID_SCALED_IMU2:
