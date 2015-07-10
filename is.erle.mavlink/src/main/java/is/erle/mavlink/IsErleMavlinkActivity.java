@@ -8,6 +8,7 @@ import interactivespaces.activity.impl.ros.BaseRoutableRosActivity;
 import com.MAVLink.*;
 import com.MAVLink.Messages.MAVLinkMessage;
 import com.MAVLink.common.*;
+import com.MAVLink.enums.MAV_FRAME;
 import com.MAVLink.enums.MAV_MISSION_RESULT;
 import com.MAVLink.pixhawk.*;
 import com.google.common.collect.Maps;
@@ -1093,19 +1094,43 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_servo_output_raw.MAVLINK_MSG_ID_SERVO_OUTPUT_RAW:
-
+			msg_servo_output_raw mavServoOutputRaw;
+			if (mavMessage2 instanceof msg_servo_output_raw) 
+			{
+				mavServoOutputRaw = (msg_servo_output_raw) mavMessage2;
+				String tempServoOutputRaw = "[" + mavServoOutputRaw.time_usec
+						+ "] ," + "SERVO 1 : " + mavServoOutputRaw.servo1_raw
+						+ " , " + "SERVO 2 : " + mavServoOutputRaw.servo2_raw
+						+ " , " + "SERVO 3 : " + mavServoOutputRaw.servo3_raw
+						+ " , " + "SERVO 4 : " + mavServoOutputRaw.servo4_raw
+						+ " , " + "SERVO 5 : " + mavServoOutputRaw.servo5_raw
+						+ " , " + "SERVO 6 : " + mavServoOutputRaw.servo6_raw
+						+ " , " + "SERVO 7 : " + mavServoOutputRaw.servo7_raw
+						+ " , " + "SERVO 8 : " + mavServoOutputRaw.servo8_raw
+						+ " , " + "PORT : " + mavServoOutputRaw.port;
+				Map<String, Object> tempMavServoOutputRaw = Maps.newHashMap();
+				tempMavServoOutputRaw.put("data", tempServoOutputRaw);
+				sendOutputJson(publishers[2], tempMavServoOutputRaw);
+				getLog().info(tempServoOutputRaw);
+			}
 			break;
 
 		case msg_mission_request_partial_list.MAVLINK_MSG_ID_MISSION_REQUEST_PARTIAL_LIST:
-
+			/*
+			 * Not a message receive case
+			 */
 			break;
 
 		case msg_mission_write_partial_list.MAVLINK_MSG_ID_MISSION_WRITE_PARTIAL_LIST:
-
+			/*
+			 * Not a message receive case
+			 */
 			break;
 
 		case msg_mission_item.MAVLINK_MSG_ID_MISSION_ITEM:
-
+			/*
+			 * Not a message receive case
+			 */
 			break;
 
 		case msg_mission_request.MAVLINK_MSG_ID_MISSION_REQUEST:
@@ -1117,35 +1142,75 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			if (mavMessage2 instanceof msg_mission_request) 
 			{
 				mavMissionRequest = (msg_mission_request) mavMessage2;
-				String tempStringRequest = "MISSION_REQUEST-" + Short.toString(mavMissionRequest.seq);
+				String tempStringRequest = "MISSION_REQUEST-"
+						+ Short.toString(mavMissionRequest.seq);
 				Map<String, Object> tempMapMissionRequest = Maps.newHashMap();
 				tempMapMissionRequest.put("mission", tempStringRequest);
 				sendOutputJson(publishers[1], tempMapMissionRequest);
+				getLog().info(tempMapMissionRequest);
 			}
 			break;
 
 		case msg_mission_set_current.MAVLINK_MSG_ID_MISSION_SET_CURRENT:
-
+			/*
+			 * Not a message receive case
+			 */
 			break;
 
 		case msg_mission_current.MAVLINK_MSG_ID_MISSION_CURRENT:
-
+			/**
+			 * Message that announces the sequence number of the current active
+			 * mission item. The MAV will fly towards this mission item.
+			 */
+			msg_mission_current mavMissionCurrent;
+			if (mavMessage2 instanceof msg_mission_current) 
+			{
+				mavMissionCurrent = (msg_mission_current) mavMessage2;
+				String tempStringCurrent = "CURRENT SEQUENCE : "
+						+ Short.toString(mavMissionCurrent.seq);
+				Map<String, Object> tempMapMissionCurrent = Maps.newHashMap();
+				tempMapMissionCurrent.put("mission", tempStringCurrent);
+				sendOutputJson(publishers[2], tempMapMissionCurrent);
+				getLog().info(tempMapMissionCurrent);
+			}
 			break;
 
 		case msg_mission_request_list.MAVLINK_MSG_ID_MISSION_REQUEST_LIST:
-
+			/*
+			 * Not a message receive case
+			 */
 			break;
 
 		case msg_mission_count.MAVLINK_MSG_ID_MISSION_COUNT:
-
+			/*
+			 * Not a message receive case
+			 */
 			break;
 
 		case msg_mission_clear_all.MAVLINK_MSG_ID_MISSION_CLEAR_ALL:
-
+			/*
+			 * Not a message receive case
+			 */
 			break;
 
 		case msg_mission_item_reached.MAVLINK_MSG_ID_MISSION_ITEM_REACHED:
-
+			/**
+			 * A certain mission item has been reached. The system will either
+			 * hold this position (or circle on the orbit) or (if the
+			 * autocontinue on the WP was set) continue to the next MISSION.
+			 */
+			msg_mission_item_reached mavMissionItemReached;
+			if (mavMessage2 instanceof msg_mission_item_reached) 
+			{
+				mavMissionItemReached = (msg_mission_item_reached) mavMessage2;
+				String tempStringItemReached = "ITEM REACHED : "
+						+ Short.toString(mavMissionItemReached.seq);
+				Map<String, Object> tempMapMissionItemReached = Maps
+						.newHashMap();
+				tempMapMissionItemReached.put("mission", tempStringItemReached);
+				sendOutputJson(publishers[2], tempMapMissionItemReached);
+				getLog().info(tempMapMissionItemReached);
+			}
 			break;
 
 		case msg_mission_ack.MAVLINK_MSG_ID_MISSION_ACK:
@@ -1285,7 +1350,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_set_gps_global_origin.MAVLINK_MSG_ID_SET_GPS_GLOBAL_ORIGIN:
-
+			/*
+			 * Not a message receive case
+			 */
 			break;
 
 		case msg_gps_global_origin.MAVLINK_MSG_ID_GPS_GLOBAL_ORIGIN:
@@ -1307,15 +1374,75 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_param_map_rc.MAVLINK_MSG_ID_PARAM_MAP_RC:
-
+			/*
+			 * Not a message receive case
+			 */
 			break;
 
 		case msg_safety_set_allowed_area.MAVLINK_MSG_ID_SAFETY_SET_ALLOWED_AREA:
-
+			/*
+			 * Not a message receive case
+			 */
 			break;
 
 		case msg_safety_allowed_area.MAVLINK_MSG_ID_SAFETY_ALLOWED_AREA:
+			msg_safety_allowed_area mavSafetyAllowedArea;
+			if (mavMessage2 instanceof msg_safety_allowed_area) 
+			{
+				mavSafetyAllowedArea = (msg_safety_allowed_area) mavMessage2 ;
+				String tempSafetyAllowedArea = null;
+				switch (mavSafetyAllowedArea.frame) {
+				case MAV_FRAME.MAV_FRAME_GLOBAL:
+					tempSafetyAllowedArea = "X POSITION 1 : "
+							+ mavSafetyAllowedArea.p1x + "degrees , "
+							+ "Y POSITION 1 : " + mavSafetyAllowedArea.p1y
+							+ "degrees , " + "ALTITUDE 1 : "
+							+ mavSafetyAllowedArea.p1z + "metres , "
+							+ "X POSITION 2 : " + mavSafetyAllowedArea.p2x
+							+ "degrees , " + "Y POSITION 2 : "
+							+ mavSafetyAllowedArea.p2y + "degrees , "
+							+ "ALTITUDE 2 : " + mavSafetyAllowedArea.p2z
+							+ "metres";
+					break;
+					
+				case MAV_FRAME.MAV_FRAME_LOCAL_NED:
+					tempSafetyAllowedArea = "X POSITION 1 : "
+							+ mavSafetyAllowedArea.p1x + "metres , "
+							+ "Y POSITION 1 : " + mavSafetyAllowedArea.p1y
+							+ "metres , " + "ALTITUDE 1 : "
+							+ mavSafetyAllowedArea.p1z + "metres , "
+							+ "X POSITION 2 : " + mavSafetyAllowedArea.p2x
+							+ "metres , " + "Y POSITION 2 : "
+							+ mavSafetyAllowedArea.p2y + "metres , "
+							+ "ALTITUDE 2 : " + mavSafetyAllowedArea.p2z
+							+ "metres";
+					break;
 
+				case MAV_FRAME.MAV_FRAME_LOCAL_ENU:
+					tempSafetyAllowedArea = "X POSITION 1 : "
+							+ mavSafetyAllowedArea.p1x + "metres , "
+							+ "Y POSITION 1 : " + mavSafetyAllowedArea.p1y
+							+ "metres , " + "ALTITUDE 1 : "
+							+ mavSafetyAllowedArea.p1z * (-1.0) + "metres , "
+							+ "X POSITION 2 : " + mavSafetyAllowedArea.p2x
+							+ "metres , " + "Y POSITION 2 : "
+							+ mavSafetyAllowedArea.p2y + "metres , "
+							+ "ALTITUDE 2 : " + mavSafetyAllowedArea.p2z
+							* (-1.0) + "metres";
+					break;
+					
+				default:
+					getLog().error("Bad Coordinate frame type received");
+					break;
+				}
+				if (tempSafetyAllowedArea != null) 
+				{
+					Map<String, Object> tempMavSafetyAllowedArea = Maps.newHashMap();
+					tempMavSafetyAllowedArea.put("gps" , tempSafetyAllowedArea);
+					sendOutputJson(publishers[2], tempMavSafetyAllowedArea);
+					getLog().info(tempSafetyAllowedArea);
+				}
+			}
 			break;
 
 		case msg_attitude_quaternion_cov.MAVLINK_MSG_ID_ATTITUDE_QUATERNION_COV:
@@ -1337,7 +1464,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ "rad/s , " + "PITCH SPEED : "
 						+ mavAttitudeQuaternionCov.pitchspeed + "rad/s , "
 						+ "YAW SPEED : " + mavAttitudeQuaternionCov.yawspeed
-						+ "rad/s" + "COVARIANCE MATRIX : "
+						+ "rad/s , " + "COVARIANCE MATRIX : "
 						+ Arrays.toString(mavAttitudeQuaternionCov.covariance);
 				Map<String , Object> tempMavAttitudeQuaternionCov = Maps.newHashMap();
 				tempMavAttitudeQuaternionCov.put("data", tempAttitudeQuaternionCov);
@@ -1347,7 +1474,38 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_nav_controller_output.MAVLINK_MSG_ID_NAV_CONTROLLER_OUTPUT:
-
+			/**
+			 * Outputs of the APM navigation controller. The primary use of this
+			 * message is to check the response and signs of the controller
+			 * before actual flight and to assist with tuning controller
+			 * parameters.
+			 */
+			msg_nav_controller_output  mavNavControllerOutput;
+			if (mavMessage2 instanceof msg_nav_controller_output) 
+			{
+				mavNavControllerOutput = (msg_nav_controller_output) mavMessage2;
+				String tempNavControllerOutput = "CURRENT DESIRED ROLL : "
+						+ mavNavControllerOutput.nav_roll + "degrees , "
+						+ "CURRENT DESIRED PITCH : "
+						+ mavNavControllerOutput.nav_pitch + "degrees , "
+						+ "CURRENT DESIRED HEADING : "
+						+ mavNavControllerOutput.nav_bearing + "degrees , "
+						+ "CURRENT TARGET HEADING  : "
+						+ mavNavControllerOutput.target_bearing + "degrees , "
+						+ "ALTITUDE ERROR : "
+						+ mavNavControllerOutput.alt_error + "m , "
+						+ "AIR SPEED ERROR : "
+						+ mavNavControllerOutput.aspd_error + "m/s , "
+						+ "CROSSTRACK ERROR XY PLANE : "
+						+ mavNavControllerOutput.xtrack_error + "m , "
+						+ "WAYPOINT DISTANCE : "
+						+ mavNavControllerOutput.wp_dist + "m";
+				Map<String, Object> tempMavNavControllerOutput = Maps
+						.newHashMap();
+				tempMavNavControllerOutput.put("data", tempNavControllerOutput);
+				sendOutputJson(publishers[2], tempMavNavControllerOutput);
+				getLog().info(tempNavControllerOutput);
+			}
 			break;
 
 		case msg_global_position_int_cov.MAVLINK_MSG_ID_GLOBAL_POSITION_INT_COV:
