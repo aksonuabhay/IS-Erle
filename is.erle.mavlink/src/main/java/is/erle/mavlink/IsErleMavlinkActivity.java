@@ -1621,47 +1621,108 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_request_data_stream.MAVLINK_MSG_ID_REQUEST_DATA_STREAM:
-
+			/*
+			 * Not a message receive case
+			 */
 			break;
 
 		case msg_data_stream.MAVLINK_MSG_ID_DATA_STREAM:
-
+			msg_data_stream  mavDataStream;
+			if (mavMessage2 instanceof msg_data_stream) 
+			{
+				mavDataStream = (msg_data_stream) mavMessage2;
+				String tempDataStream = "MESSAGE RATE : "
+						+ mavDataStream.message_rate + " , " + "STREAM ID : "
+						+ mavDataStream.stream_id + " , " + "STREAM STATUS : "
+						+ mavDataStream.on_off;
+				Map<String, Object> tempMavDataStream = Maps.newHashMap();
+				tempMavDataStream.put("data", tempDataStream);
+				sendOutputJson(publishers[2], tempMavDataStream);
+				getLog().info(tempDataStream);
+			}
 			break;
 
 		case msg_manual_control.MAVLINK_MSG_ID_MANUAL_CONTROL:
-
+			/*
+			 * Not a message receive case
+			 */
 			break;
 
 		case msg_rc_channels_override.MAVLINK_MSG_ID_RC_CHANNELS_OVERRIDE:
-
+			/*
+			 * Not a message receive case
+			 */
 			break;
 
 		case msg_mission_item_int.MAVLINK_MSG_ID_MISSION_ITEM_INT:
-
+			/*
+			 * Not a message receive case
+			 */
 			break;
 
 		case msg_vfr_hud.MAVLINK_MSG_ID_VFR_HUD:
-
+			/**
+			 * Metrics typically displayed on a HUD for fixed wing aircraft
+			 */
+			msg_vfr_hud  mavVfrHud;
+			if (mavMessage2 instanceof msg_vfr_hud) 
+			{
+				mavVfrHud = (msg_vfr_hud) mavMessage2;
+				String tempVfrHud = "AIR SPEED : " + mavVfrHud.airspeed
+						+ "m/s , " + "GROUND SPEED : " + mavVfrHud.groundspeed
+						+ "m/s , " + "ALTITUDE : " + mavVfrHud.alt + "m , "
+						+ "CLIMB : " + mavVfrHud.climb + "m/s , "
+						+ "HEADING : " + mavVfrHud.heading + "degrees , "
+						+ "THROTTLE : " + mavVfrHud.throttle + "%";
+				Map<String, Object> tempMavVfrHud = Maps.newHashMap();
+				tempMavVfrHud.put("data", tempVfrHud);
+				sendOutputJson(publishers[2], tempMavVfrHud);
+				getLog().info(tempVfrHud);
+			}
 			break;
 
 		case msg_command_int.MAVLINK_MSG_ID_COMMAND_INT:
-
+			/*
+			 * Not a message receive case
+			 */
 			break;
 
 		case msg_command_long.MAVLINK_MSG_ID_COMMAND_LONG:
-
+			/*
+			 * Not a message receive case
+			 */
 			break;
 
 		case msg_command_ack.MAVLINK_MSG_ID_COMMAND_ACK:
-
+			/**
+			 * Report status of a command. Includes feedback wether the command
+			 * was executed.
+			 */
+			msg_command_ack  mavCommandAck;
+			if (mavMessage2 instanceof msg_command_ack) 
+			{
+				mavCommandAck = (msg_command_ack) mavMessage2;
+				String tempCommandAck = "COMMAND : "
+						+ getVariableName("MAV_CMD", mavCommandAck.command)
+						+ " , " + "RESULT : "
+						+ getVariableName("MAV_RESILT", mavCommandAck.result);
+				Map<String, Object> tempMavCommandAck = Maps.newHashMap();
+				tempMavCommandAck.put("data", tempCommandAck);
+				sendOutputJson(publishers[2], tempMavCommandAck);
+				getLog().info(tempCommandAck);
+			}
 			break;
 
 		case msg_manual_setpoint.MAVLINK_MSG_ID_MANUAL_SETPOINT:
-
+			/*
+			 * Not a message receive case
+			 */
 			break;
 
 		case msg_set_attitude_target.MAVLINK_MSG_ID_SET_ATTITUDE_TARGET:
-
+			/*
+			 * Not a message receive case
+			 */
 			break;
 
 		case msg_attitude_target.MAVLINK_MSG_ID_ATTITUDE_TARGET:
@@ -1681,7 +1742,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ "BODY PITCH SPEED : "
 						+ mavAttitudeTarget.body_pitch_rate + "rad/s , "
 						+ "BODY YAW SPEED : " + mavAttitudeTarget.body_yaw_rate
-						+ "rad/s" + "THRUST : " + mavAttitudeTarget.thrust;
+						+ "rad/s , " + "THRUST : " + mavAttitudeTarget.thrust;
 				/**
 				 * mavAttitudeTarget.type_mask
 				 * Mappings: If any of these bits are set, the corresponding
@@ -1697,7 +1758,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_set_position_target_local_ned.MAVLINK_MSG_ID_SET_POSITION_TARGET_LOCAL_NED:
-
+			/*
+			 * Not a message receive case
+			 */
 			break;
 
 		case msg_position_target_local_ned.MAVLINK_MSG_ID_POSITION_TARGET_LOCAL_NED:
@@ -1740,7 +1803,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_set_position_target_global_int.MAVLINK_MSG_ID_SET_POSITION_TARGET_GLOBAL_INT:
-
+			/*
+			 * Not a message receive case
+			 */
 			break;
 
 		case msg_position_target_global_int.MAVLINK_MSG_ID_POSITION_TARGET_GLOBAL_INT:
@@ -1843,7 +1908,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_hil_controls.MAVLINK_MSG_ID_HIL_CONTROLS:
-
+			/*
+			 * Not a message receive case
+			 */
 			break;
 
 		case msg_hil_rc_inputs_raw.MAVLINK_MSG_ID_HIL_RC_INPUTS_RAW:
@@ -2140,23 +2207,81 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_sim_state.MAVLINK_MSG_ID_SIM_STATE:
-
+			msg_sim_state  mavSimState;
+			if (mavMessage2 instanceof msg_sim_state) 
+			{
+				mavSimState = (msg_sim_state) mavMessage2;
+				String tempSimState = "ATTITUDE QUATERNION COMPONENT 1 : "
+						+ mavSimState.q1 + " , "
+						+ "ATTITUDE QUATERNION COMPONENT 2 : " + mavSimState.q2
+						+ " , " + "ATTITUDE QUATERNION COMPONENT 3 : "
+						+ mavSimState.q3 + " , "
+						+ "ATTITUDE QUATERNION COMPONENT 4 : " + mavSimState.q4
+						+ " , " + "ROLL : " + mavSimState.roll + "degrees , "
+						+ "PITCH : " + mavSimState.pitch + "degrees , "
+						+ "YAW : " + mavSimState.yaw + "degrees , "
+						+ "LATITUDE : " + mavSimState.lat + "degrees , "
+						+ "LONGITUDE : " + mavSimState.lon + "degrees , "
+						+ "ALTITUDE : " + mavSimState.alt + "metres , "
+						+ "VELOCITY NORTH : " + mavSimState.vn + "m/s , "
+						+ "VELOCITY EAST : " + mavSimState.ve + "m/s , "
+						+ "VELOCITY DOWN : " + mavSimState.vd + "m/s , "
+						+ "STANDARD DEVIATION HORIZONTAL POSITION : "
+						+ mavSimState.std_dev_horz + " , "
+						+ "STANDARD DEVIATION VERTICAL POSITION : "
+						+ mavSimState.std_dev_vert + " , "
+						+ "ACCELARATION X : " + mavSimState.xacc
+						+ "metres/sec2 , " + "ACCELARATION Y : "
+						+ mavSimState.yacc + "metres/sec2 , "
+						+ "ACCELARATION Z : " + mavSimState.zacc
+						+ "metres/sec2 , " + "OMEGA X : " + mavSimState.xgyro
+						+ "rad/s , " + "OMEGA Y : " + mavSimState.ygyro
+						+ "rad/s , " + "OMEGA Z : " + mavSimState.zgyro
+						+ "rad/s ";
+				Map<String, Object> tempMavSimState = Maps.newHashMap();
+				tempMavSimState.put("data", tempSimState);
+				sendOutputJson(publishers[2], tempMavSimState);
+				getLog().info(tempSimState);
+			}
 			break;
 
 		case msg_radio_status.MAVLINK_MSG_ID_RADIO_STATUS:
-
+			msg_radio_status mavRadioStatus;
+			if (mavMessage2 instanceof msg_radio_status) 
+			{
+				mavRadioStatus = (msg_radio_status) mavMessage2;
+				String tempRadioStatus = "RECEIVE ERRORS : "
+						+ mavRadioStatus.rxerrors + " , "
+						+ "ERROR CORRECTED PACKET COUNT : "
+						+ mavRadioStatus.fixed + " , " + "SIGNAL STRENGTH : "
+						+ mavRadioStatus.rssi + " , "
+						+ "REMOTE SIGNAL STRENGTH :" + mavRadioStatus.remrssi
+						+ " , " + "FREE BUFFERS : " + mavRadioStatus.txbuf
+						+ "% , " + "NOISE : " + mavRadioStatus.noise + " , "
+						+ "REMOTE NOISE : " + mavRadioStatus.remnoise;
+				Map<String, Object> tempMavRadioStatus = Maps.newHashMap();
+				tempMavRadioStatus.put("data", tempRadioStatus);
+				sendOutputJson(publishers[2], tempMavRadioStatus);
+				getLog().info(tempRadioStatus);
+			}
 			break;
 
 		case msg_file_transfer_protocol.MAVLINK_MSG_ID_FILE_TRANSFER_PROTOCOL:
-
+			/*
+			 * Not a message receive case
+			 */
 			break;
 
 		case msg_timesync.MAVLINK_MSG_ID_TIMESYNC:
-
+			/*
+			 * Not a message receive case
+			 */
 			break;
 
 		case msg_camera_trigger.MAVLINK_MSG_ID_CAMERA_TRIGGER:
-
+			/*
+			 * Not a message receive case
+			 */
 			break;
 
 		case msg_hil_gps.MAVLINK_MSG_ID_HIL_GPS:
@@ -2240,15 +2365,16 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ "rad/s , " + "PITCH SPEED : "
 						+ mavHilStateQuaternion.pitchspeed + "rad/s , "
 						+ "YAW SPEED : " + mavHilStateQuaternion.yawspeed
-						+ "LATITUDE : " + mavHilStateQuaternion.lat
-						/ 10000000.0 + "degrees , " + "LONGITUDE : "
-						+ mavHilStateQuaternion.lon / 10000000.0 + "degrees , "
-						+ "ALTITUDE : " + mavHilStateQuaternion.alt / 1000.0
-						+ "metres , " + "VELOCITY X : "
-						+ mavHilStateQuaternion.vx / 100.0 + "m/s , "
-						+ "VELOCITY Y : " + mavHilStateQuaternion.vy / 100.0
-						+ "m/s , " + "VELOCITY Z : " + mavHilStateQuaternion.vz
-						/ 100.0 + "m/s , " + "INDICATED AIRSPEED : "
+						+ "rad/s , " + "LATITUDE : "
+						+ mavHilStateQuaternion.lat / 10000000.0 + "degrees , "
+						+ "LONGITUDE : " + mavHilStateQuaternion.lon
+						/ 10000000.0 + "degrees , " + "ALTITUDE : "
+						+ mavHilStateQuaternion.alt / 1000.0 + "metres , "
+						+ "VELOCITY X : " + mavHilStateQuaternion.vx / 100.0
+						+ "m/s , " + "VELOCITY Y : " + mavHilStateQuaternion.vy
+						/ 100.0 + "m/s , " + "VELOCITY Z : "
+						+ mavHilStateQuaternion.vz / 100.0 + "m/s , "
+						+ "INDICATED AIRSPEED : "
 						+ mavHilStateQuaternion.ind_airspeed / 100.0 + "m/s , "
 						+ "TRUE AIRSPEED : "
 						+ mavHilStateQuaternion.true_airspeed / 100.0
@@ -2257,8 +2383,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ "metres/sec2 , " + "ACCELARATION Y : "
 						+ mavHilStateQuaternion.yacc / 100000.0
 						+ "metres/sec2 , " + "ACCELARATION Z : "
-						+ mavHilStateQuaternion.zacc / 100000.0
-						+ "metres/sec2";
+						+ mavHilStateQuaternion.zacc / 100000.0 + "metres/sec2";
 				Map<String, Object> tempMavHilStateQuaternion = Maps
 						.newHashMap();
 				tempMavHilStateQuaternion.put("data", tempHilStateQuaternion);
@@ -2295,31 +2420,66 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_log_request_list.MAVLINK_MSG_ID_LOG_REQUEST_LIST:
-
+			/*
+			 * Not a message receive case
+			 */
 			break;
 
 		case msg_log_entry.MAVLINK_MSG_ID_LOG_ENTRY:
-
+			msg_log_entry mavLogEntry;
+			if (mavMessage2 instanceof msg_log_entry) 
+			{
+				mavLogEntry = (msg_log_entry) mavMessage2;
+				String tempLogEntry = "[" + mavLogEntry.time_utc + "] , "
+						+ "SIZE : " + mavLogEntry.size + " , " + "LOG ID : "
+						+ mavLogEntry.id + " , " + "TOTAL NUMBER OF LOGS : "
+						+ mavLogEntry.num_logs + " , " + "LAST LOG NUMBER : "
+						+ mavLogEntry.last_log_num;
+				Map<String, Object> tempMavLogEntry = Maps.newHashMap();
+				tempMavLogEntry.put("data", tempLogEntry);
+				sendOutputJson(publishers[2], tempMavLogEntry);
+				getLog().info(tempLogEntry);
+			}
 			break;
 
 		case msg_log_request_data.MAVLINK_MSG_ID_LOG_REQUEST_DATA:
-
+			/*
+			 * Not a message receive case
+			 */
 			break;
 
 		case msg_log_data.MAVLINK_MSG_ID_LOG_DATA:
-
+			msg_log_data mavLogData;
+			if (mavMessage2 instanceof msg_log_data) 
+			{
+				mavLogData = (msg_log_data) mavMessage2;
+				String tempLogData = "OFFSET : " + mavLogData.ofs + " , "
+						+ "LOG ID : " + mavLogData.id + " , "
+						+ "TOTAL NUMBER OF BYTES : " + mavLogData.count + " , "
+						+ "DATA : " + mavLogData.data;
+				Map<String, Object> tempMavLogData = Maps.newHashMap();
+				tempMavLogData.put("data", tempLogData);
+				sendOutputJson(publishers[2], tempMavLogData);
+				getLog().info(tempLogData);
+			}
 			break;
 
 		case msg_log_erase.MAVLINK_MSG_ID_LOG_ERASE:
-
+			/*
+			 * Not a message receive case
+			 */
 			break;
 
 		case msg_log_request_end.MAVLINK_MSG_ID_LOG_REQUEST_END:
-
+			/*
+			 * Not a message receive case
+			 */
 			break;
 
 		case msg_gps_inject_data.MAVLINK_MSG_ID_GPS_INJECT_DATA:
-
+			/*
+			 * Not a message receive case
+			 */
 			break;
 
 		case msg_gps2_raw.MAVLINK_MSG_ID_GPS2_RAW:
@@ -2357,15 +2517,135 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_serial_control.MAVLINK_MSG_ID_SERIAL_CONTROL:
-
+			/*
+			 * Not a message receive case
+			 */
 			break;
 
 		case msg_gps_rtk.MAVLINK_MSG_ID_GPS_RTK:
+			msg_gps_rtk mavGpsRtk;
+			if (mavMessage2 instanceof msg_gps_rtk) 
+			{
+				mavGpsRtk = (msg_gps_rtk) mavMessage2;
+				String tempGpsRtk =null;
+				switch (mavGpsRtk.baseline_coords_type) 
+				{
+				case 0:
+					tempGpsRtk = "[" + mavGpsRtk.time_last_baseline_ms + "] ,"
+							+ "GPS Time of Week : " + mavGpsRtk.tow + " , "
+							+ "CURRENT BASELINE IN ECEF X : "
+							+ mavGpsRtk.baseline_a_mm + "mm , "
+							+ "CURRENT BASELINE IN ECEF Y : "
+							+ mavGpsRtk.baseline_b_mm + "mm , "
+							+ "CURRENT BASELINE IN ECEF Z : "
+							+ mavGpsRtk.baseline_c_mm + "mm , " + "ACCURACY : "
+							+ mavGpsRtk.accuracy + " , "
+							+ "NUMBER OF INTEGER AMBIGUITY HYPOTHESIS : "
+							+ mavGpsRtk.iar_num_hypotheses + " , "
+							+ "GPS WEEK NUMBER OF LAST BASELINE : "
+							+ mavGpsRtk.wn + " , " + "RTK RECEIVER ID : "
+							+ mavGpsRtk.rtk_receiver_id + " , "
+							+ "RTK RECEIVER RATE : " + mavGpsRtk.rtk_rate
+							+ "Hz , " + "RTK RECEIVER HEALTH : "
+							+ mavGpsRtk.rtk_health + " , "
+							+ "NUMBER OF SATELLITES USED : " + mavGpsRtk.nsats;
+					break;
 
+				case 1:
+					tempGpsRtk = "[" + mavGpsRtk.time_last_baseline_ms + "] ,"
+							+ "GPS Time of Week : " + mavGpsRtk.tow + " , "
+							+ "NED NORTH COMPONENT : "
+							+ mavGpsRtk.baseline_a_mm + "mm , "
+							+ "NED EAST COMPONENT : " + mavGpsRtk.baseline_b_mm
+							+ "mm , " + "NED DOWN COMPONENT : "
+							+ mavGpsRtk.baseline_c_mm + "mm , " + "ACCURACY : "
+							+ mavGpsRtk.accuracy + " , "
+							+ "NUMBER OF INTEGER AMBIGUITY HYPOTHESIS : "
+							+ mavGpsRtk.iar_num_hypotheses + " , "
+							+ "GPS WEEK NUMBER OF LAST BASELINE : "
+							+ mavGpsRtk.wn + " , " + "RTK RECEIVER ID : "
+							+ mavGpsRtk.rtk_receiver_id + " , "
+							+ "RTK RECEIVER RATE : " + mavGpsRtk.rtk_rate
+							+ "Hz , " + "RTK RECEIVER HEALTH : "
+							+ mavGpsRtk.rtk_health + " , "
+							+ "NUMBER OF SATELLITES USED : " + mavGpsRtk.nsats;
+					break;
+					
+				default:
+					getLog().error("Bad Baseline Coordinate System Type");
+					break;
+				}
+				if (tempGpsRtk != null) 
+				{
+					Map<String, Object> tempMavGpsRtk = Maps.newHashMap();
+					tempMavGpsRtk.put("data", tempGpsRtk);
+					sendOutputJson(publishers[2], tempMavGpsRtk);
+					getLog().info(tempGpsRtk);	
+				}
+			}
 			break;
 
 		case msg_gps2_rtk.MAVLINK_MSG_ID_GPS2_RTK:
+			msg_gps2_rtk mavGps2Rtk;
+			if (mavMessage2 instanceof msg_gps2_rtk) 
+			{
+				mavGps2Rtk = (msg_gps2_rtk) mavMessage2;
+				String tempGps2Rtk =null;
+				switch (mavGps2Rtk.baseline_coords_type) 
+				{
+				case 0:
+					tempGps2Rtk = "[" + mavGps2Rtk.time_last_baseline_ms + "] ,"
+							+ "GPS Time of Week : " + mavGps2Rtk.tow + " , "
+							+ "CURRENT BASELINE IN ECEF X : "
+							+ mavGps2Rtk.baseline_a_mm + "mm , "
+							+ "CURRENT BASELINE IN ECEF Y : "
+							+ mavGps2Rtk.baseline_b_mm + "mm , "
+							+ "CURRENT BASELINE IN ECEF Z : "
+							+ mavGps2Rtk.baseline_c_mm + "mm , " + "ACCURACY : "
+							+ mavGps2Rtk.accuracy + " , "
+							+ "NUMBER OF INTEGER AMBIGUITY HYPOTHESIS : "
+							+ mavGps2Rtk.iar_num_hypotheses + " , "
+							+ "GPS WEEK NUMBER OF LAST BASELINE : "
+							+ mavGps2Rtk.wn + " , " + "RTK RECEIVER ID : "
+							+ mavGps2Rtk.rtk_receiver_id + " , "
+							+ "RTK RECEIVER RATE : " + mavGps2Rtk.rtk_rate
+							+ "Hz , " + "RTK RECEIVER HEALTH : "
+							+ mavGps2Rtk.rtk_health + " , "
+							+ "NUMBER OF SATELLITES USED : " + mavGps2Rtk.nsats;
+					break;
 
+				case 1:
+					tempGps2Rtk = "[" + mavGps2Rtk.time_last_baseline_ms + "] ,"
+							+ "GPS Time of Week : " + mavGps2Rtk.tow + " , "
+							+ "NED NORTH COMPONENT : "
+							+ mavGps2Rtk.baseline_a_mm + "mm , "
+							+ "NED EAST COMPONENT : " + mavGps2Rtk.baseline_b_mm
+							+ "mm , " + "NED DOWN COMPONENT : "
+							+ mavGps2Rtk.baseline_c_mm + "mm , " + "ACCURACY : "
+							+ mavGps2Rtk.accuracy + " , "
+							+ "NUMBER OF INTEGER AMBIGUITY HYPOTHESIS : "
+							+ mavGps2Rtk.iar_num_hypotheses + " , "
+							+ "GPS WEEK NUMBER OF LAST BASELINE : "
+							+ mavGps2Rtk.wn + " , " + "RTK RECEIVER ID : "
+							+ mavGps2Rtk.rtk_receiver_id + " , "
+							+ "RTK RECEIVER RATE : " + mavGps2Rtk.rtk_rate
+							+ "Hz , " + "RTK RECEIVER HEALTH : "
+							+ mavGps2Rtk.rtk_health + " , "
+							+ "NUMBER OF SATELLITES USED : " + mavGps2Rtk.nsats;
+					break;
+					
+				default:
+					getLog().error("Bad Baseline Coordinate System Type");
+					break;
+				}
+				if (tempGps2Rtk != null) 
+				{
+					Map<String, Object> tempMavGps2Rtk = Maps.newHashMap();
+					tempMavGps2Rtk.put("data", tempGps2Rtk);
+					sendOutputJson(publishers[2], tempMavGps2Rtk);
+					getLog().info(tempGps2Rtk);	
+				}
+			}
 			break;
 
 		case msg_scaled_imu3.MAVLINK_MSG_ID_SCALED_IMU3:
@@ -2441,11 +2721,15 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_terrain_data.MAVLINK_MSG_ID_TERRAIN_DATA:
-
+			/*
+			 * Not a message receive case
+			 */
 			break;
 
 		case msg_terrain_check.MAVLINK_MSG_ID_TERRAIN_CHECK:
-
+			/*
+			 * Not a message receive case
+			 */
 			break;
 
 		case msg_terrain_report.MAVLINK_MSG_ID_TERRAIN_REPORT:
@@ -2494,7 +2778,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_set_actuator_control_target.MAVLINK_MSG_ID_SET_ACTUATOR_CONTROL_TARGET:
-
+			/*
+			 * Not a message receive case
+			 */
 			break;
 
 		case msg_actuator_control_target.MAVLINK_MSG_ID_ACTUATOR_CONTROL_TARGET:
