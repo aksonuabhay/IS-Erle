@@ -2756,7 +2756,25 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_terrain_request.MAVLINK_MSG_ID_TERRAIN_REQUEST:
-
+			/**
+			 * Request for terrain data and terrain status
+			 */
+			msg_terrain_request  mavTerrainRequest;
+			if (mavMessage2 instanceof msg_terrain_request) 
+			{
+				mavTerrainRequest = (msg_terrain_request) mavMessage2;
+				String tempTerrainRequest = "BITMASK : "
+						+ mavTerrainRequest.mask + " , "
+						+ "SW CORNER LATITUDE : " + mavTerrainRequest.lat
+						/ 10000000.0 + "degrees , " + "SW CORNER LONGITUDE : "
+						+ mavTerrainRequest.lon / 10000000.0 + "degrees , "
+						+ "GRID SPACING : " + mavTerrainRequest.grid_spacing
+						+ "m ";
+				Map<String, Object> tempMavTerrainRequest = Maps.newHashMap();
+				tempMavTerrainRequest.put("data", tempTerrainRequest);
+				sendOutputJson(publishers[2], tempMavTerrainRequest);
+				getLog().info(tempTerrainRequest);
+			}
 			break;
 
 		case msg_terrain_data.MAVLINK_MSG_ID_TERRAIN_DATA:
@@ -2772,7 +2790,29 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_terrain_report.MAVLINK_MSG_ID_TERRAIN_REPORT:
-
+			/**
+			 * Response from a TERRAIN_CHECK request
+			 */
+			msg_terrain_report  mavTerrainReport;
+			if (mavMessage2 instanceof msg_terrain_report) 
+			{
+				mavTerrainReport = (msg_terrain_report) mavMessage2;
+				String tempTerrainReport = "LATITUDE : " + mavTerrainReport.lat
+						/ 10000000.0 + "degrees , " + "LONGITUDE : "
+						+ mavTerrainReport.lon / 10000000.0 + "degrees , "
+						+ "TERRAIN HEIGHT : " + mavTerrainReport.terrain_height
+						+ "m , " + "CURRENT HEIGHT : "
+						+ mavTerrainReport.current_height + "m , "
+						+ "GRID SPACING : " + mavTerrainReport.spacing + "m , "
+						+ "NUMBER OF BLOCKS PENDING : "
+						+ mavTerrainReport.pending + " , "
+						+ "NUMBER OF BLOCKS LOADED : "
+						+ mavTerrainReport.loaded;
+				Map<String, Object> tempMavTerrainReport = Maps.newHashMap();
+				tempMavTerrainReport.put("data", tempTerrainReport);
+				sendOutputJson(publishers[2], tempMavTerrainReport);
+				getLog().info(tempTerrainReport);
+			}
 			break;
 
 		case msg_scaled_pressure2.MAVLINK_MSG_ID_SCALED_PRESSURE2:
