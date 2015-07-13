@@ -8,8 +8,7 @@ import interactivespaces.activity.impl.ros.BaseRoutableRosActivity;
 import com.MAVLink.*;
 import com.MAVLink.Messages.MAVLinkMessage;
 import com.MAVLink.common.*;
-import com.MAVLink.enums.MAV_FRAME;
-import com.MAVLink.enums.MAV_MISSION_RESULT;
+import com.MAVLink.enums.*;
 import com.MAVLink.pixhawk.*;
 import com.google.common.collect.Maps;
 
@@ -2676,11 +2675,51 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_data_transmission_handshake.MAVLINK_MSG_ID_DATA_TRANSMISSION_HANDSHAKE:
-
+			msg_data_transmission_handshake mavDataTransmissionHandshake;
+			if (mavMessage2 instanceof msg_data_transmission_handshake) 
+			{
+				mavDataTransmissionHandshake = (msg_data_transmission_handshake) mavMessage2;
+				String tempDataTransmissionHandshake = "TOTAL SIZE : "
+						+ mavDataTransmissionHandshake.size
+						+ " , "
+						+ "WIDTH : "
+						+ mavDataTransmissionHandshake.width
+						+ " , "
+						+ "HEIGHT : "
+						+ mavDataTransmissionHandshake.height
+						+ " , "
+						+ "PACKETS SENT : "
+						+ mavDataTransmissionHandshake.packets
+						+ " , "
+						+ "DATA TYPE : "
+						+ getVariableName("DATA_TYPES",
+								mavDataTransmissionHandshake.type) + " , "
+						+ "PAYLOAD SIZE : "
+						+ mavDataTransmissionHandshake.payload + " , "
+						+ "JPG QUALITY : "
+						+ mavDataTransmissionHandshake.jpg_quality;
+				Map<String, Object> tempMavDataTransmissionHandshake = Maps
+						.newHashMap();
+				tempMavDataTransmissionHandshake.put("data",
+						tempDataTransmissionHandshake);
+				sendOutputJson(publishers[2], tempMavDataTransmissionHandshake);
+				getLog().info(tempDataTransmissionHandshake);
+			}
 			break;
 
 		case msg_encapsulated_data.MAVLINK_MSG_ID_ENCAPSULATED_DATA:
-
+			msg_encapsulated_data mavEncapsulatedData;
+			if (mavMessage2 instanceof msg_encapsulated_data) 
+			{
+				mavEncapsulatedData = (msg_encapsulated_data) mavMessage2;
+				String tempEncapsulatedData = "SEQUENCE NUMBER : "
+						+ mavEncapsulatedData.seqnr + " , " + "Data : "
+						+ mavEncapsulatedData.data;
+				Map<String, Object> tempMavEncapsulatedData = Maps.newHashMap();
+				tempMavEncapsulatedData.put("data", tempEncapsulatedData);
+				sendOutputJson(publishers[2], tempMavEncapsulatedData);
+				getLog().info(tempEncapsulatedData);
+			}
 			break;
 
 		case msg_distance_sensor.MAVLINK_MSG_ID_DISTANCE_SENSOR:
