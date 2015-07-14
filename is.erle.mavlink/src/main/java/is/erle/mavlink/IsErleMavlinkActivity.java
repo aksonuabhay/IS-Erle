@@ -246,7 +246,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		//To Do
 		switch (mavMessage2.msgid) {
 		case msg_set_cam_shutter.MAVLINK_MSG_ID_SET_CAM_SHUTTER:
-
+			/*
+			 * Not a message receive case
+			 */
 			break;
 
 		case msg_image_triggered.MAVLINK_MSG_ID_IMAGE_TRIGGERED:
@@ -276,7 +278,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_image_trigger_control.MAVLINK_MSG_ID_IMAGE_TRIGGER_CONTROL:
-
+			/*
+			 * Not a message receive case
+			 */
 			break;
 
 		case msg_image_available.MAVLINK_MSG_ID_IMAGE_AVAILABLE:
@@ -320,7 +324,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_set_position_control_offset.MAVLINK_MSG_ID_SET_POSITION_CONTROL_OFFSET:
-
+			/*
+			 * Not a message receive case
+			 */
 			break;
 
 		case msg_position_control_setpoint.MAVLINK_MSG_ID_POSITION_CONTROL_SETPOINT:
@@ -462,7 +468,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_watchdog_command.MAVLINK_MSG_ID_WATCHDOG_COMMAND:
-
+			/*
+			 * Not a message receive case
+			 */
 			break;
 
 		case msg_pattern_detected.MAVLINK_MSG_ID_PATTERN_DETECTED:
@@ -2960,15 +2968,54 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_v2_extension.MAVLINK_MSG_ID_V2_EXTENSION:
-
+			/*
+			 * Not a message receive case
+			 */
 			break;
 
 		case msg_memory_vect.MAVLINK_MSG_ID_MEMORY_VECT:
-
+			/**
+			 * Send raw controller memory. The use of this message is
+			 * discouraged for normal packets, but a quite efficient way for
+			 * testing new messages and getting experimental debug output.
+			 */
+			msg_memory_vect mavMemoryVect;
+			if (mavMessage2 instanceof msg_memory_vect) 
+			{
+				mavMemoryVect = (msg_memory_vect) mavMessage2;
+				String[] memoryVectType = { "16 x int16_t", "16 x uint16_t",
+						"16 x Q15", "16 x 1Q14" };
+				String tempMemoryVect = "STARTING ADDRESS : "
+						+ mavMemoryVect.address + " , " + "VERSION : "
+						+ mavMemoryVect.ver + " , " + "TYPE : "
+						+ memoryVectType[mavMemoryVect.type] + " , "
+						+ "VALUE : " + mavMemoryVect.value;
+				/**
+				 * Type code of the memory variables. for ver = 1: 0=16 x
+				 * int16_t, 1=16 x uint16_t, 2=16 x Q15, 3=16 x 1Q14
+				 */
+				Map<String, Object> tempMavMemoryVect = Maps.newHashMap();
+				tempMavMemoryVect.put("data", tempMemoryVect);
+				sendOutputJson(publishers[2], tempMavMemoryVect);
+				getLog().info(tempMemoryVect);
+			}
 			break;
 
 		case msg_debug_vect.MAVLINK_MSG_ID_DEBUG_VECT:
-
+			msg_debug_vect  mavDebugVect;
+			if (mavMessage2 instanceof msg_debug_vect) 
+			{
+				mavDebugVect = (msg_debug_vect) mavMessage2;
+				String tempDebugVect = "[" + mavDebugVect.time_usec + "] , "
+						+ "X : " + mavDebugVect.x + "metres , " + "Y : "
+						+ mavDebugVect.y + "metres , " + "Z : "
+						+ mavDebugVect.z + "metres , " + "NAME : "
+						+ Arrays.toString(mavDebugVect.name);
+				Map<String, Object> tempMavDebugVect = Maps.newHashMap();
+				tempMavDebugVect.put("data", tempDebugVect);
+				sendOutputJson(publishers[2], tempMavDebugVect);
+				getLog().info(tempDebugVect);
+			}
 			break;
 
 		case msg_named_value_float.MAVLINK_MSG_ID_NAMED_VALUE_FLOAT:
@@ -2986,11 +3033,41 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_statustext.MAVLINK_MSG_ID_STATUSTEXT:
-
+			/**
+			 * Status text message. These messages are printed in yellow in the
+			 * COMM console of QGroundControl. WARNING: They consume quite some
+			 * bandwidth, so use only for important status and error messages.
+			 * If implemented wisely, these messages are buffered on the MCU and
+			 * sent only at a limited rate (e.g. 10 Hz).
+			 */
+			msg_statustext  mavStatusText;
+			if (mavMessage2 instanceof msg_statustext) 
+			{
+				mavStatusText = (msg_statustext) mavMessage2;
+				String tempStatusText = "SEVERITY : "
+						+ getVariableName("MAV_SEVERITY",
+								mavStatusText.severity) + " , " + "TEXT : "
+						+ Arrays.toString(mavStatusText.text);
+				Map<String, Object> tempMavStatusText = Maps.newHashMap();
+				tempMavStatusText.put("data", tempStatusText);
+				sendOutputJson(publishers[2], tempMavStatusText);
+				getLog().info(tempStatusText);
+			}
 			break;
 
 		case msg_debug.MAVLINK_MSG_ID_DEBUG:
-
+			msg_debug  mavDebug;
+			if (mavMessage2 instanceof msg_debug) 
+			{
+				mavDebug = (msg_debug) mavMessage2;
+				String tempDebug = "[" + mavDebug.time_boot_ms + "] , "
+						+ "VALUE : " + mavDebug.value + " , " + "INDEX : "
+						+ mavDebug.ind;
+				Map<String, Object> tempMavDebug = Maps.newHashMap();
+				tempMavDebug.put("data", tempDebug);
+				sendOutputJson(publishers[2], tempMavDebug);
+				getLog().info(tempDebug);
+			}
 			break;
 
 		default:
