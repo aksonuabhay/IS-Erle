@@ -1,0 +1,89 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>FAED Ground Station by aksonuabhay</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1 class="header">FAED Ground Station</h1>
+        <p class="header">A Drone Ground Control Station based on Interactive Spaces</p>
+
+        <ul>
+          <li class="download"><a class="buttons" href="https://github.com/aksonuabhay/IS-Erle/zipball/master">Download ZIP</a></li>
+          <li class="download"><a class="buttons" href="https://github.com/aksonuabhay/IS-Erle/tarball/master">Download TAR</a></li>
+          <li><a class="buttons github" href="https://github.com/aksonuabhay/IS-Erle">View On GitHub</a></li>
+        </ul>
+
+        <p class="header">This project is maintained by <a class="header name" href="https://github.com/aksonuabhay">aksonuabhay</a></p>
+
+
+      </header>
+      <section>
+        <p><a href="https://www.google-melange.com/gsoc/homepage/google/gsoc2015"><img src="https://1-ps.googleusercontent.com/sxk/lUi00NOiZZtaYcm5-HDw_Ypz0k/s.google-melange.appspot.com/www.google-melange.com/soc/content/2-1-20150617-1-g92ed789/images/gsoc/logo/banner-gsoc2015.png.pagespeed.ce.1-XG35qq3RNDTKsRq6cx.png" alt="GSoC 2015"></a></p>
+
+<h2>
+<a id="welcome-to-interactive-spaces-based-ground-control-station" class="anchor" href="#welcome-to-interactive-spaces-based-ground-control-station" aria-hidden="true"><span class="octicon octicon-link"></span></a>Welcome to Interactive Spaces based Ground Control Station</h2>
+
+<p>This project is a part of <a href="http://www.faeddroneproject.com/">FAED Drone Project</a> and is a <a href="https://www.google-melange.com/gsoc/homepage/google/gsoc2015">GSoC 2015</a> project. This subproject has to maintain a robust communication between a drone and Interactive Spaces activities. It has to make the drone follow a particular path by sending it coordinates to the Way points. It also has to receive data back from the drone so that it can be monitored in real time. For achieving this goal, the following activities have been made. While designing this, the thing of utmost importance was maintaining modularity, robustness and easy understanding. </p>
+
+<h3>
+<a id="1-communications-activity" class="anchor" href="#1-communications-activity" aria-hidden="true"><span class="octicon octicon-link"></span></a>1. Communications Activity</h3>
+
+<p>This is the communication layer of the project. It will receive data to be sent from Mavlink Activity and send it to the drone.  Also it will receive data from the drone and it will publish it. Mavlink will process this data and put it on several relevant topics to be used by other activities. Basically this activity has been separated from the main mavlink activity to ensure modularity in the entire project. If we want to have a different means of communication with the drone, we will change this activity to use that method of communication and thats it! We do not need to change anything else. We only have to make sure that the bytes received from the drone is transported successfully to the mavlink activity reliably.</p>
+
+<h3>
+<a id="2-mavlink-activity" class="anchor" href="#2-mavlink-activity" aria-hidden="true"><span class="octicon octicon-link"></span></a>2. Mavlink Activity</h3>
+
+<p>This activity will extract the <a href="http://qgroundcontrol.org/mavlink/start">Mavlink payload data</a> from the data received from communications activity (It will subscribe to the communication activity’s publisher). It will then parse the data into various fields and then publish it on several different topics. For example, if it receives IMU data, it will will extract this data and publish on some topic named /IMU, if it receives gps data it will extract this data and put it on some topic like /GPS. This activity will also subscribe to the Way point generator activity and in turn pack the data according to MAVLink’s standards and then publish it on the communication activity’s input channel. Then the communication activity will send it to the drone. This package will be something similar to <a href="http://wiki.ros.org/mavros">mavros</a> package. </p>
+
+<h3>
+<a id="3-way-point-generator-activity" class="anchor" href="#3-way-point-generator-activity" aria-hidden="true"><span class="octicon octicon-link"></span></a>3. Way point Generator Activity</h3>
+
+<p>This will first read the number of Way points from a mission text file and generate a payload data and send it to the Mavlink Activity. Mavlink will then pack this data and send it to the communications activity to be sent to the drone. The drone in return will reply with a request for the Way point data which Mavlink Activity will understand and ask from Way point Generator Activity. Then this activity will read a Way point in the mission text file stored locally and generate payload data from this and send it to the Mavlink Activity. In turn, Mavlink Activity will further pack this payload data as per MAVLink’s norms and send it to the communications activity which in turn will send it to the drone. In response, the drone will send some acknowledgement or ask for some further Way point data which will be understood by Mavlink Activity and then asked from Way point Generator Activity. Way point generator will send the next Way point coordinates and this process will continue until whole of the mission text file is transmitted. Thus Way point generator will transmit the whole mission text file reliably.</p>
+
+<h3>
+<a id="4-way-point-processor-activity" class="anchor" href="#4-way-point-processor-activity" aria-hidden="true"><span class="octicon octicon-link"></span></a>4. Way point Processor Activity</h3>
+
+<p>This activity will communicate with FAED mesh activity (from another FAED subproject) and then generate a mission text file based on the data it gets. This mission file is prepared in between so that there is a compatibility between our code and <a href="http://planner.ardupilot.com/">Mission Planner</a> / <a href="http://planner2.ardupilot.com/">APM Planner</a> or any other Ground Control Station. So if any one prepares a mission file using these planners, they would still be able to use it with this architecture.</p>
+
+<h3>
+<a id="5-liquid-galaxy-activity" class="anchor" href="#5-liquid-galaxy-activity" aria-hidden="true"><span class="octicon octicon-link"></span></a>5. Liquid Galaxy Activity</h3>
+
+<p>This activity will subscribe to all the data received from the Mavlink activity received from the drone (Like GPS , IMU, Battery, compass etc). It will then paint all these data on the liquid galaxy system so that it is easier to visualize everything.</p>
+
+<h3>
+<a id="6-captain-activity" class="anchor" href="#6-captain-activity" aria-hidden="true"><span class="octicon octicon-link"></span></a>6. Captain Activity</h3>
+
+<p>This activity will be a safety activity for the drone. It will decide when to arm the motors and when to disarm then. It will keep a track of the error between the input Way point and the path followed by the drone and if there is too much of an error then it will take some action either to correct or to call off the mission and seek human intervention. It will keep a track of the battery health of the drone and take appropriate actions if necessary. Basically whatever safety precautions, run time actions or any other thing which a human drone pilot would do will be implemented in this activity.</p>
+
+<p><img src="https://drive.google.com/file/d/0B_-uI3mBeiF0X2lUeDNZYmI3bFU/view?usp=sharing" alt="Illustration"></p>
+
+<h4>
+<a id="authors-and-contributors" class="anchor" href="#authors-and-contributors" aria-hidden="true"><span class="octicon octicon-link"></span></a>Authors and Contributors</h4>
+
+<p>In 2015, Abhay Kumar (<a href="https://github.com/aksonuabhay" class="user-mention">@aksonuabhay</a>)</p>
+
+<h3>
+<a id="support-or-contact" class="anchor" href="#support-or-contact" aria-hidden="true"><span class="octicon octicon-link"></span></a>Support or Contact</h3>
+
+<p>Having trouble with Pages? Check out the <a href="https://github.com/aksonuabhay/IS-Erle">documentation</a> or <a href="@aksonuabhay">contact author</a> and we’ll help you sort it out.</p>
+      </section>
+      <footer>
+        <p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+		
+  </body>
+</html>
