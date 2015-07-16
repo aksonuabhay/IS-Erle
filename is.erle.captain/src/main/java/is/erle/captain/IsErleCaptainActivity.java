@@ -1,15 +1,27 @@
 package is.erle.captain;
 
-import interactivespaces.activity.impl.BaseActivity;
+import java.util.concurrent.TimeUnit;
+
+import interactivespaces.activity.impl.ros.BaseRoutableRosActivity;
+import interactivespaces.util.concurrency.ManagedCommand;
 
 /**
  * A simple Interactive Spaces Java-based activity.
  */
-public class IsErleCaptainActivity extends BaseActivity {
+public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 
+	private ManagedCommand monitorCaptainThread,heartbeatThread;
+	
+	
     @Override
     public void onActivitySetup() {
         getLog().info("Activity is.erle.captain setup");
+        heartbeatThread = getManagedCommands().scheduleWithFixedDelay(new Runnable() {
+
+			public void run() {
+				
+			}
+		},120,20,TimeUnit.SECONDS);
     }
 
     @Override

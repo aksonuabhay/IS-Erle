@@ -41,7 +41,6 @@ public class IsErleCommsActivity extends BaseRoutableRosActivity {
 			
 			public void onUdpResponse(UdpClientNetworkCommunicationEndpoint arg0,
 					byte[] response, InetSocketAddress address) {
-				// TODO Auto-generated method stub
 				handleUdpDroneResponse(response , address);
 			}
 		});
