@@ -96,8 +96,10 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
     	if (channelName.equals(subscribers[0])) 
     	{
     		//Data from drone handled here
-        	String items[]= message.get("comm").toString().replaceAll("\\[", "").replaceAll("\\]", "").replaceAll(" ", "").split(",");
-        	int lenItems = items.length;
+			String items[] = message.get("comm").toString()
+					.replaceAll("\\[", "").replaceAll("\\]", "")
+					.replaceAll(" ", "").split(",");
+			int lenItems = items.length;
         	for (int i = 0; i < lenItems; i++) {
         		try 
         		{

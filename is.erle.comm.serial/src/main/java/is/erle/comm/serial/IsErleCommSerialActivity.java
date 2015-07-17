@@ -106,8 +106,24 @@ public class IsErleCommSerialActivity extends BaseRoutableRosActivity {
 
 	@Override
 	public void onNewInputJson(String channelName, Map<String, Object> message) {
-		byte [] temp = (byte []) message.get("comm");
-		serial.write(temp);
+		byte [] responseGlobal ;
+		String items[] = message.get("comm").toString()
+				.replaceAll("\\[", "").replaceAll("\\]", "")
+				.replaceAll(" ", "").split(",");
+		int lenItems = items.length;
+		responseGlobal = new byte[lenItems];
+    	for (int i = 0; i < lenItems; i++) {
+    		try 
+    		{
+        		responseGlobal[i] = Byte.parseByte(items[i]);
+			}
+    		catch (NumberFormatException e) 
+    		{
+				getLog().error(e);
+			}
+
+		}
+		serial.write(responseGlobal);
 		jsonInputCounter++; // Take care of this variable
 	}
 
