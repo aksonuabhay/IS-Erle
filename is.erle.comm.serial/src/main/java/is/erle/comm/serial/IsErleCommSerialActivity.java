@@ -1,14 +1,16 @@
 package is.erle.comm.serial;
 
+import java.util.Arrays;
 import java.util.Map;
+
+import org.apache.commons.lang.ArrayUtils;
 
 import com.google.common.collect.Maps;
 
 import interactivespaces.activity.impl.ros.BaseRoutableRosActivity;
 import interactivespaces.service.comm.serial.SerialCommunicationEndpoint;
 import interactivespaces.service.comm.serial.SerialCommunicationEndpointService;
-import interactivespaces.util.concurrency.CancellableLoop;
-import interactivespaces.util.resource.ManagedResourceWithTask;
+import interactivespaces.util.concurrency.ManagedCommand;
 
 /**
  * A simple Interactive Spaces Java-based activity.
@@ -32,22 +34,27 @@ public class IsErleCommSerialActivity extends BaseRoutableRosActivity {
 				"space.hardware.serial.port");
 		serial = serialService.newSerialEndpoint(portName);
 		serial.setBaud(115200);
-		serial.setInputBufferSize(5000);
+		serial.setInputBufferSize(10000);
 		serial.setOutputBufferSize(1000);
+		serialData = new byte[600];
+		serial.startup();
 
-		ManagedResourceWithTask serialTask = new ManagedResourceWithTask(
-				serial, new CancellableLoop() {
-
-					@Override
-					protected void loop() throws InterruptedException {
-						handleSerialInput();
-					}
-
-					protected void handleException(Exception e) {
-						getLog().error("Error " + e);
-					}
-				}, getSpaceEnvironment());
-		addManagedResource(serialTask);
+		ManagedCommand threadSender = getManagedCommands().submit(new Runnable() {
+						public void run() {
+							while (!Thread.interrupted())
+						{
+								while (serial.available() >0) 
+								{
+									int tempInt = serial.read(serialData);
+									serialData = ArrayUtils.subarray(serialData, 0, tempInt);
+									Map<String, Object> temp = Maps.newHashMap();
+									temp.put("comm", Arrays.toString(serialData));
+									sendOutputJson("output", temp);
+								}
+								
+							}
+						}
+					});
 	}
 
 	@Override
@@ -84,6 +91,7 @@ public class IsErleCommSerialActivity extends BaseRoutableRosActivity {
 	@Override
 	public void onActivityPreShutdown() {
 		getLog().info("Activity is.erle.comm.serial pre shutdown");
+		serial.shutdown();
 	}
 
 	@Override
@@ -103,11 +111,4 @@ public class IsErleCommSerialActivity extends BaseRoutableRosActivity {
 		jsonInputCounter++; // Take care of this variable
 	}
 
-	private void handleSerialInput() {
-		serialData = new byte[1000];
-		serial.read(serialData);
-		Map<String, Object> temp = Maps.newHashMap();
-		temp.put("comm", serialData);
-		sendOutputJson("output", temp);
-	}
 }

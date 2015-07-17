@@ -37,7 +37,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	private static byte targetSystem = 0; // TO DO : Get this from the current drone
 	private static byte targetComponent = 0; // TO DO : Get this from the current drone
 	
-	private byte responseGlobal[];
+	private int responseGlobal[];
 	
 	
     @Override
@@ -45,7 +45,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
         getLog().info("Activity is.erle.mavlink setup");
         publishers = getConfiguration().getRequiredPropertyString(CONFIGURATION_PUBLISHER_NAME).split(":");
         subscribers = getConfiguration().getRequiredPropertyString(CONFIGURATION_SUBSCRIBER_NAME).split(":");
-        responseGlobal = new byte[1000];
+        responseGlobal = new int[1000];
+        mavParser = new Parser();
     }
 
     @Override
@@ -92,28 +93,45 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
     {
         getLog().debug("Got message on input channel " + channelName);
         getLog().debug(message);
-    	if (channelName == subscribers[0]) 
+    	if (channelName.equals(subscribers[0])) 
     	{
     		//Data from drone handled here
-			responseGlobal = (byte[]) message.get("comm");
-			for (int i = 0; i < responseGlobal.length; i++) 
+        	String items[]= message.get("comm").toString().replaceAll("\\[", "").replaceAll("\\]", "").replaceAll(" ", "").split(",");
+        	int lenItems = items.length;
+        	for (int i = 0; i < lenItems; i++) {
+        		try 
+        		{
+            		responseGlobal[i] = Integer.parseInt(items[i])&0xFF;
+				}
+        		catch (NumberFormatException e) 
+        		{
+					getLog().error(e);
+				}
+
+    		}
+
+			for (int i = 0; i < lenItems; i++) 
 			{
 				mavPacket = mavParser.mavlink_parse_char(responseGlobal[i]);
 			}
 			
-			if (mavPacket != null) 
+			if (!(mavPacket == null)) 
 			{
 				mavMessage = mavPacket.unpack();
-				/*Map<String, Object> temp = Maps.newHashMap();
-				temp.put("mavMessage", mavMessage);
-				sendOutputJson(publishers[2], temp); */
-				hadnleMavMessage(mavMessage);
+				getLog().info(mavPacket.seq);
+				//Map<String, Object> temp = Maps.newHashMap();
+				//temp.put("mavMessage", mavMessage);
+				//sendOutputJson(publishers[2], temp); 
+				getLog().info(mavMessage.toString());
+				//hadnleMavMessage(mavMessage);
 				mavPacket = null;
+				mavParser = new Parser();
+				//getLog().info("mavPacket2 ");
 			}
 
 		}
     	
-    	else if (channelName == subscribers[1])
+    	else if (channelName.equals(subscribers[1]))
     	{
     		
     		//Waypoint generator message handling here
@@ -172,7 +190,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
     		
     	}
     	
-    	else if (channelName == subscribers[2])
+    	else if (channelName.equals(subscribers[2]))
     	{
     		//Captain message handling here
     	}
@@ -185,7 +203,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
     private String getVariableName(String className , int matchVar)
     {
 		String variableName = null;
-    	Class<?> classVar = null;
+    	/*Class<?> classVar = null;
 		try 
 		{
 			classVar = Class.forName(className);
@@ -212,7 +230,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		catch (IllegalAccessException e) 
 		{
 				e.printStackTrace();
-		}
+		}*/
 		return variableName;
     }
 
@@ -716,10 +734,10 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ getVariableName("MAV_TYPE", mavHeartbeat.type)
 						+ ","
 						+ "AUTOPILOT : "
-						+ getVariableName("MAV_MODE_FLAG",
+						+ getVariableName("MAV_AUTOPILOT",
 								mavHeartbeat.autopilot) + ","
 						+ "BASE MODE : "
-						+ getVariableName("MA_MODE_FLAG",
+						+ getVariableName("MAV_MODE_FLAG",
 								mavHeartbeat.base_mode) + ","
 						+ "STATUS : "
 						+ getVariableName("MAV_STATE",
@@ -1178,7 +1196,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				Map<String, Object> tempMapMissionCurrent = Maps.newHashMap();
 				tempMapMissionCurrent.put("mission", tempStringCurrent);
 				sendOutputJson(publishers[2], tempMapMissionCurrent);
-				getLog().info(tempMapMissionCurrent);
+				getLog().info(mavMissionCurrent);
 			}
 			break;
 

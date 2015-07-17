@@ -6,7 +6,7 @@
   </description>
 
   <identifyingName>is.erle.comm.serial</identifyingName>
-  <version>0.0.1</version>
+  <version>1.0.0</version>
 
   <activity type="interactivespaces_native">
     <name>is.erle.comm.serial</name>
