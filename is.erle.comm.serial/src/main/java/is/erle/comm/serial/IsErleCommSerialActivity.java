@@ -123,6 +123,7 @@ public class IsErleCommSerialActivity extends BaseRoutableRosActivity {
 			}
 
 		}
+    	getLog().debug(Arrays.toString(responseGlobal));
 		serial.write(responseGlobal);
 		jsonInputCounter++; // Take care of this variable
 	}

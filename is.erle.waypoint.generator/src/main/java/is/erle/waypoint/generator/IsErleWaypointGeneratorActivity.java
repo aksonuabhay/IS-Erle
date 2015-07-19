@@ -32,8 +32,8 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
 {
 	private static final String CONFIGURATION_PUBLISHER_NAME = "space.activity.routes.outputs";
 	private static final String CONFIGURATION_SUBSCRIBER_NAME = "space.activity.routes.inputs";
-	private static final String CONFIGURATION_FILE_NAME = "~/interactivespaces/controller/mission.txt";
-	
+	private static final String FILE_NAME = "mission.txt";
+	private static String fileWithDirectory;
 	private static final String SEPARATOR ="\t";
 	
 	private BufferedReader br;
@@ -43,6 +43,7 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
 	
 	private String publisherName;
 	private String subscriberName;
+	private boolean wpSendFlag[];
 	
     @Override
     public void onActivitySetup() {
@@ -50,11 +51,11 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
         
         publisherName = getConfiguration().getRequiredPropertyString(CONFIGURATION_PUBLISHER_NAME);
         subscriberName = getConfiguration().getRequiredPropertyString(CONFIGURATION_SUBSCRIBER_NAME);
-        
+        fileWithDirectory = getActivityFilesystem().getInstallDirectory().getAbsolutePath()+"/"+FILE_NAME;
         short lineCount=1;
         try 
         {
-			br = new BufferedReader(new FileReader(CONFIGURATION_FILE_NAME));
+			br = new BufferedReader(new FileReader(fileWithDirectory));
 			while ((currentLine = br.readLine())!=null) 
 			{
 				if (lineCount != 1) 
@@ -65,9 +66,9 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
 
 				lineCount++;
 			}
-			if (lineCount != waypointCount) 
+			if (lineCount != (waypointCount+2)) 
 			{
-				getLog().fatal("Waypoint count and number of lines mismatch , recheck mission file ");
+				getLog().info("Waypoint count and number of lines mismatch , recheck mission file ");
 			}
 			br.close();
 		} 
@@ -79,7 +80,11 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
 		{
 			getLog().error(e);
 		}
-        
+        waypointCount+=1; //So as to accomodate array index 0
+        wpSendFlag = new boolean[waypointCount];
+        for (int i = 0; i < wpSendFlag.length; i++) {
+			wpSendFlag[i] = false;
+		}
     }
 
     @Override
@@ -99,6 +104,7 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
 			String temps="START-" + Short.toString(waypointCount);
 			temp.put("mission", temps);
 			sendOutputJson(publisherName, temp);
+			getLog().info(temps);
     }
 
     @Override
@@ -129,35 +135,42 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
 			// To Do
 			String msgFromDrone[] = message.get("mission").toString()
 					.split("-");
-			if (msgFromDrone[0] == "WAYPOINT_REQUEST") {
+			if (msgFromDrone[0].equals("MISSION_REQUEST")) {
+				if (!wpSendFlag[Integer.parseInt(msgFromDrone[1])]) {
 
-				try {
-					br = new BufferedReader(new FileReader(
-							CONFIGURATION_FILE_NAME));
+					try {
+						br = new BufferedReader(new FileReader(
+								fileWithDirectory));
 
-					currentLine = br.readLine(); // So that it can ignore first
-													// line of file, it can be
-													// used in checking the
-													// integrity of file/version
-													// of file
+						currentLine = br.readLine(); // So that it can ignore
+														// first
+														// line of file, it can
+														// be
+														// used in checking the
+														// integrity of
+														// file/version
+														// of file
+						//getLog().info("REQUEST NUMBER : " + msgFromDrone[1]);
+						for (int i = 0; i <= Integer.parseInt(msgFromDrone[1]); i++) {
+							currentLine = br.readLine(); // Seek to the current
+															// line
 
-					for (int i = 0; i <= Integer.parseInt(msgFromDrone[1]); i++) {
-						currentLine = br.readLine(); // Seek to the current line
+						}
 
+						String payLoad[] = currentLine.split(SEPARATOR);
+						//getLog().info("SENDING REQUEST NUMBER : " + payLoad[0]);
+						Map<String, Object> temp = Maps.newHashMap();
+						temp.put("mission", Arrays.toString(payLoad));
+						sendOutputJson(publisherName, temp);
+						br.close();
+					} catch (IOException e) {
+						getLog().error(e);
 					}
-
-					String payLoad[] = currentLine.split(SEPARATOR);
-
-					Map<String, Object> temp = Maps.newHashMap();
-					temp.put("mission", Arrays.toString(payLoad));
-					sendOutputJson(publisherName, temp);
-					br.close();
-				} catch (IOException e) {
-					getLog().error(e);
+					wpSendFlag[Integer.parseInt(msgFromDrone[1])] = true;
 				}
+				
 			}
-
-			else if (msgFromDrone[0] == "MISSION_ACCEPTED") {
+			else if (msgFromDrone[0].equals("MISSION_ACCEPTED")) {
 				getLog().info("Mission successfully uploaded on the drone");
 			}
 

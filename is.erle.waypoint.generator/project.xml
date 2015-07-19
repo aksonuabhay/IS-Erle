@@ -25,4 +25,9 @@
       </property>
     </configuration>
   </activity>
+  
+    <resources>
+    <resource sourceFile="${project.home}/../mission.txt" />
+  </resources>
+  
 </project>
