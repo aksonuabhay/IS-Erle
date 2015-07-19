@@ -93,44 +93,44 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
     {
         getLog().debug("Got message on input channel " + channelName);
         getLog().debug(message);
-    	if (channelName.equals(subscribers[0])) 
-    	{
-    		//Data from drone handled here
-			String items[] = message.get("comm").toString()
-					.replaceAll("\\[", "").replaceAll("\\]", "")
-					.replaceAll(" ", "").split(",");
-			int lenItems = items.length;
-        	for (int i = 0; i < lenItems; i++) {
-        		try 
-        		{
-            		responseGlobal[i] = Integer.parseInt(items[i])&0xFF;
+		if (channelName.equals(subscribers[0])) {
+			// Data from drone handled here
+			if (message.containsKey("comm")) {
+
+				String items[] = message.get("comm").toString()
+						.replaceAll("\\[", "").replaceAll("\\]", "")
+						.replaceAll(" ", "").split(",");
+				int lenItems = items.length;
+				for (int i = 0; i < lenItems; i++) {
+					try 
+					{
+						responseGlobal[i] = Integer.parseInt(items[i]) & 0xFF;
+					} 
+					catch (NumberFormatException e) 
+					{
+						getLog().error(e);
+					}
+
 				}
-        		catch (NumberFormatException e) 
-        		{
-					getLog().error(e);
+
+				for (int i = 0; i < lenItems; i++) {
+					mavPacket = mavParser.mavlink_parse_char(responseGlobal[i]);
 				}
 
-    		}
+				if (!(mavPacket == null)) {
+					mavMessage = mavPacket.unpack();
+					getLog().info(mavPacket.seq);
+					// Map<String, Object> temp = Maps.newHashMap();
+					// temp.put("mavMessage", mavMessage);
+					// sendOutputJson(publishers[2], temp);
+					getLog().info(mavMessage.toString());
+					// hadnleMavMessage(mavMessage);
+					mavPacket = null;
+					mavParser = new Parser();
+					// getLog().info("mavPacket2 ");
+				}
 
-			for (int i = 0; i < lenItems; i++) 
-			{
-				mavPacket = mavParser.mavlink_parse_char(responseGlobal[i]);
 			}
-			
-			if (!(mavPacket == null)) 
-			{
-				mavMessage = mavPacket.unpack();
-				getLog().info(mavPacket.seq);
-				//Map<String, Object> temp = Maps.newHashMap();
-				//temp.put("mavMessage", mavMessage);
-				//sendOutputJson(publishers[2], temp); 
-				getLog().info(mavMessage.toString());
-				//hadnleMavMessage(mavMessage);
-				mavPacket = null;
-				mavParser = new Parser();
-				//getLog().info("mavPacket2 ");
-			}
-
 		}
     	
     	else if (channelName.equals(subscribers[1]))
@@ -150,7 +150,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
     			missionStart.target_component = targetComponent;
     			byte tempByte[] = missionStart.pack().encodePacket();
     			Map<String, Object> tempMapMission = Maps.newHashMap();
-    			tempMapMission.put("comm", tempByte);
+    			tempMapMission.put("comm", Arrays.toString(tempByte));
     			sendOutputJson(publishers[0], tempMapMission);
 			}
     		
@@ -170,7 +170,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				 */
     			
     			// Rest of the messages about the waypoint data
-				String missionWP[] = (String[]) message.get("mission");
+				String missionWP[] =message.get("mission").toString()
+						.replaceAll("\\[", "").replaceAll("\\]", "")
+						.replaceAll(" ", "").split(",");
 				msg_mission_item missionItem = new msg_mission_item();
 				missionItem.seq = Short.parseShort(missionWP[0]);
 				missionItem.current = Byte.parseByte(missionWP[1]);
@@ -186,7 +188,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				missionItem.autocontinue = Byte.parseByte(missionWP[11]);
 				byte tempByte[] = missionItem.pack().encodePacket();
 				Map<String, Object> tempMapMission = Maps.newHashMap();
-				tempMapMission.put("comm", tempByte);
+				tempMapMission.put("comm", Arrays.toString(tempByte));
 				sendOutputJson(publishers[0], tempMapMission);
     		}
     		

@@ -15,16 +15,10 @@
     <class>is.erle.comms.IsErleCommsActivity</class>
 
     <configuration>
-      <property name = "space.comm.udp.server.host" required = "false">
-      <value>11.0.0.1</value>
-      </property>
-      <property name = "space.comm.udp.server.port" required = "true" >
-      	<value>6000</value>
-      </property>
       
        <property name = "space.comm.udp.server.port" required = "true" >
-+      	<value>6000</value>
-+      </property>
+      	<value>6000</value>
+       </property>
       
       <property name="space.activity.ros.node.name" value="comms" />
       <property name="space.activity.routes.outputs" value="output" />

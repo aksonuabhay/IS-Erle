@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Map;
 
 
@@ -40,9 +41,16 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
 	private String currentLine;
 	private short waypointCount;
 	
+	private String publisherName;
+	private String subscriberName;
+	
     @Override
     public void onActivitySetup() {
         getLog().info("Activity is.erle.waypoint.generator setup");
+        
+        publisherName = getConfiguration().getRequiredPropertyString(CONFIGURATION_PUBLISHER_NAME);
+        subscriberName = getConfiguration().getRequiredPropertyString(CONFIGURATION_SUBSCRIBER_NAME);
+        
         short lineCount=1;
         try 
         {
@@ -90,7 +98,7 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
 			Map<String, Object> temp = Maps.newHashMap();
 			String temps="START-" + Short.toString(waypointCount);
 			temp.put("mission", temps);
-			sendOutputJson(getConfiguration().getRequiredPropertyString(CONFIGURATION_PUBLISHER_NAME), temp);
+			sendOutputJson(publisherName, temp);
     }
 
     @Override
@@ -116,47 +124,50 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
     @Override
     public void onNewInputJson(String channelName, Map <String , Object> message)
     {
-    	//To Do
-    	String msgFromDrone[] = message.get("mission").toString().split("-") ;
-    	if (msgFromDrone[0] == "WAYPOINT_REQUEST") 
-    	{
-    		
-    		try 
-    		{
-    			br = new BufferedReader(new FileReader(CONFIGURATION_FILE_NAME));
-    			
-    			currentLine=br.readLine(); //So that it can ignore first line of file, it can be used in checking the integrity of file/version of file 
-    			
-    			for (int i = 0; i <= Integer.parseInt(msgFromDrone[1]); i++) 
-    			{
-					currentLine=br.readLine(); // Seek to the current line
-					
+		if (channelName.equals(subscriberName)) {
+
+			// To Do
+			String msgFromDrone[] = message.get("mission").toString()
+					.split("-");
+			if (msgFromDrone[0] == "WAYPOINT_REQUEST") {
+
+				try {
+					br = new BufferedReader(new FileReader(
+							CONFIGURATION_FILE_NAME));
+
+					currentLine = br.readLine(); // So that it can ignore first
+													// line of file, it can be
+													// used in checking the
+													// integrity of file/version
+													// of file
+
+					for (int i = 0; i <= Integer.parseInt(msgFromDrone[1]); i++) {
+						currentLine = br.readLine(); // Seek to the current line
+
+					}
+
+					String payLoad[] = currentLine.split(SEPARATOR);
+
+					Map<String, Object> temp = Maps.newHashMap();
+					temp.put("mission", Arrays.toString(payLoad));
+					sendOutputJson(publisherName, temp);
+					br.close();
+				} catch (IOException e) {
+					getLog().error(e);
 				}
-    			
-    			String payLoad[] = currentLine.split(SEPARATOR);
-    			
-				Map<String, Object> temp = Maps.newHashMap();
-				temp.put("mission", payLoad);
-				sendOutputJson(getConfiguration().getRequiredPropertyString(CONFIGURATION_PUBLISHER_NAME), temp);
-				br.close();
-			} 
-    		catch (IOException e) 
-    		{
-    			getLog().error(e);
 			}
+
+			else if (msgFromDrone[0] == "MISSION_ACCEPTED") {
+				getLog().info("Mission successfully uploaded on the drone");
+			}
+
+			else {
+				getLog().error("Mission upload failure");
+				getLog().error("REASON : " + msgFromDrone[0]);
+			}
+
 		}
-    	
-    	else if (msgFromDrone[0] == "MISSION_ACCEPTED")
-    	{
-    		getLog().info("Mission successfully uploaded on the drone");
-    	}
-    	
-    	else
-    	{
-    		getLog().error("Mission upload failure");
-    		getLog().error("REASON : " + msgFromDrone[0]);
-    	}
-    }
+	}
 }
 
 
