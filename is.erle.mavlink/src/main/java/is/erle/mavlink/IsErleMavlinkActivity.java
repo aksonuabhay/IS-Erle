@@ -42,7 +42,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	
 	private ArrayList<String []> readWaypointList;
 	private short readWaypointCount;
-	
+	private boolean isMissionCleared;
 	
     @Override
     public void onActivitySetup() {
@@ -1225,7 +1225,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				sendOutputJson(publishers[2], tempMapMissionItem);
 				getLog().debug(tempMissionItem);
 				
-				updateReadWaypointList(mavMissionItem);
+				updateReadWPList(mavMissionItem);
 			}
 			break;
 
@@ -1330,132 +1330,154 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			{
 				Map<String, Object> tempMapMissionAck = Maps.newHashMap();
 				mavMissionAck = (msg_mission_ack) mavMessage2;
-				switch (mavMissionAck.type) 
+				if (isMissionCleared) 
 				{
-				case MAV_MISSION_RESULT.MAV_MISSION_ACCEPTED:
-					/*
-					 *  mission accepted OK | 
-					 *  */
-					tempMapMissionAck.put("mission", "MISSION_ACCEPTED");
-					sendOutputJson(publishers[1], tempMapMissionAck);
-					break;
+					isMissionCleared = false;
+					getLog().debug(
+							"CLEAR MISSION RESULT : " + mavMissionAck.type);
+				} 
+				else 
+				{
+					switch (mavMissionAck.type) 
+					{
+					case MAV_MISSION_RESULT.MAV_MISSION_ACCEPTED:
+						/*
+						 * mission accepted OK |
+						 */
+						tempMapMissionAck.put("mission", "MISSION_ACCEPTED");
+						sendOutputJson(publishers[1], tempMapMissionAck);
+						break;
 
-				case MAV_MISSION_RESULT.MAV_MISSION_ERROR:
-					/* 
-					 * generic error / not accepting mission commands at all right now | 
-					 * */
-					tempMapMissionAck.put("mission", "MISSION_ERROR");
-					sendOutputJson(publishers[1], tempMapMissionAck);
-					break;
+					case MAV_MISSION_RESULT.MAV_MISSION_ERROR:
+						/*
+						 * generic error / not accepting mission commands at all
+						 * right now |
+						 */
+						tempMapMissionAck.put("mission", "MISSION_ERROR");
+						sendOutputJson(publishers[1], tempMapMissionAck);
+						break;
 
-				case MAV_MISSION_RESULT.MAV_MISSION_UNSUPPORTED_FRAME:
-					/* 
-					 * coordinate frame is not supported | 
-					 * */
-					tempMapMissionAck.put("mission", "MISSION_UNSUPPORTED_FRAME");
-					sendOutputJson(publishers[1], tempMapMissionAck);
-					break;
+					case MAV_MISSION_RESULT.MAV_MISSION_UNSUPPORTED_FRAME:
+						/*
+						 * coordinate frame is not supported |
+						 */
+						tempMapMissionAck.put("mission",
+								"MISSION_UNSUPPORTED_FRAME");
+						sendOutputJson(publishers[1], tempMapMissionAck);
+						break;
 
-				case MAV_MISSION_RESULT.MAV_MISSION_UNSUPPORTED:
-					/* 
-					 * command is not supported | 
-					 * */
-					tempMapMissionAck.put("mission", "MISSION_UNSUPPORTED");
-					sendOutputJson(publishers[1], tempMapMissionAck);
-					break;
+					case MAV_MISSION_RESULT.MAV_MISSION_UNSUPPORTED:
+						/*
+						 * command is not supported |
+						 */
+						tempMapMissionAck.put("mission", "MISSION_UNSUPPORTED");
+						sendOutputJson(publishers[1], tempMapMissionAck);
+						break;
 
-				case MAV_MISSION_RESULT.MAV_MISSION_NO_SPACE:
-					/* 
-					 * mission item exceeds storage space | 
-					 * */
-					tempMapMissionAck.put("mission", "MISSION_NO_SPACE");
-					sendOutputJson(publishers[1], tempMapMissionAck);
-					break;
+					case MAV_MISSION_RESULT.MAV_MISSION_NO_SPACE:
+						/*
+						 * mission item exceeds storage space |
+						 */
+						tempMapMissionAck.put("mission", "MISSION_NO_SPACE");
+						sendOutputJson(publishers[1], tempMapMissionAck);
+						break;
 
-				case MAV_MISSION_RESULT.MAV_MISSION_INVALID:
-					/* 
-					 * one of the parameters has an invalid value | 
-					 * */
-					tempMapMissionAck.put("mission", "MISSION_INVALID");
-					sendOutputJson(publishers[1], tempMapMissionAck);
-					break;
+					case MAV_MISSION_RESULT.MAV_MISSION_INVALID:
+						/*
+						 * one of the parameters has an invalid value |
+						 */
+						tempMapMissionAck.put("mission", "MISSION_INVALID");
+						sendOutputJson(publishers[1], tempMapMissionAck);
+						break;
 
-				case MAV_MISSION_RESULT.MAV_MISSION_INVALID_PARAM1:
-					/* 
-					 * param1 has an invalid value | 
-					 * */
-					tempMapMissionAck.put("mission", "MISSION_INVALID_PARAM1");
-					sendOutputJson(publishers[1], tempMapMissionAck);
-					break;
+					case MAV_MISSION_RESULT.MAV_MISSION_INVALID_PARAM1:
+						/*
+						 * param1 has an invalid value |
+						 */
+						tempMapMissionAck.put("mission",
+								"MISSION_INVALID_PARAM1");
+						sendOutputJson(publishers[1], tempMapMissionAck);
+						break;
 
-				case MAV_MISSION_RESULT.MAV_MISSION_INVALID_PARAM2:
-					/* 
-					 * param2 has an invalid value | 
-					 * */
-					tempMapMissionAck.put("mission", "MISSION_INVALID_PARAM2");
-					sendOutputJson(publishers[1], tempMapMissionAck);
-					break;
+					case MAV_MISSION_RESULT.MAV_MISSION_INVALID_PARAM2:
+						/*
+						 * param2 has an invalid value |
+						 */
+						tempMapMissionAck.put("mission",
+								"MISSION_INVALID_PARAM2");
+						sendOutputJson(publishers[1], tempMapMissionAck);
+						break;
 
-				case MAV_MISSION_RESULT.MAV_MISSION_INVALID_PARAM3:
-					/* 
-					 * param3 has an invalid value | 
-					 * */
-					tempMapMissionAck.put("mission", "MISSION_INVALID_PARAM3");
-					sendOutputJson(publishers[1], tempMapMissionAck);
-					break;
+					case MAV_MISSION_RESULT.MAV_MISSION_INVALID_PARAM3:
+						/*
+						 * param3 has an invalid value |
+						 */
+						tempMapMissionAck.put("mission",
+								"MISSION_INVALID_PARAM3");
+						sendOutputJson(publishers[1], tempMapMissionAck);
+						break;
 
-				case MAV_MISSION_RESULT.MAV_MISSION_INVALID_PARAM4:
-					/* 
-					 * param4 has an invalid value | 
-					 * */
-					tempMapMissionAck.put("mission", "MISSION_INVALID_PARAM4");
-					sendOutputJson(publishers[1], tempMapMissionAck);
-					break;
+					case MAV_MISSION_RESULT.MAV_MISSION_INVALID_PARAM4:
+						/*
+						 * param4 has an invalid value |
+						 */
+						tempMapMissionAck.put("mission",
+								"MISSION_INVALID_PARAM4");
+						sendOutputJson(publishers[1], tempMapMissionAck);
+						break;
 
-				case MAV_MISSION_RESULT.MAV_MISSION_INVALID_PARAM5_X:
-					/* 
-					 * x/param5 has an invalid value | 
-					 * */
-					tempMapMissionAck.put("mission", "MISSION_INVALID_PARAM5_X");
-					sendOutputJson(publishers[1], tempMapMissionAck);
-					break;
+					case MAV_MISSION_RESULT.MAV_MISSION_INVALID_PARAM5_X:
+						/*
+						 * x/param5 has an invalid value |
+						 */
+						tempMapMissionAck.put("mission",
+								"MISSION_INVALID_PARAM5_X");
+						sendOutputJson(publishers[1], tempMapMissionAck);
+						break;
 
-				case MAV_MISSION_RESULT.MAV_MISSION_INVALID_PARAM6_Y:
-					/* 
-					 * y/param6 has an invalid value | 
-					 * */
-					tempMapMissionAck.put("mission", "MISSION_INVALID_PARAM6_Y");
-					sendOutputJson(publishers[1], tempMapMissionAck);
-					break;
+					case MAV_MISSION_RESULT.MAV_MISSION_INVALID_PARAM6_Y:
+						/*
+						 * y/param6 has an invalid value |
+						 */
+						tempMapMissionAck.put("mission",
+								"MISSION_INVALID_PARAM6_Y");
+						sendOutputJson(publishers[1], tempMapMissionAck);
+						break;
 
-				case MAV_MISSION_RESULT.MAV_MISSION_INVALID_PARAM7:
-					/* 
-					 * param7 has an invalid value | 
-					 * */
-					tempMapMissionAck.put("mission", "MISSION_INVALID_PARAM7");
-					sendOutputJson(publishers[1], tempMapMissionAck);
-					break;
+					case MAV_MISSION_RESULT.MAV_MISSION_INVALID_PARAM7:
+						/*
+						 * param7 has an invalid value |
+						 */
+						tempMapMissionAck.put("mission",
+								"MISSION_INVALID_PARAM7");
+						sendOutputJson(publishers[1], tempMapMissionAck);
+						break;
 
-				case MAV_MISSION_RESULT.MAV_MISSION_INVALID_SEQUENCE :
-					/* 
-					 * received waypoint out of sequence | 
-					 * */
-					tempMapMissionAck.put("mission", "MISSION_INVALID_SEQUENCE");
-					sendOutputJson(publishers[1], tempMapMissionAck);
-					break;
+					case MAV_MISSION_RESULT.MAV_MISSION_INVALID_SEQUENCE:
+						/*
+						 * received waypoint out of sequence |
+						 */
+						tempMapMissionAck.put("mission",
+								"MISSION_INVALID_SEQUENCE");
+						sendOutputJson(publishers[1], tempMapMissionAck);
+						break;
 
-				case MAV_MISSION_RESULT.MAV_MISSION_RESULT_ENUM_END:
-					/* 
-					 * not accepting any mission commands from this communication partner | 
-					 * */
-					tempMapMissionAck.put("mission", "MISSION_RESULT_ENUM_END");
-					sendOutputJson(publishers[1], tempMapMissionAck);
-					break;
+					case MAV_MISSION_RESULT.MAV_MISSION_RESULT_ENUM_END:
+						/*
+						 * not accepting any mission commands from this
+						 * communication partner |
+						 */
+						tempMapMissionAck.put("mission",
+								"MISSION_RESULT_ENUM_END");
+						sendOutputJson(publishers[1], tempMapMissionAck);
+						break;
 
-				default:
-					tempMapMissionAck.put("mission", "MISSION_RESULT_UNKNOWN");
-					sendOutputJson(publishers[1], tempMapMissionAck);
-					break;
+					default:
+						tempMapMissionAck.put("mission",
+								"MISSION_RESULT_UNKNOWN");
+						sendOutputJson(publishers[1], tempMapMissionAck);
+						break;
+					}
 				}
 			}
 			break;
@@ -3184,47 +3206,98 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	private void readMissionListStart()
 	{
 		msg_mission_request_list reqMissionList = new msg_mission_request_list();
-		reqMissionList.target_component =targetComponent;
+		reqMissionList.target_component = targetComponent;
 		reqMissionList.target_system = targetSystem;
 		byte tempByte[] = reqMissionList.pack().encodePacket();
 		Map<String, Object> tempReadMission = Maps.newHashMap();
 		tempReadMission.put("comm", Arrays.toString(tempByte));
 		sendOutputJson(publishers[0], tempReadMission);
-		getLog().info("SENDING READ START SEQUENCE : "+Arrays.toString(tempByte));
+		getLog().debug(
+				"SENDING READ START SEQUENCE : " + Arrays.toString(tempByte));
 		/*
 		 * It will receive a mission count message after this
 		 */
 	}
+	
+	private void readMissionListStart(byte tSystem, byte tComponent)
+	{
+		msg_mission_request_list reqMissionList = new msg_mission_request_list();
+		reqMissionList.target_component = tComponent;
+		reqMissionList.target_system = tSystem;
+		byte tempByte[] = reqMissionList.pack().encodePacket();
+		Map<String, Object> tempReadMission = Maps.newHashMap();
+		tempReadMission.put("comm", Arrays.toString(tempByte));
+		sendOutputJson(publishers[0], tempReadMission);
+		getLog().debug(
+				"SENDING READ START SEQUENCE : " + Arrays.toString(tempByte));
+		/*
+		 * It will receive a mission count message after this
+		 */
+	}
+	
 	private void setMissionCount(short count) 
 	{
 		/*
 		 * Called by mission count message receive case
 		 */
-		readWaypointCount =count;
+		readWaypointCount = count;
 		readWaypointList = new ArrayList<String[]>(count);
-		sendWaypointRequest((short) 0);
+		sendWPRequest((short) 0);
+	}
+	
+	private void setMissionCount(short count, byte tSystem, byte tComponent)
+	{
+		/*
+		 * Called by mission count message receive case
+		 */
+		readWaypointCount = count;
+		readWaypointList = new ArrayList<String[]>(count);
+		sendWPRequest((short) 0, tSystem, tComponent);
 	}
 
-	private void sendWaypointRequest(short i) 
+	private void sendWPRequest(short i) 
 	{
 		/*
 		 * Called by setMissionCount and updateReadWaypointList
 		 */
 		msg_mission_request reqWaypoint = new msg_mission_request();
-		reqWaypoint.seq= i;
+		reqWaypoint.seq = i;
 		reqWaypoint.target_component = targetComponent;
 		reqWaypoint.target_system = targetSystem;
 		byte tempByte[] = reqWaypoint.pack().encodePacket();
 		Map<String, Object> tempReadMission = Maps.newHashMap();
 		tempReadMission.put("comm", Arrays.toString(tempByte));
 		sendOutputJson(publishers[0], tempReadMission);
-		getLog().info("SENDING WAYPOINT REQUEST : "+"["+i+"]"+Arrays.toString(tempByte));
+		getLog().debug(
+				"SENDING WAYPOINT REQUEST : " + "[" + i + "]"
+						+ Arrays.toString(tempByte));
 		/*
 		 * It will receive a mission item message after this
 		 */
 	}
 
-	private void updateReadWaypointList(msg_mission_item mavMissionItem) 
+	private void sendWPRequest(short i, byte tSystem, byte tComponent)
+	{
+		/*
+		 * Called by setMissionCount and updateReadWaypointList
+		 */
+		msg_mission_request reqWaypoint = new msg_mission_request();
+		reqWaypoint.seq = i;
+		reqWaypoint.target_component = tComponent;
+		reqWaypoint.target_system = tSystem;
+		byte tempByte[] = reqWaypoint.pack().encodePacket();
+		Map<String, Object> tempReadMission = Maps.newHashMap();
+		tempReadMission.put("comm", Arrays.toString(tempByte));
+		sendOutputJson(publishers[0], tempReadMission);
+		getLog().debug(
+				"SENDING WAYPOINT REQUEST : " + "[" + i + "]"
+						+ Arrays.toString(tempByte));
+		/*
+		 * It will receive a mission item message after this
+		 */
+	}
+	
+	private void updateReadWPList(msg_mission_item mavMissionItem) 
 	{
 		/*
 		 * Called after a mission_item message case
@@ -3243,15 +3316,51 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		tempWP[10] = Float.toString(mavMissionItem.z);
 		tempWP[11] = Byte.toString(mavMissionItem.autocontinue);
 		readWaypointList.add(tempWP);
-		if (readWaypointCount == (mavMissionItem.seq+1)) 
+		if (readWaypointCount == (mavMissionItem.seq + 1))
 		{
 			sendMissionAck((byte) MAV_MISSION_RESULT.MAV_MISSION_ACCEPTED);
 			/*
 			 * If it is the last waypoint, send an acknowledgement message
 			 */
+		} 
+		else 
+		{
+			sendWPRequest((short) (mavMissionItem.seq + 1));
+			/*
+			 * Other wise request the next waypoint
+			 */
 		}
-		else {
-			sendWaypointRequest((short) (mavMissionItem.seq+1));
+	}
+	
+	private void updateReadWPList(msg_mission_item mavMissionItem, byte tSystem, byte tComponent) 
+	{
+		/*
+		 * Called after a mission_item message case
+		 */
+		String[] tempWP = new String[12];
+		tempWP[0] = Short.toString(mavMissionItem.seq);
+		tempWP[1] = Byte.toString(mavMissionItem.current);
+		tempWP[2] = Byte.toString(mavMissionItem.frame);
+		tempWP[3] = Short.toString(mavMissionItem.command);
+		tempWP[4] = Float.toString(mavMissionItem.param1);
+		tempWP[5] = Float.toString(mavMissionItem.param2);
+		tempWP[6] = Float.toString(mavMissionItem.param3);
+		tempWP[7] = Float.toString(mavMissionItem.param4);
+		tempWP[8] = Float.toString(mavMissionItem.x);
+		tempWP[9] = Float.toString(mavMissionItem.y);
+		tempWP[10] = Float.toString(mavMissionItem.z);
+		tempWP[11] = Byte.toString(mavMissionItem.autocontinue);
+		readWaypointList.add(tempWP);
+		if (readWaypointCount == (mavMissionItem.seq + 1))
+		{
+			sendMissionAck((byte) MAV_MISSION_RESULT.MAV_MISSION_ACCEPTED);
+			/*
+			 * If it is the last waypoint, send an acknowledgement message
+			 */
+		} 
+		else 
+		{
+			sendWPRequest((short) (mavMissionItem.seq + 1), tSystem, tComponent);
 			/*
 			 * Other wise request the next waypoint
 			 */
@@ -3268,9 +3377,92 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		Map<String, Object> tempMissionAck = Maps.newHashMap();
 		tempMissionAck.put("comm", Arrays.toString(tempByte));
 		sendOutputJson(publishers[0], tempMissionAck);
-		getLog().info("SENDING MISSION ACKNOWLEDGEMENT : "+Arrays.toString(tempByte));
+		getLog().debug(
+				"SENDING MISSION ACKNOWLEDGEMENT : "
+						+ Arrays.toString(tempByte));
+	}
+	
+	private void sendMissionAck(byte ackType, byte tSystem, byte tComponent)
+	{
+		msg_mission_ack missionAck = new msg_mission_ack();
+		missionAck.target_component = tComponent;
+		missionAck.target_system = tSystem;
+		missionAck.type = ackType;
+		byte tempByte[] = missionAck.pack().encodePacket();
+		Map<String, Object> tempMissionAck = Maps.newHashMap();
+		tempMissionAck.put("comm", Arrays.toString(tempByte));
+		sendOutputJson(publishers[0], tempMissionAck);
+		getLog().debug(
+				"SENDING MISSION ACKNOWLEDGEMENT : "
+						+ Arrays.toString(tempByte));
 	}
 
+	//Untested
+	private void setCurrentActiveWP(short currentSequence )
+	{
+		msg_mission_set_current missionCurrent = new msg_mission_set_current();
+		missionCurrent.seq = currentSequence;
+		missionCurrent.target_system = targetSystem;
+		missionCurrent.target_component = targetComponent;
+		byte tempByte[] = missionCurrent.pack().encodePacket();
+		Map<String, Object> tempMissionWPCurrent = Maps.newHashMap();
+		tempMissionWPCurrent.put("comm", Arrays.toString(tempByte));
+		sendOutputJson(publishers[0], tempMissionWPCurrent);
+		getLog().debug(
+				"SENDING MISSION CURRENT WAYPOINT SET : "
+						+ Arrays.toString(tempByte));
+	}
+	
+	//Untested
+	
+	//Untested
+	private void setCurrentActiveWP(short currentSequence, byte tSystem,
+			byte tComponent)
+	{
+		msg_mission_set_current missionCurrent = new msg_mission_set_current();
+		missionCurrent.seq = currentSequence;
+		missionCurrent.target_system = tSystem;
+		missionCurrent.target_component = tComponent;
+		byte tempByte[] = missionCurrent.pack().encodePacket();
+		Map<String, Object> tempMissionWPCurrent = Maps.newHashMap();
+		tempMissionWPCurrent.put("comm", Arrays.toString(tempByte));
+		sendOutputJson(publishers[0], tempMissionWPCurrent);
+		getLog().debug(
+				"SENDING MISSION CURRENT WAYPOINT SET : "
+						+ Arrays.toString(tempByte));
+	}
+	
+	//Untested
+	private void clearMissionList()
+	{
+		msg_mission_clear_all missionClear = new msg_mission_clear_all();
+		missionClear.target_component = targetComponent;
+		missionClear.target_system = targetSystem;
+		isMissionCleared = true;
+		byte tempByte[] = missionClear.pack().encodePacket();
+		Map<String, Object> tempMissionClear = Maps.newHashMap();
+		tempMissionClear.put("comm", Arrays.toString(tempByte));
+		sendOutputJson(publishers[0], tempMissionClear);
+		getLog().debug(
+				"SENDING MISSION CURRENT WAYPOINT SET : "
+						+ Arrays.toString(tempByte));
+	}
+	
+	//Untested
+	private void clearMissionList(byte tSystem, byte tComponent)
+	{
+		msg_mission_clear_all missionClear = new msg_mission_clear_all();
+		missionClear.target_component = tComponent;
+		missionClear.target_system = tSystem;
+		isMissionCleared = true;
+		byte tempByte[] = missionClear.pack().encodePacket();
+		Map<String, Object> tempMissionClear = Maps.newHashMap();
+		tempMissionClear.put("comm", Arrays.toString(tempByte));
+		sendOutputJson(publishers[0], tempMissionClear);
+		getLog().debug(
+				"SENDING MISSION CURRENT WAYPOINT SET : "
+						+ Arrays.toString(tempByte));
+	}
 }
 
 
