@@ -1,5 +1,6 @@
 package is.erle.mavlink;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -11,7 +12,6 @@ import com.MAVLink.common.*;
 import com.MAVLink.enums.*;
 import com.MAVLink.pixhawk.*;
 import com.google.common.collect.Maps;
-
 import java.io.UnsupportedEncodingException;
 import java.lang.Class;
 import java.lang.reflect.Field;
@@ -39,6 +39,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	private static boolean heartbeatReceiveFlag;
 	
 	private int responseGlobal[];
+	
+	private ArrayList<String []> readWaypointList;
+	private short readWaypointCount;
 	
 	
     @Override
@@ -68,6 +71,14 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 //		temp.put("mission", "START");
 //		sendOutputJson(getConfiguration().getRequiredPropertyString(CONFIGURATION_PUBLISHER_NAME), temp);
 //		sendOutputJson("outputCOM_M", temp);
+        //For waypoint list read test case
+        /*try {
+			Thread.sleep(10000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+        readMissionListStart();*/
+ 
     }
 
     @Override
@@ -275,7 +286,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		}
 		return variableNames;
     }
-    
+    /*
+     * Handles all incoming messages from drone
+     */
 	private void hadnleMavMessage(MAVLinkMessage mavMessage2) 
 	{
 		//To Do
@@ -1175,9 +1188,45 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_mission_item.MAVLINK_MSG_ID_MISSION_ITEM:
+
 			/*
-			 * Not a message receive case
+			 * Format
+			 * QGC WPL <VERSION> 
+			 * <INDEX> <CURRENT WP> <COORD FRAME><COMMAND> <PARAM1> <PARAM2> <PARAM3> <PARAM4><PARAM5/X/LONGITUDE> <PARAM6/Y/LATITUDE> <PARAM7/Z/ALTITUDE><AUTOCONTINUE> 
+			 * 
+			 * Example
+			 * QGC WPL 110 
+			 * 0 1 0 16 0.149999999999999994 0 0 0 8.54800000000000004 47.3759999999999977 550 1 
+			 * 1 0 0 16 0.149999999999999994 0 0 0 8.54800000000000004 47.3759999999999977 550 1 
+			 * 2 0 0 16 0.149999999999999994 0 0 0 8.54800000000000004 47.3759999999999977 550 1
 			 */
+			msg_mission_item mavMissionItem;
+			if (mavMessage2 instanceof msg_mission_item) 
+			{
+				mavMissionItem = (msg_mission_item) mavMessage2;
+				String tempMissionItem = "INDEX :"
+						+ Short.toString(mavMissionItem.seq) + " , "
+						+ "CURRENT WP : " + mavMissionItem.current + " , "
+						+ "COORDINATE FRAME : " + mavMissionItem.frame + " , "
+						+ "COMMAND : " + mavMissionItem.command + " , "
+						+ "PARAM 1 : " + mavMissionItem.param1 + " , "
+						+ "PARAM 2 : " + mavMissionItem.param2 + " , "
+						+ "PARAM 3 : " + mavMissionItem.param3 + " , "
+						+ "PARAM 4 : " + mavMissionItem.param4 + " , " + "X : "
+						+ mavMissionItem.x + " , " + "Y : " + mavMissionItem.y
+						+ " , " + "Z : " + mavMissionItem.z + " , "
+						+ "AUTOCONTINUE : " + mavMissionItem.autocontinue
+						+ " , " + "TARGET SYSTEM : "
+						+ mavMissionItem.target_system + " , "
+						+ "TARGET COMPONENT : "
+						+ mavMissionItem.target_component;
+				Map<String, Object> tempMapMissionItem = Maps.newHashMap();
+				tempMapMissionItem.put("mission", tempMissionItem);
+				sendOutputJson(publishers[2], tempMapMissionItem);
+				getLog().debug(tempMissionItem);
+				
+				updateReadWaypointList(mavMissionItem);
+			}
 			break;
 
 		case msg_mission_request.MAVLINK_MSG_ID_MISSION_REQUEST:
@@ -1194,7 +1243,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				
 				Map<String, Object> tempMapMissionRequest = Maps.newHashMap();
 				tempMapMissionRequest.put("mission", tempMissionRequest);
-				sendOutputJson(publishers[1], tempMapMissionRequest);
+				sendOutputJson(publishers[2], tempMapMissionRequest);
 				getLog().debug(tempMissionRequest);
 			}
 			break;
@@ -1230,9 +1279,23 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_mission_count.MAVLINK_MSG_ID_MISSION_COUNT:
-			/*
-			 * Not a message receive case
-			 */
+			msg_mission_count mavMissionCount;
+			if (mavMessage2 instanceof msg_mission_count) 
+			{
+				mavMissionCount = (msg_mission_count) mavMessage2;
+				String tempStringCount = "WAYPOINT COUNT : "
+						+ Short.toString(mavMissionCount.count) + " , "
+						+ "TARGET SYSTEM : " + mavMissionCount.target_system
+						+ " , " + "TARGET COMPONENT :"
+						+ mavMissionCount.target_component;
+				Map<String, Object> tempMapMissionCount = Maps.newHashMap();
+				tempMapMissionCount.put("mission", tempStringCount);
+				sendOutputJson(publishers[2], tempMapMissionCount);
+				getLog().debug(tempMapMissionCount);
+				
+				setMissionCount(mavMissionCount.count);
+				
+			}
 			break;
 
 		case msg_mission_clear_all.MAVLINK_MSG_ID_MISSION_CLEAR_ALL:
@@ -3116,4 +3179,99 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		}
 		
 	}
+
+
+	private void readMissionListStart()
+	{
+		msg_mission_request_list reqMissionList = new msg_mission_request_list();
+		reqMissionList.target_component =targetComponent;
+		reqMissionList.target_system = targetSystem;
+		byte tempByte[] = reqMissionList.pack().encodePacket();
+		Map<String, Object> tempReadMission = Maps.newHashMap();
+		tempReadMission.put("comm", Arrays.toString(tempByte));
+		sendOutputJson(publishers[0], tempReadMission);
+		getLog().info("SENDING READ START SEQUENCE : "+Arrays.toString(tempByte));
+		/*
+		 * It will receive a mission count message after this
+		 */
+	}
+	private void setMissionCount(short count) 
+	{
+		/*
+		 * Called by mission count message receive case
+		 */
+		readWaypointCount =count;
+		readWaypointList = new ArrayList<String[]>(count);
+		sendWaypointRequest((short) 0);
+	}
+
+	private void sendWaypointRequest(short i) 
+	{
+		/*
+		 * Called by setMissionCount and updateReadWaypointList
+		 */
+		msg_mission_request reqWaypoint = new msg_mission_request();
+		reqWaypoint.seq= i;
+		reqWaypoint.target_component = targetComponent;
+		reqWaypoint.target_system = targetSystem;
+		byte tempByte[] = reqWaypoint.pack().encodePacket();
+		Map<String, Object> tempReadMission = Maps.newHashMap();
+		tempReadMission.put("comm", Arrays.toString(tempByte));
+		sendOutputJson(publishers[0], tempReadMission);
+		getLog().info("SENDING WAYPOINT REQUEST : "+"["+i+"]"+Arrays.toString(tempByte));
+		/*
+		 * It will receive a mission item message after this
+		 */
+	}
+
+	private void updateReadWaypointList(msg_mission_item mavMissionItem) 
+	{
+		/*
+		 * Called after a mission_item message case
+		 */
+		String[] tempWP = new String[12];
+		tempWP[0] = Short.toString(mavMissionItem.seq);
+		tempWP[1] = Byte.toString(mavMissionItem.current);
+		tempWP[2] = Byte.toString(mavMissionItem.frame);
+		tempWP[3] = Short.toString(mavMissionItem.command);
+		tempWP[4] = Float.toString(mavMissionItem.param1);
+		tempWP[5] = Float.toString(mavMissionItem.param2);
+		tempWP[6] = Float.toString(mavMissionItem.param3);
+		tempWP[7] = Float.toString(mavMissionItem.param4);
+		tempWP[8] = Float.toString(mavMissionItem.x);
+		tempWP[9] = Float.toString(mavMissionItem.y);
+		tempWP[10] = Float.toString(mavMissionItem.z);
+		tempWP[11] = Byte.toString(mavMissionItem.autocontinue);
+		readWaypointList.add(tempWP);
+		if (readWaypointCount == (mavMissionItem.seq+1)) 
+		{
+			sendMissionAck((byte) MAV_MISSION_RESULT.MAV_MISSION_ACCEPTED);
+			/*
+			 * If it is the last waypoint, send an acknowledgement message
+			 */
+		}
+		else {
+			sendWaypointRequest((short) (mavMissionItem.seq+1));
+			/*
+			 * Other wise request the next waypoint
+			 */
+		}
+	}
+
+	private void sendMissionAck(byte ackType) 
+	{
+		msg_mission_ack missionAck = new msg_mission_ack();
+		missionAck.target_component = targetComponent;
+		missionAck.target_system = targetSystem;
+		missionAck.type = ackType;
+		byte tempByte[] = missionAck.pack().encodePacket();
+		Map<String, Object> tempMissionAck = Maps.newHashMap();
+		tempMissionAck.put("comm", Arrays.toString(tempByte));
+		sendOutputJson(publishers[0], tempMissionAck);
+		getLog().info("SENDING MISSION ACKNOWLEDGEMENT : "+Arrays.toString(tempByte));
+	}
+
 }
+
+
+
