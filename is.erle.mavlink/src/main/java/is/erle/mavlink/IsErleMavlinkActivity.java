@@ -44,6 +44,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	private short readWaypointCount;
 	private boolean isMissionCleared;
 	
+	private boolean isCommandSent;
     @Override
     public void onActivitySetup() {
         getLog().info("Activity is.erle.mavlink setup");
@@ -1835,10 +1836,39 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			if (mavMessage2 instanceof msg_command_ack) 
 			{
 				mavCommandAck = (msg_command_ack) mavMessage2;
+				isCommandSent = false;
 				String tempCommandAck = "COMMAND : "
 						+ getVariableName("MAV_CMD", mavCommandAck.command)
 						+ " , " + "RESULT : "
 						+ getVariableName("MAV_RESILT", mavCommandAck.result);
+				switch (mavCommandAck.result) 
+				{
+				case MAV_RESULT.MAV_RESULT_ACCEPTED:
+					//Send to captain activity
+					break;
+
+				case MAV_RESULT.MAV_RESULT_DENIED:
+					//Send to captain activity
+					break;
+
+				case MAV_RESULT.MAV_RESULT_ENUM_END:
+					//Send to captain activity
+					break;
+
+				case MAV_RESULT.MAV_RESULT_FAILED:
+					//Send to captain activity and retry for limited number of times
+					break;
+
+				case MAV_RESULT.MAV_RESULT_TEMPORARILY_REJECTED:
+					//Retry from captain activity until it accepts
+					break;
+
+				case MAV_RESULT.MAV_RESULT_UNSUPPORTED:
+					//Send to captain activity
+					break;
+				default:
+					break;
+				}
 				Map<String, Object> tempMavCommandAck = Maps.newHashMap();
 				tempMavCommandAck.put("data", tempCommandAck);
 				sendOutputJson(publishers[2], tempMavCommandAck);
@@ -3462,6 +3492,83 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		getLog().debug(
 				"SENDING MISSION CURRENT WAYPOINT SET : "
 						+ Arrays.toString(tempByte));
+	}
+
+	//Not Tested
+	public void doARM(boolean armit) 
+	{
+		doCommand((short) MAV_CMD.MAV_CMD_COMPONENT_ARM_DISARM, armit ? 1 : 0,
+				21196, 0, 0, 0, 0, 0);
+	}
+
+	//Not Tested
+	public void doARM(boolean armit,byte tSystem, byte tComponent) 
+	{
+		doCommand((short) MAV_CMD.MAV_CMD_COMPONENT_ARM_DISARM, armit ? 1 : 0,
+				21196, 0, 0, 0, 0, 0 , tSystem , tComponent);
+	}
+	
+	//Not Tested
+	public void doCommand(short actionid, float p1, float p2, float p3,
+			float p4, float p5, float p6, float p7)
+	{
+		msg_command_long req = new msg_command_long();
+
+		req.target_system = targetSystem;
+		req.target_component = targetComponent;
+
+		req.command = (short) actionid;
+
+		req.param1 = p1;
+		req.param2 = p2;
+		req.param3 = p3;
+		req.param4 = p4;
+		req.param5 = p5;
+		req.param6 = p6;
+		req.param7 = p7;
+		byte tempByte[] = req.pack().encodePacket();
+		Map<String, Object> tempMissionClear = Maps.newHashMap();
+		tempMissionClear.put("comm", Arrays.toString(tempByte));
+		sendOutputJson(publishers[0], tempMissionClear);
+		isCommandSent = true;
+		getLog().debug(
+				"SENDING MISSION CURRENT WAYPOINT SET : "
+						+ Arrays.toString(tempByte));
+		/*
+		 * It will Receive command acknowledgement message case after this
+		 */
+	}
+	
+	//Not Tested
+	public void doCommand(short actionid, float p1, float p2, float p3,
+			float p4, float p5, float p6, float p7, byte tSystem,
+			byte tComponent) 
+	{
+		msg_command_long req = new msg_command_long();
+
+		req.target_system = tSystem;
+		req.target_component = tComponent;
+
+		req.command = (short) actionid;
+
+		req.param1 = p1;
+		req.param2 = p2;
+		req.param3 = p3;
+		req.param4 = p4;
+		req.param5 = p5;
+		req.param6 = p6;
+		req.param7 = p7;
+		byte tempByte[] = req.pack().encodePacket();
+		Map<String, Object> tempMissionClear = Maps.newHashMap();
+		tempMissionClear.put("comm", Arrays.toString(tempByte));
+		sendOutputJson(publishers[0], tempMissionClear);
+		isCommandSent = true;
+		getLog().debug(
+				"SENDING MISSION CURRENT WAYPOINT SET : "
+						+ Arrays.toString(tempByte));
+		/*
+		 * It will Receive command acknowledgement message case after this
+		 */
 	}
 }
 
