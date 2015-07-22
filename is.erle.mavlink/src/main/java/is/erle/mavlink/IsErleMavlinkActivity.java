@@ -2,6 +2,8 @@ package is.erle.mavlink;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import interactivespaces.activity.impl.ros.BaseRoutableRosActivity;
@@ -15,6 +17,8 @@ import com.google.common.collect.Maps;
 import java.io.UnsupportedEncodingException;
 import java.lang.Class;
 import java.lang.reflect.Field;
+
+import org.apache.commons.lang.ArrayUtils;
 /**
  * A simple Interactive Spaces Java-based activity.
  */
@@ -45,6 +49,14 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	private boolean isMissionCleared;
 	
 	private boolean isCommandSent;
+	
+	private Map<String,Byte > paramType;
+	private Map<String , Double> paramList;
+	private List<Short> paramReceivedIndexes;
+	private short paramIndex;
+	private short paramTotal;
+	private boolean receiveparamList;
+	
     @Override
     public void onActivitySetup() {
         getLog().info("Activity is.erle.mavlink setup");
@@ -79,7 +91,15 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			e.printStackTrace();
 		}
         readMissionListStart();*/
- 
+        /*readParameterListStart();
+        try {
+			Thread.sleep(20000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        getLog().info(paramList);
+        getLog().info(paramType);*/
     }
 
     @Override
@@ -865,6 +885,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				tempMavParamValue.put("data", tempParamValue);
 				sendOutputJson(publishers[2], tempMavParamValue);
 				getLog().debug(tempParamValue);
+				saveParam(mavParamValue);
 			}
 			break;
 
@@ -3527,15 +3548,15 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		req.param6 = p6;
 		req.param7 = p7;
 		byte tempByte[] = req.pack().encodePacket();
-		Map<String, Object> tempMissionClear = Maps.newHashMap();
-		tempMissionClear.put("comm", Arrays.toString(tempByte));
-		sendOutputJson(publishers[0], tempMissionClear);
+		Map<String, Object> tempCommand = Maps.newHashMap();
+		tempCommand.put("comm", Arrays.toString(tempByte));
+		sendOutputJson(publishers[0], tempCommand);
 		isCommandSent = true;
 		getLog().debug(
-				"SENDING MISSION CURRENT WAYPOINT SET : "
+				"SENDING COMMAND : "
 						+ Arrays.toString(tempByte));
 		/*
-		 * It will Receive command acknowledgement message case after this
+		 * It will Receive command acknowledgment message case after this
 		 */
 	}
 	
@@ -3559,16 +3580,117 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		req.param6 = p6;
 		req.param7 = p7;
 		byte tempByte[] = req.pack().encodePacket();
-		Map<String, Object> tempMissionClear = Maps.newHashMap();
-		tempMissionClear.put("comm", Arrays.toString(tempByte));
-		sendOutputJson(publishers[0], tempMissionClear);
+		Map<String, Object> tempCommand = Maps.newHashMap();
+		tempCommand.put("comm", Arrays.toString(tempByte));
+		sendOutputJson(publishers[0], tempCommand);
 		isCommandSent = true;
 		getLog().debug(
-				"SENDING MISSION CURRENT WAYPOINT SET : "
+				"SENDING COMMAND : "
 						+ Arrays.toString(tempByte));
 		/*
-		 * It will Receive command acknowledgement message case after this
+		 * It will Receive command acknowledgment message case after this
 		 */
+	}
+	
+	/*
+	 * Tested - This function reads all the parameters stored on the drone.
+	 * WARNING - Never call this function when the drone is in air
+	 */
+	private void readParameterListStart()
+	{
+		paramList = new HashMap<String, Double>(600);
+		paramType = new HashMap<String, Byte>(600);
+		paramReceivedIndexes = new ArrayList<Short>(600);
+		paramIndex =0;
+		paramTotal =1;
+		receiveparamList = true;
+		readParamList();
+	}
+	
+	/*
+	 * This function should not be called before the readParameterListStart
+	 * function as it initializes the critical components to be used
+	 */
+	private void readParamList()
+	{
+		if (paramList==null||paramType==null||paramReceivedIndexes==null) {
+			getLog().error("Use readParameterListStart function instead of this");
+			return;
+		}
+		msg_param_request_list req = new msg_param_request_list();
+		req.target_component = targetComponent;
+		req.target_system = targetSystem ;
+		byte tempByte[] = req.pack().encodePacket();
+		Map<String, Object> tempParameterList = Maps.newHashMap();
+		tempParameterList.put("comm", Arrays.toString(tempByte));
+		sendOutputJson(publishers[0], tempParameterList);
+		getLog().debug(
+				"REQUESTING PARAMETER LIST : "
+						+ Arrays.toString(tempByte));
+		/*
+		 * A sequence of Parameter value messages will be received after it
+		 */
+	}
+	
+	private void getParam(short index)
+	{
+		msg_param_request_read req = new msg_param_request_read();
+		req.target_system = targetSystem;
+		req.target_component = targetComponent;
+		req.param_index= index;
+		req.param_id = new byte[16];
+		byte tempByte[] = req.pack().encodePacket();
+		Map<String, Object> tempParameter = Maps.newHashMap();
+		tempParameter.put("comm", Arrays.toString(tempByte));
+		sendOutputJson(publishers[0], tempParameter);
+		getLog().info(
+				"REQUESTING PARAMETER : "
+						+ Arrays.toString(tempByte));
+		/*
+		 * A Parameter value message will be received after it
+		 */
+	}
+	
+	private void getParam(String id)
+	{
+		msg_param_request_read req = new msg_param_request_read();
+		req.target_system = targetSystem;
+		req.target_component = targetComponent;
+		req.param_index= -1;
+		req.param_id = id.getBytes();
+		req.param_id= ArrayUtils.subarray(req.param_id, 0, 16);
+		byte tempByte[] = req.pack().encodePacket();
+		Map<String, Object> tempParameter = Maps.newHashMap();
+		tempParameter.put("comm", Arrays.toString(tempByte));
+		sendOutputJson(publishers[0], tempParameter);
+		getLog().info(
+				"REQUESTING PARAMETER : "
+						+ Arrays.toString(tempByte));
+		/*
+		 * A Parameter value message will be received after it
+		 */
+	}
+	
+	private void saveParam(msg_param_value paramValue)
+	{
+		if (paramReceivedIndexes.contains(paramValue.param_index) && receiveparamList) {
+			getLog().info("Parameter already received");
+		}
+		else {
+			paramReceivedIndexes.add(paramValue.param_index);
+			paramIndex++;
+		}
+		String paramID = (new String(paramValue.param_id)).split("\0",2)[0];
+		paramList.put(paramID, (double) paramValue.param_value);
+		paramType.put(paramID, paramValue.param_type);
+		paramTotal = paramValue.param_count;
+		if (paramTotal == (paramIndex-1)) {
+			getLog().info("Received all the parameter successfully");
+			receiveparamList = false;
+		}
+		else {
+			//getParam(paramIndex);
+		}
 	}
 }
 
