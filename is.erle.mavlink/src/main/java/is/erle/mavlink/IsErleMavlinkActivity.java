@@ -3224,7 +3224,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				String tempStatusText = "SEVERITY : "
 						+ getVariableName("MAV_SEVERITY",
 								mavStatusText.severity) + " , " + "TEXT : "
-						+ Arrays.toString(mavStatusText.text);
+						+ new String (mavStatusText.text);
 				Map<String, Object> tempMavStatusText = Maps.newHashMap();
 				tempMavStatusText.put("data", tempStatusText);
 				sendOutputJson(publishers[2], tempMavStatusText);
@@ -3613,13 +3613,97 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	 */
 	private void readParamList()
 	{
+		if (paramList == null || paramType == null
+				|| paramReceivedIndexes == null) {
+			getLog().error(
+					"Use readParameterListStart function instead of this");
+			return;
+		}
+		msg_param_request_list req = new msg_param_request_list();
+		req.target_component = targetComponent;
+		req.target_system = targetSystem;
+		byte tempByte[] = req.pack().encodePacket();
+		Map<String, Object> tempParameterList = Maps.newHashMap();
+		tempParameterList.put("comm", Arrays.toString(tempByte));
+		sendOutputJson(publishers[0], tempParameterList);
+		getLog().debug(
+				"REQUESTING PARAMETER LIST : " + Arrays.toString(tempByte));
+		/*
+		 * A sequence of Parameter value messages will be received after it
+		 */
+	}
+
+	/*
+	 * Gets a single Parameter from the drone.
+	 */
+	private void getParam(short index)
+	{
+		msg_param_request_read req = new msg_param_request_read();
+		req.target_system = targetSystem;
+		req.target_component = targetComponent;
+		req.param_index = index;
+		req.param_id = new byte[16];
+		byte tempByte[] = req.pack().encodePacket();
+		Map<String, Object> tempParameter = Maps.newHashMap();
+		tempParameter.put("comm", Arrays.toString(tempByte));
+		sendOutputJson(publishers[0], tempParameter);
+		getLog().debug("REQUESTING PARAMETER : " + Arrays.toString(tempByte));
+		/*
+		 * A Parameter value message will be received after it
+		 */
+	}
+	
+	/*
+	 * Gets a single Parameter from the drone.
+	 */
+	private void getParam(String id)
+	{
+		msg_param_request_read req = new msg_param_request_read();
+		req.target_system = targetSystem;
+		req.target_component = targetComponent;
+		req.param_index = -1;
+		req.param_id = id.getBytes();
+		req.param_id = ArrayUtils.subarray(req.param_id, 0, 16);
+		byte tempByte[] = req.pack().encodePacket();
+		Map<String, Object> tempParameter = Maps.newHashMap();
+		tempParameter.put("comm", Arrays.toString(tempByte));
+		sendOutputJson(publishers[0], tempParameter);
+		getLog().debug("REQUESTING PARAMETER : " + Arrays.toString(tempByte));
+		/*
+		 * A Parameter value message will be received after it
+		 */
+	}
+	
+	/*
+	 * Tested - This function reads all the parameters stored on the drone.
+	 * WARNING - Never call this function when the drone is in air
+	 * This is a function overload with specific target system and component
+	 */
+	private void readParameterListStart(byte tSystem, byte tComponent)
+	{
+		paramList = new HashMap<String, Double>(600);
+		paramType = new HashMap<String, Byte>(600);
+		paramReceivedIndexes = new ArrayList<Short>(600);
+		paramIndex =0;
+		paramTotal =1;
+		receiveparamList = true;
+		readParamList(tSystem, tComponent);
+	}
+	
+	/*
+	 * This function should not be called before the readParameterListStart
+	 * function as it initializes the critical components to be used
+	 * This is a function overload with specific target system and component
+	 */
+	private void readParamList(byte tSystem, byte tComponent)
+	{
 		if (paramList==null||paramType==null||paramReceivedIndexes==null) {
 			getLog().error("Use readParameterListStart function instead of this");
 			return;
 		}
 		msg_param_request_list req = new msg_param_request_list();
-		req.target_component = targetComponent;
-		req.target_system = targetSystem ;
+		req.target_component = tComponent;
+		req.target_system = tSystem ;
 		byte tempByte[] = req.pack().encodePacket();
 		Map<String, Object> tempParameterList = Maps.newHashMap();
 		tempParameterList.put("comm", Arrays.toString(tempByte));
@@ -3632,40 +3716,44 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		 */
 	}
 	
-	private void getParam(short index)
+	/*
+	 * This is a function overload with specific target system and component
+	 * Gets a single Parameter from the drone.
+	 */
+	private void getParam(short index, byte tSystem, byte tComponent)
 	{
 		msg_param_request_read req = new msg_param_request_read();
-		req.target_system = targetSystem;
-		req.target_component = targetComponent;
-		req.param_index= index;
+		req.target_system = tSystem;
+		req.target_component = tComponent;
+		req.param_index = index;
 		req.param_id = new byte[16];
 		byte tempByte[] = req.pack().encodePacket();
 		Map<String, Object> tempParameter = Maps.newHashMap();
 		tempParameter.put("comm", Arrays.toString(tempByte));
 		sendOutputJson(publishers[0], tempParameter);
-		getLog().info(
-				"REQUESTING PARAMETER : "
-						+ Arrays.toString(tempByte));
+		getLog().debug("REQUESTING PARAMETER : " + Arrays.toString(tempByte));
 		/*
 		 * A Parameter value message will be received after it
 		 */
 	}
 	
-	private void getParam(String id)
+	/*
+	 * This is a function overload with specific target system and component
+	 * Gets a single Parameter from the drone.
+	 */
+	private void getParam(String id, byte tSystem, byte tComponent)
 	{
 		msg_param_request_read req = new msg_param_request_read();
-		req.target_system = targetSystem;
-		req.target_component = targetComponent;
-		req.param_index= -1;
+		req.target_system = tSystem;
+		req.target_component = tComponent;
+		req.param_index = -1;
 		req.param_id = id.getBytes();
-		req.param_id= ArrayUtils.subarray(req.param_id, 0, 16);
+		req.param_id = ArrayUtils.subarray(req.param_id, 0, 16);
 		byte tempByte[] = req.pack().encodePacket();
 		Map<String, Object> tempParameter = Maps.newHashMap();
 		tempParameter.put("comm", Arrays.toString(tempByte));
 		sendOutputJson(publishers[0], tempParameter);
-		getLog().info(
-				"REQUESTING PARAMETER : "
-						+ Arrays.toString(tempByte));
+		getLog().debug("REQUESTING PARAMETER : " + Arrays.toString(tempByte));
 		/*
 		 * A Parameter value message will be received after it
 		 */
