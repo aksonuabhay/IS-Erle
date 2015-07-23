@@ -2,9 +2,11 @@ package is.erle.mavlink;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import interactivespaces.activity.impl.ros.BaseRoutableRosActivity;
 
@@ -3598,7 +3600,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	 */
 	private void readParameterListStart()
 	{
-		paramList = new HashMap<String, Double>(600);
+		paramList = new ConcurrentHashMap<String, Double>(600);
 		paramType = new HashMap<String, Byte>(600);
 		paramReceivedIndexes = new ArrayList<Short>(600);
 		paramIndex =0;
@@ -3758,27 +3760,153 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		 * A Parameter value message will be received after it
 		 */
 	}
-	
-	private void saveParam(msg_param_value paramValue)
+
+	private void saveParam(msg_param_value paramValue) 
 	{
-		if (paramReceivedIndexes.contains(paramValue.param_index) && receiveparamList) {
-			getLog().info("Parameter already received");
+		if (receiveparamList) {
+			if (paramReceivedIndexes.contains(paramValue.param_index)) {
+				getLog().info("Parameter already received");
+			} else {
+				paramReceivedIndexes.add(paramValue.param_index);
+				paramIndex++;
+			}
+			String paramID = (new String(paramValue.param_id)).split("\0", 2)[0];
+			paramList.put(paramID, (double) paramValue.param_value);
+			paramType.put(paramID, paramValue.param_type);
+			paramTotal = paramValue.param_count;
+			if (paramTotal == (paramIndex - 1)) {
+				getLog().info("Received all the parameter successfully");
+				receiveparamList = false;
+			} else {
+				// getParam(paramIndex);
+			}	
 		}
 		else {
-			paramReceivedIndexes.add(paramValue.param_index);
-			paramIndex++;
+			String paramID = (new String(paramValue.param_id)).split("\0", 2)[0];
+			paramList.put(paramID, (double) paramValue.param_value);
+			paramType.put(paramID, paramValue.param_type);
 		}
-		String paramID = (new String(paramValue.param_id)).split("\0",2)[0];
-		paramList.put(paramID, (double) paramValue.param_value);
-		paramType.put(paramID, paramValue.param_type);
-		paramTotal = paramValue.param_count;
-		if (paramTotal == (paramIndex-1)) {
-			getLog().info("Received all the parameter successfully");
-			receiveparamList = false;
+		
+	}
+
+	//NOT TESTED
+	private void setParameter(String pID, float pValue)
+	{
+		if (paramList.containsKey(pID)) {
+			Map<String, Object> tempParameterSet;
+			msg_param_set req = new msg_param_set();
+			req.target_component = targetComponent;
+			req.target_system = targetSystem;
+			req.param_value = pValue;
+			req.param_id = pID.getBytes();
+
+			req.param_type = paramType.get(pID);
+			byte tempByte[] = req.pack().encodePacket();
+			tempParameterSet = Maps.newHashMap();
+			tempParameterSet.put("comm", Arrays.toString(tempByte));
+			sendOutputJson(publishers[0], tempParameterSet);
+			getLog().debug(
+					"REQUESTING SET PARAMETER : " + Arrays.toString(tempByte));
+
+			Date start = new Date();
+			int retry = 3;
+			while (true) {
+				if (!((start.getTime() + 700) > System.currentTimeMillis())) {
+					if (retry > 0) {
+						sendOutputJson(publishers[0], tempParameterSet);
+						getLog().debug("REQUESTING SET PARAMETER AGAIN ");
+						start = new Date();
+						retry--;
+						continue;
+					} else {
+						getLog().error("Timeout on set Parameter");
+						break;
+					}
+				}
+				if (paramList.get(pID) == pValue) {
+					getLog().info("Successfully set parameter");
+					break;
+				}
+			}
 		}
-		else {
-			//getParam(paramIndex);
+		else
+		{
+			getLog().warn("No such parameter on the drone");
 		}
+		/**
+		 * Set a parameter value TEMPORARILY to RAM. It will be reset to default
+		 * on system reboot. Send the ACTION MAV_ACTION_STORAGE_WRITE to
+		 * PERMANENTLY write the RAM contents to EEPROM. IMPORTANT: The
+		 * receiving component should acknowledge the new parameter value by
+		 * sending a param_value message to all communication partners. This
+		 * will also ensure that multiple GCS all have an up-to-date list of all
+		 * parameters. If the sending GCS did not receive a PARAM_VALUE message
+		 * within its timeout time, it should re-send the PARAM_SET message.
+		 */
+	}
+	
+	//NOT TESTED
+	private void setParameter(String pID, float pValue, byte tSystem,
+			byte tComponent) 
+	{
+		if (paramList.containsKey(pID)) {
+			Map<String, Object> tempParameterSet;
+			msg_param_set req = new msg_param_set();
+			req.target_component = tComponent;
+			req.target_system = tSystem;
+			req.param_value = pValue;
+			req.param_id = pID.getBytes();
+
+			req.param_type = paramType.get(pID);
+			byte tempByte[] = req.pack().encodePacket();
+			tempParameterSet = Maps.newHashMap();
+			tempParameterSet.put("comm", Arrays.toString(tempByte));
+			sendOutputJson(publishers[0], tempParameterSet);
+			getLog().debug(
+					"REQUESTING SET PARAMETER : " + Arrays.toString(tempByte));
+
+			Date start = new Date();
+			int retry = 3;
+			while (true) {
+				if (!((start.getTime() + 700) > System.currentTimeMillis())) {
+					if (retry > 0) {
+						sendOutputJson(publishers[0], tempParameterSet);
+						getLog().debug("REQUESTING SET PARAMETER AGAIN ");
+						start = new Date();
+						retry--;
+						continue;
+					} else {
+						getLog().error("Timeout on set Parameter");
+						break;
+					}
+				}
+				if (paramList.get(pID) == pValue) {
+					getLog().info("Successfully set parameter");
+					break;
+				}
+			}
+		}
+		else
+		{
+			getLog().warn("No such parameter on the drone");
+		}
+		/**
+		 * Set a parameter value TEMPORARILY to RAM. It will be reset to default
+		 * on system reboot. Send the ACTION MAV_ACTION_STORAGE_WRITE to
+		 * PERMANENTLY write the RAM contents to EEPROM. IMPORTANT: The
+		 * receiving component should acknowledge the new parameter value by
+		 * sending a param_value message to all communication partners. This
+		 * will also ensure that multiple GCS all have an up-to-date list of all
+		 * parameters. If the sending GCS did not receive a PARAM_VALUE message
+		 * within its timeout time, it should re-send the PARAM_SET message.
+		 */
+		
+	}
+	
+
+	private void setMode() 
+	{
+
 	}
 }
 
