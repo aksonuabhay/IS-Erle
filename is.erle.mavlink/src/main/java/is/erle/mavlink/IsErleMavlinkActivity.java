@@ -19,8 +19,7 @@ import com.google.common.collect.Maps;
 import java.io.UnsupportedEncodingException;
 import java.lang.Class;
 import java.lang.reflect.Field;
-
-import org.apache.commons.lang.ArrayUtils;
+import java.nio.charset.StandardCharsets;
 /**
  * A simple Interactive Spaces Java-based activity.
  */
@@ -87,13 +86,13 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 //		sendOutputJson(getConfiguration().getRequiredPropertyString(CONFIGURATION_PUBLISHER_NAME), temp);
 //		sendOutputJson("outputCOM_M", temp);
         //For waypoint list read test case
-        /*try {
+        try {
 			Thread.sleep(10000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-        readMissionListStart();*/
-        /*readParameterListStart();
+        //readMissionListStart();
+        readParameterListStart();
         try {
 			Thread.sleep(20000);
 		} catch (InterruptedException e) {
@@ -101,7 +100,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			e.printStackTrace();
 		}
         getLog().info(paramList);
-        getLog().info(paramType);*/
+        getLog().info(paramType);
+        setParameter("RC6_TRIM",1300);
+        getLog().info(paramList);
     }
 
     @Override
@@ -3664,8 +3665,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		req.target_system = targetSystem;
 		req.target_component = targetComponent;
 		req.param_index = -1;
-		req.param_id = id.getBytes();
-		req.param_id = ArrayUtils.subarray(req.param_id, 0, 16);
+		req.param_id = Arrays
+				.copyOf(id.getBytes(StandardCharsets.US_ASCII), 16);
 		byte tempByte[] = req.pack().encodePacket();
 		Map<String, Object> tempParameter = Maps.newHashMap();
 		tempParameter.put("comm", Arrays.toString(tempByte));
@@ -3686,8 +3687,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		paramList = new HashMap<String, Double>(600);
 		paramType = new HashMap<String, Byte>(600);
 		paramReceivedIndexes = new ArrayList<Short>(600);
-		paramIndex =0;
-		paramTotal =1;
+		paramIndex = 0;
+		paramTotal = 1;
 		receiveparamList = true;
 		readParamList(tSystem, tComponent);
 	}
@@ -3749,8 +3750,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		req.target_system = tSystem;
 		req.target_component = tComponent;
 		req.param_index = -1;
-		req.param_id = id.getBytes();
-		req.param_id = ArrayUtils.subarray(req.param_id, 0, 16);
+		req.param_id = Arrays
+				.copyOf(id.getBytes(StandardCharsets.US_ASCII), 16);
 		byte tempByte[] = req.pack().encodePacket();
 		Map<String, Object> tempParameter = Maps.newHashMap();
 		tempParameter.put("comm", Arrays.toString(tempByte));
@@ -3774,8 +3775,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			paramList.put(paramID, (double) paramValue.param_value);
 			paramType.put(paramID, paramValue.param_type);
 			paramTotal = paramValue.param_count;
-			if (paramTotal == (paramIndex - 1)) {
-				getLog().info("Received all the parameter successfully");
+			if ((paramTotal-1) == (paramIndex )) {
+				getLog().info("Received all the parameters successfully");
 				receiveparamList = false;
 			} else {
 				// getParam(paramIndex);
@@ -3790,7 +3791,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	}
 
 	//NOT TESTED
-	private void setParameter(String pID, float pValue)
+	private void setParam(String pID, float pValue)
 	{
 		if (paramList.containsKey(pID)) {
 			Map<String, Object> tempParameterSet;
@@ -3798,14 +3799,14 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			req.target_component = targetComponent;
 			req.target_system = targetSystem;
 			req.param_value = pValue;
-			req.param_id = pID.getBytes();
-
+			req.param_id = Arrays
+					.copyOf(pID.getBytes(StandardCharsets.US_ASCII), 16);
 			req.param_type = paramType.get(pID);
 			byte tempByte[] = req.pack().encodePacket();
 			tempParameterSet = Maps.newHashMap();
 			tempParameterSet.put("comm", Arrays.toString(tempByte));
 			sendOutputJson(publishers[0], tempParameterSet);
-			getLog().debug(
+			getLog().info(
 					"REQUESTING SET PARAMETER : " + Arrays.toString(tempByte));
 
 			Date start = new Date();
@@ -3814,7 +3815,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				if (!((start.getTime() + 700) > System.currentTimeMillis())) {
 					if (retry > 0) {
 						sendOutputJson(publishers[0], tempParameterSet);
-						getLog().debug("REQUESTING SET PARAMETER AGAIN ");
+						getLog().info("REQUESTING SET PARAMETER AGAIN ");
 						start = new Date();
 						retry--;
 						continue;
@@ -3846,7 +3847,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	}
 	
 	//NOT TESTED
-	private void setParameter(String pID, float pValue, byte tSystem,
+	private void setParam(String pID, float pValue, byte tSystem,
 			byte tComponent) 
 	{
 		if (paramList.containsKey(pID)) {
@@ -3855,13 +3856,13 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			req.target_component = tComponent;
 			req.target_system = tSystem;
 			req.param_value = pValue;
-			req.param_id = pID.getBytes();
-
+			req.param_id = Arrays
+					.copyOf(pID.getBytes(StandardCharsets.US_ASCII), 16);
 			req.param_type = paramType.get(pID);
 			byte tempByte[] = req.pack().encodePacket();
 			tempParameterSet = Maps.newHashMap();
 			tempParameterSet.put("comm", Arrays.toString(tempByte));
-			sendOutputJson(publishers[0], tempParameterSet);
+			//sendOutputJson(publishers[0], tempParameterSet);
 			getLog().debug(
 					"REQUESTING SET PARAMETER : " + Arrays.toString(tempByte));
 
