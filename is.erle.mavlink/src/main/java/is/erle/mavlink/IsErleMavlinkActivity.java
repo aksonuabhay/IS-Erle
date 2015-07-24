@@ -46,7 +46,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	private int responseGlobal[];
 	
 	private ArrayList<String []> readWaypointList;
-	private short readWaypointCount;
+	private short readWaypointCount = -1, missionCurrentSeq;
 	private boolean isMissionCleared;
 	
 	private boolean isCommandSent;
@@ -56,7 +56,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	private List<Short> paramReceivedIndexes;
 	private short paramIndex;
 	private short paramTotal;
-	private boolean receiveparamList;
+	private boolean receiveParamList, receiveParam;
 	
     @Override
     public void onActivitySetup() {
@@ -101,7 +101,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		}
         getLog().info(paramList);
         getLog().info(paramType);
-        setParameter("RC6_TRIM",1300);
+        setParam("RC6_TRIM",1300);
         getLog().info(paramList);
     }
 
@@ -1294,6 +1294,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				tempMapMissionCurrent.put("mission", tempStringCurrent);
 				sendOutputJson(publishers[2], tempMapMissionCurrent);
 				getLog().debug(mavMissionCurrent);
+				missionCurrentSeq = mavMissionCurrent.seq;
 			}
 			break;
 
@@ -3268,11 +3269,38 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		sendOutputJson(publishers[0], tempReadMission);
 		getLog().debug(
 				"SENDING READ START SEQUENCE : " + Arrays.toString(tempByte));
+
+		Date start = new Date();
+		int retry = 3;
+		while (true)
+		{
+			if (!((start.getTime() + 700) > System.currentTimeMillis()))
+			{
+				if (retry > 0)
+				{
+					sendOutputJson(publishers[0], tempReadMission);
+					getLog().info("REQUESTING GET MISSION LIST AGAIN ");
+					start = new Date();
+					retry--;
+					continue;
+				}
+				else
+				{
+					getLog().error("Timeout on request list");
+					break;
+				}
+			}
+			if (!(readWaypointCount == -1))
+			{
+				getLog().info("Successfully get a waypoint count message");
+				break;
+			}
+		}
 		/*
 		 * It will receive a mission count message after this
 		 */
 	}
-	
+
 	private void readMissionListStart(byte tSystem, byte tComponent)
 	{
 		msg_mission_request_list reqMissionList = new msg_mission_request_list();
@@ -3284,12 +3312,39 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		sendOutputJson(publishers[0], tempReadMission);
 		getLog().debug(
 				"SENDING READ START SEQUENCE : " + Arrays.toString(tempByte));
+
+		Date start = new Date();
+		int retry = 3;
+		while (true)
+		{
+			if (!((start.getTime() + 700) > System.currentTimeMillis()))
+			{
+				if (retry > 0)
+				{
+					sendOutputJson(publishers[0], tempReadMission);
+					getLog().info("REQUESTING GET MISSION LIST AGAIN ");
+					start = new Date();
+					retry--;
+					continue;
+				}
+				else
+				{
+					getLog().error("Timeout on request list");
+					break;
+				}
+			}
+			if (!(readWaypointCount == -1))
+			{
+				getLog().info("Successfully get a waypoint count message");
+				break;
+			}
+		}
 		/*
 		 * It will receive a mission count message after this
 		 */
 	}
-	
-	private void setMissionCount(short count) 
+
+	private void setMissionCount(short count)
 	{
 		/*
 		 * Called by mission count message receive case
@@ -3298,7 +3353,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		readWaypointList = new ArrayList<String[]>(count);
 		sendWPRequest((short) 0);
 	}
-	
+
 	private void setMissionCount(short count, byte tSystem, byte tComponent)
 	{
 		/*
@@ -3309,7 +3364,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		sendWPRequest((short) 0, tSystem, tComponent);
 	}
 
-	private void sendWPRequest(short i) 
+	private void sendWPRequest(short i)
 	{
 		/*
 		 * Called by setMissionCount and updateReadWaypointList
@@ -3325,6 +3380,33 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		getLog().debug(
 				"SENDING WAYPOINT REQUEST : " + "[" + i + "]"
 						+ Arrays.toString(tempByte));
+
+		Date start = new Date();
+		int retry = 3;
+		while (true)
+		{
+			if (!((start.getTime() + 700) > System.currentTimeMillis()))
+			{
+				if (retry > 0)
+				{
+					sendOutputJson(publishers[0], tempReadMission);
+					getLog().info("SENDING WAYPOINT REQUEST AGAIN ");
+					start = new Date();
+					retry--;
+					continue;
+				}
+				else
+				{
+					getLog().error("Timeout on waypoint read");
+					break;
+				}
+			}
+			if (readWaypointList.size() == (i + 1))
+			{
+				getLog().info("Successfully get waypoint data");
+				break;
+			}
+		}
 		/*
 		 * It will receive a mission item message after this
 		 */
@@ -3346,12 +3428,39 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		getLog().debug(
 				"SENDING WAYPOINT REQUEST : " + "[" + i + "]"
 						+ Arrays.toString(tempByte));
+
+		Date start = new Date();
+		int retry = 3;
+		while (true)
+		{
+			if (!((start.getTime() + 700) > System.currentTimeMillis()))
+			{
+				if (retry > 0)
+				{
+					sendOutputJson(publishers[0], tempReadMission);
+					getLog().info("SENDING WAYPOINT REQUEST AGAIN ");
+					start = new Date();
+					retry--;
+					continue;
+				}
+				else
+				{
+					getLog().error("Timeout on waypoint read");
+					break;
+				}
+			}
+			if (readWaypointList.size() == (i + 1))
+			{
+				getLog().info("Successfully get waypoint data");
+				break;
+			}
+		}
 		/*
 		 * It will receive a mission item message after this
 		 */
 	}
-	
-	private void updateReadWPList(msg_mission_item mavMissionItem) 
+
+	private void updateReadWPList(msg_mission_item mavMissionItem)
 	{
 		/*
 		 * Called after a mission_item message case
@@ -3373,11 +3482,12 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		if (readWaypointCount == (mavMissionItem.seq + 1))
 		{
 			sendMissionAck((byte) MAV_MISSION_RESULT.MAV_MISSION_ACCEPTED);
+			readWaypointCount = -1;
 			/*
 			 * If it is the last waypoint, send an acknowledgement message
 			 */
-		} 
-		else 
+		}
+		else
 		{
 			sendWPRequest((short) (mavMissionItem.seq + 1));
 			/*
@@ -3385,8 +3495,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			 */
 		}
 	}
-	
-	private void updateReadWPList(msg_mission_item mavMissionItem, byte tSystem, byte tComponent) 
+
+	private void updateReadWPList(msg_mission_item mavMissionItem,
+			byte tSystem, byte tComponent)
 	{
 		/*
 		 * Called after a mission_item message case
@@ -3408,11 +3519,12 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		if (readWaypointCount == (mavMissionItem.seq + 1))
 		{
 			sendMissionAck((byte) MAV_MISSION_RESULT.MAV_MISSION_ACCEPTED);
+			readWaypointCount = -1;
 			/*
 			 * If it is the last waypoint, send an acknowledgement message
 			 */
-		} 
-		else 
+		}
+		else
 		{
 			sendWPRequest((short) (mavMissionItem.seq + 1), tSystem, tComponent);
 			/*
@@ -3421,7 +3533,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		}
 	}
 
-	private void sendMissionAck(byte ackType) 
+	private void sendMissionAck(byte ackType)
 	{
 		msg_mission_ack missionAck = new msg_mission_ack();
 		missionAck.target_component = targetComponent;
@@ -3434,8 +3546,11 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		getLog().debug(
 				"SENDING MISSION ACKNOWLEDGEMENT : "
 						+ Arrays.toString(tempByte));
+		/*
+		 * No Response from drone in response to this
+		 */
 	}
-	
+
 	private void sendMissionAck(byte ackType, byte tSystem, byte tComponent)
 	{
 		msg_mission_ack missionAck = new msg_mission_ack();
@@ -3449,10 +3564,13 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		getLog().debug(
 				"SENDING MISSION ACKNOWLEDGEMENT : "
 						+ Arrays.toString(tempByte));
+		/*
+		 * No Response from drone in response to this
+		 */
 	}
 
-	//Untested
-	private void setCurrentActiveWP(short currentSequence )
+	// Untested
+	private void setCurrentActiveWP(short currentSequence)
 	{
 		msg_mission_set_current missionCurrent = new msg_mission_set_current();
 		missionCurrent.seq = currentSequence;
@@ -3465,11 +3583,41 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		getLog().debug(
 				"SENDING MISSION CURRENT WAYPOINT SET : "
 						+ Arrays.toString(tempByte));
+
+		Date start = new Date();
+		int retry = 5;
+		while (true)
+		{
+			if (!((start.getTime() + 700) > System.currentTimeMillis()))
+			{
+				if (retry > 0)
+				{
+					sendOutputJson(publishers[0], tempMissionWPCurrent);
+					getLog().info("SENDING MISSION CURRENT WAYPOINT SET AGAIN ");
+					start = new Date();
+					retry--;
+					continue;
+				}
+				else
+				{
+					getLog().error("Timeout on set current active Waypoint");
+					break;
+				}
+			}
+			if (currentSequence == missionCurrentSeq)
+			{
+				getLog().info("Successfully set current active Waypoint");
+				break;
+			}
+		}
+		/*
+		 * It will receive a Mission Current message after it
+		 */
 	}
-	
-	//Untested
-	
-	//Untested
+
+	// Untested
+
+	// Untested
 	private void setCurrentActiveWP(short currentSequence, byte tSystem,
 			byte tComponent)
 	{
@@ -3484,9 +3632,39 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		getLog().debug(
 				"SENDING MISSION CURRENT WAYPOINT SET : "
 						+ Arrays.toString(tempByte));
+
+		Date start = new Date();
+		int retry = 5;
+		while (true)
+		{
+			if (!((start.getTime() + 700) > System.currentTimeMillis()))
+			{
+				if (retry > 0)
+				{
+					sendOutputJson(publishers[0], tempMissionWPCurrent);
+					getLog().info("SENDING MISSION CURRENT WAYPOINT SET AGAIN ");
+					start = new Date();
+					retry--;
+					continue;
+				}
+				else
+				{
+					getLog().error("Timeout on set current active Waypoint");
+					break;
+				}
+			}
+			if (currentSequence == missionCurrentSeq)
+			{
+				getLog().info("Successfully set current active Waypoint");
+				break;
+			}
+		}
+		/*
+		 * It will receive a Mission Current message after it
+		 */
 	}
-	
-	//Untested
+
+	// Untested
 	private void clearMissionList()
 	{
 		msg_mission_clear_all missionClear = new msg_mission_clear_all();
@@ -3500,9 +3678,36 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		getLog().debug(
 				"SENDING MISSION CURRENT WAYPOINT SET : "
 						+ Arrays.toString(tempByte));
+
+		Date start = new Date();
+		int retry = 3;
+		while (true)
+		{
+			if (!((start.getTime() + 700) > System.currentTimeMillis()))
+			{
+				if (retry > 0)
+				{
+					sendOutputJson(publishers[0], tempMissionClear);
+					getLog().info("SENDING MISSION CURRENT WAYPOINT SET AGAIN ");
+					start = new Date();
+					retry--;
+					continue;
+				}
+				else
+				{
+					getLog().error("Timeout on clear Mission list");
+					break;
+				}
+			}
+			if (!isMissionCleared)
+			{
+				getLog().info("Successfully clear Mission list");
+				break;
+			}
+		}
 	}
-	
-	//Untested
+
+	// Untested
 	private void clearMissionList(byte tSystem, byte tComponent)
 	{
 		msg_mission_clear_all missionClear = new msg_mission_clear_all();
@@ -3516,23 +3721,50 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		getLog().debug(
 				"SENDING MISSION CURRENT WAYPOINT SET : "
 						+ Arrays.toString(tempByte));
+
+		Date start = new Date();
+		int retry = 3;
+		while (true)
+		{
+			if (!((start.getTime() + 700) > System.currentTimeMillis()))
+			{
+				if (retry > 0)
+				{
+					sendOutputJson(publishers[0], tempMissionClear);
+					getLog().info("SENDING MISSION CURRENT WAYPOINT SET AGAIN ");
+					start = new Date();
+					retry--;
+					continue;
+				}
+				else
+				{
+					getLog().error("Timeout on clear Mission list");
+					break;
+				}
+			}
+			if (!isMissionCleared)
+			{
+				getLog().info("Successfully clear Mission list");
+				break;
+			}
+		}
 	}
 
-	//Not Tested
-	public void doARM(boolean armit) 
+	// Not Tested
+	public void doARM(boolean armit)
 	{
 		doCommand((short) MAV_CMD.MAV_CMD_COMPONENT_ARM_DISARM, armit ? 1 : 0,
 				21196, 0, 0, 0, 0, 0);
 	}
 
-	//Not Tested
-	public void doARM(boolean armit,byte tSystem, byte tComponent) 
+	// Not Tested
+	public void doARM(boolean armit, byte tSystem, byte tComponent)
 	{
 		doCommand((short) MAV_CMD.MAV_CMD_COMPONENT_ARM_DISARM, armit ? 1 : 0,
-				21196, 0, 0, 0, 0, 0 , tSystem , tComponent);
+				21196, 0, 0, 0, 0, 0, tSystem, tComponent);
 	}
-	
-	//Not Tested
+
+	// Not Tested
 	public void doCommand(short actionid, float p1, float p2, float p3,
 			float p4, float p5, float p6, float p7)
 	{
@@ -3555,18 +3787,43 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		tempCommand.put("comm", Arrays.toString(tempByte));
 		sendOutputJson(publishers[0], tempCommand);
 		isCommandSent = true;
-		getLog().debug(
-				"SENDING COMMAND : "
-						+ Arrays.toString(tempByte));
+		getLog().debug("SENDING COMMAND : " + Arrays.toString(tempByte));
+
+		Date start = new Date();
+		int retry = 3;
+		while (true)
+		{
+			if (!((start.getTime() + 700) > System.currentTimeMillis()))
+			{
+				if (retry > 0)
+				{
+					sendOutputJson(publishers[0], tempCommand);
+					getLog().info("SENDING COMMAND AGAIN ");
+					start = new Date();
+					retry--;
+					continue;
+				}
+				else
+				{
+					getLog().error("Timeout on send command");
+					break;
+				}
+			}
+			if (!isCommandSent)
+			{
+				getLog().info("Successfully send command");
+				break;
+			}
+		}
 		/*
 		 * It will Receive command acknowledgment message case after this
 		 */
 	}
-	
-	//Not Tested
+
+	// Not Tested
 	public void doCommand(short actionid, float p1, float p2, float p3,
 			float p4, float p5, float p6, float p7, byte tSystem,
-			byte tComponent) 
+			byte tComponent)
 	{
 		msg_command_long req = new msg_command_long();
 
@@ -3587,14 +3844,39 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		tempCommand.put("comm", Arrays.toString(tempByte));
 		sendOutputJson(publishers[0], tempCommand);
 		isCommandSent = true;
-		getLog().debug(
-				"SENDING COMMAND : "
-						+ Arrays.toString(tempByte));
+		getLog().debug("SENDING COMMAND : " + Arrays.toString(tempByte));
+
+		Date start = new Date();
+		int retry = 3;
+		while (true)
+		{
+			if (!((start.getTime() + 700) > System.currentTimeMillis()))
+			{
+				if (retry > 0)
+				{
+					sendOutputJson(publishers[0], tempCommand);
+					getLog().info("SENDING COMMAND AGAIN ");
+					start = new Date();
+					retry--;
+					continue;
+				}
+				else
+				{
+					getLog().error("Timeout on send command");
+					break;
+				}
+			}
+			if (!isCommandSent)
+			{
+				getLog().info("Successfully send command");
+				break;
+			}
+		}
 		/*
 		 * It will Receive command acknowledgment message case after this
 		 */
 	}
-	
+
 	/*
 	 * Tested - This function reads all the parameters stored on the drone.
 	 * WARNING - Never call this function when the drone is in air
@@ -3604,12 +3886,12 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		paramList = new ConcurrentHashMap<String, Double>(600);
 		paramType = new HashMap<String, Byte>(600);
 		paramReceivedIndexes = new ArrayList<Short>(600);
-		paramIndex =0;
-		paramTotal =1;
-		receiveparamList = true;
+		paramIndex = 0;
+		paramTotal = 1;
+		receiveParamList = true;
 		readParamList();
 	}
-	
+
 	/*
 	 * This function should not be called before the readParameterListStart
 	 * function as it initializes the critical components to be used
@@ -3617,7 +3899,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	private void readParamList()
 	{
 		if (paramList == null || paramType == null
-				|| paramReceivedIndexes == null) {
+				|| paramReceivedIndexes == null)
+		{
 			getLog().error(
 					"Use readParameterListStart function instead of this");
 			return;
@@ -3631,6 +3914,36 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		sendOutputJson(publishers[0], tempParameterList);
 		getLog().debug(
 				"REQUESTING PARAMETER LIST : " + Arrays.toString(tempByte));
+
+		Date start = new Date();
+		int retry = 3;
+		while (true)
+		{
+			if (paramList.isEmpty())
+			{
+				if (!((start.getTime() + 700) > System.currentTimeMillis()))
+				{
+					if (retry > 0)
+					{
+						sendOutputJson(publishers[0], tempParameterList);
+						getLog().info("REQUESTING GET PARAMETER LIST AGAIN ");
+						start = new Date();
+						retry--;
+						continue;
+					}
+					else
+					{
+						getLog().error("Timeout on get Parameter List");
+						break;
+					}
+				}
+			}
+			if (!receiveParamList)
+			{
+				getLog().info("Successfully get parameter list");
+				break;
+			}
+		}
 		/*
 		 * A sequence of Parameter value messages will be received after it
 		 */
@@ -3651,11 +3964,39 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		tempParameter.put("comm", Arrays.toString(tempByte));
 		sendOutputJson(publishers[0], tempParameter);
 		getLog().debug("REQUESTING PARAMETER : " + Arrays.toString(tempByte));
+		receiveParam = true;
+
+		Date start = new Date();
+		int retry = 3;
+		while (true)
+		{
+			if (!((start.getTime() + 700) > System.currentTimeMillis()))
+			{
+				if (retry > 0)
+				{
+					sendOutputJson(publishers[0], tempParameter);
+					getLog().info("REQUESTING GET PARAMETER AGAIN ");
+					start = new Date();
+					retry--;
+					continue;
+				}
+				else
+				{
+					getLog().error("Timeout on get Parameter");
+					break;
+				}
+			}
+			if (!receiveParam)
+			{
+				getLog().info("Successfully get parameter");
+				break;
+			}
+		}
 		/*
 		 * A Parameter value message will be received after it
 		 */
 	}
-	
+
 	/*
 	 * Gets a single Parameter from the drone.
 	 */
@@ -3672,15 +4013,43 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		tempParameter.put("comm", Arrays.toString(tempByte));
 		sendOutputJson(publishers[0], tempParameter);
 		getLog().debug("REQUESTING PARAMETER : " + Arrays.toString(tempByte));
+		receiveParam = true;
+
+		Date start = new Date();
+		int retry = 3;
+		while (true)
+		{
+			if (!((start.getTime() + 700) > System.currentTimeMillis()))
+			{
+				if (retry > 0)
+				{
+					sendOutputJson(publishers[0], tempParameter);
+					getLog().info("REQUESTING GET PARAMETER AGAIN ");
+					start = new Date();
+					retry--;
+					continue;
+				}
+				else
+				{
+					getLog().error("Timeout on get Parameter");
+					break;
+				}
+			}
+			if (!receiveParam)
+			{
+				getLog().info("Successfully get parameter");
+				break;
+			}
+		}
 		/*
 		 * A Parameter value message will be received after it
 		 */
 	}
-	
+
 	/*
 	 * Tested - This function reads all the parameters stored on the drone.
-	 * WARNING - Never call this function when the drone is in air
-	 * This is a function overload with specific target system and component
+	 * WARNING - Never call this function when the drone is in air This is a
+	 * function overload with specific target system and component
 	 */
 	private void readParameterListStart(byte tSystem, byte tComponent)
 	{
@@ -3689,36 +4058,68 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		paramReceivedIndexes = new ArrayList<Short>(600);
 		paramIndex = 0;
 		paramTotal = 1;
-		receiveparamList = true;
+		receiveParamList = true;
 		readParamList(tSystem, tComponent);
 	}
-	
+
 	/*
 	 * This function should not be called before the readParameterListStart
-	 * function as it initializes the critical components to be used
-	 * This is a function overload with specific target system and component
+	 * function as it initializes the critical components to be used This is a
+	 * function overload with specific target system and component
 	 */
 	private void readParamList(byte tSystem, byte tComponent)
 	{
-		if (paramList==null||paramType==null||paramReceivedIndexes==null) {
-			getLog().error("Use readParameterListStart function instead of this");
+		if (paramList == null || paramType == null
+				|| paramReceivedIndexes == null)
+		{
+			getLog().error(
+					"Use readParameterListStart function instead of this");
 			return;
 		}
 		msg_param_request_list req = new msg_param_request_list();
 		req.target_component = tComponent;
-		req.target_system = tSystem ;
+		req.target_system = tSystem;
 		byte tempByte[] = req.pack().encodePacket();
 		Map<String, Object> tempParameterList = Maps.newHashMap();
 		tempParameterList.put("comm", Arrays.toString(tempByte));
 		sendOutputJson(publishers[0], tempParameterList);
 		getLog().debug(
-				"REQUESTING PARAMETER LIST : "
-						+ Arrays.toString(tempByte));
+				"REQUESTING PARAMETER LIST : " + Arrays.toString(tempByte));
+
+		Date start = new Date();
+		int retry = 3;
+		while (true)
+		{
+			if (paramList.isEmpty())
+			{
+				if (!((start.getTime() + 700) > System.currentTimeMillis()))
+				{
+					if (retry > 0)
+					{
+						sendOutputJson(publishers[0], tempParameterList);
+						getLog().info("REQUESTING GET PARAMETER LIST AGAIN ");
+						start = new Date();
+						retry--;
+						continue;
+					}
+					else
+					{
+						getLog().error("Timeout on get Parameter List");
+						break;
+					}
+				}
+			}
+			if (!receiveParamList)
+			{
+				getLog().info("Successfully get parameter list");
+				break;
+			}
+		}
 		/*
 		 * A sequence of Parameter value messages will be received after it
 		 */
 	}
-	
+
 	/*
 	 * This is a function overload with specific target system and component
 	 * Gets a single Parameter from the drone.
@@ -3735,11 +4136,39 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		tempParameter.put("comm", Arrays.toString(tempByte));
 		sendOutputJson(publishers[0], tempParameter);
 		getLog().debug("REQUESTING PARAMETER : " + Arrays.toString(tempByte));
+		receiveParam = true;
+
+		Date start = new Date();
+		int retry = 3;
+		while (true)
+		{
+			if (!((start.getTime() + 700) > System.currentTimeMillis()))
+			{
+				if (retry > 0)
+				{
+					sendOutputJson(publishers[0], tempParameter);
+					getLog().info("REQUESTING GET PARAMETER AGAIN ");
+					start = new Date();
+					retry--;
+					continue;
+				}
+				else
+				{
+					getLog().error("Timeout on get Parameter");
+					break;
+				}
+			}
+			if (!receiveParam)
+			{
+				getLog().info("Successfully get parameter");
+				break;
+			}
+		}
 		/*
 		 * A Parameter value message will be received after it
 		 */
 	}
-	
+
 	/*
 	 * This is a function overload with specific target system and component
 	 * Gets a single Parameter from the drone.
@@ -3757,17 +4186,49 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		tempParameter.put("comm", Arrays.toString(tempByte));
 		sendOutputJson(publishers[0], tempParameter);
 		getLog().debug("REQUESTING PARAMETER : " + Arrays.toString(tempByte));
+		receiveParam = true;
+
+		Date start = new Date();
+		int retry = 3;
+		while (true)
+		{
+			if (!((start.getTime() + 700) > System.currentTimeMillis()))
+			{
+				if (retry > 0)
+				{
+					sendOutputJson(publishers[0], tempParameter);
+					getLog().info("REQUESTING GET PARAMETER AGAIN ");
+					start = new Date();
+					retry--;
+					continue;
+				}
+				else
+				{
+					getLog().error("Timeout on get Parameter");
+					break;
+				}
+			}
+			if (!receiveParam)
+			{
+				getLog().info("Successfully get parameter");
+				break;
+			}
+		}
 		/*
 		 * A Parameter value message will be received after it
 		 */
 	}
 
-	private void saveParam(msg_param_value paramValue) 
+	private void saveParam(msg_param_value paramValue)
 	{
-		if (receiveparamList) {
-			if (paramReceivedIndexes.contains(paramValue.param_index)) {
+		if (receiveParamList)
+		{
+			if (paramReceivedIndexes.contains(paramValue.param_index))
+			{
 				getLog().info("Parameter already received");
-			} else {
+			}
+			else
+			{
 				paramReceivedIndexes.add(paramValue.param_index);
 				paramIndex++;
 			}
@@ -3775,32 +4236,38 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			paramList.put(paramID, (double) paramValue.param_value);
 			paramType.put(paramID, paramValue.param_type);
 			paramTotal = paramValue.param_count;
-			if ((paramTotal-1) == (paramIndex )) {
+			if ((paramTotal - 1) == (paramIndex))
+			{
 				getLog().info("Received all the parameters successfully");
-				receiveparamList = false;
-			} else {
+				receiveParamList = false;
+			}
+			else
+			{
 				// getParam(paramIndex);
-			}	
+			}
 		}
-		else {
+		else
+		{
 			String paramID = (new String(paramValue.param_id)).split("\0", 2)[0];
 			paramList.put(paramID, (double) paramValue.param_value);
 			paramType.put(paramID, paramValue.param_type);
+			receiveParam = false;
 		}
-		
+
 	}
 
-	//NOT TESTED
+	// TESTED
 	private void setParam(String pID, float pValue)
 	{
-		if (paramList.containsKey(pID)) {
+		if (paramList.containsKey(pID))
+		{
 			Map<String, Object> tempParameterSet;
 			msg_param_set req = new msg_param_set();
 			req.target_component = targetComponent;
 			req.target_system = targetSystem;
 			req.param_value = pValue;
-			req.param_id = Arrays
-					.copyOf(pID.getBytes(StandardCharsets.US_ASCII), 16);
+			req.param_id = Arrays.copyOf(
+					pID.getBytes(StandardCharsets.US_ASCII), 16);
 			req.param_type = paramType.get(pID);
 			byte tempByte[] = req.pack().encodePacket();
 			tempParameterSet = Maps.newHashMap();
@@ -3811,20 +4278,26 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 
 			Date start = new Date();
 			int retry = 3;
-			while (true) {
-				if (!((start.getTime() + 700) > System.currentTimeMillis())) {
-					if (retry > 0) {
+			while (true)
+			{
+				if (!((start.getTime() + 700) > System.currentTimeMillis()))
+				{
+					if (retry > 0)
+					{
 						sendOutputJson(publishers[0], tempParameterSet);
 						getLog().info("REQUESTING SET PARAMETER AGAIN ");
 						start = new Date();
 						retry--;
 						continue;
-					} else {
+					}
+					else
+					{
 						getLog().error("Timeout on set Parameter");
 						break;
 					}
 				}
-				if (paramList.get(pID) == pValue) {
+				if (paramList.get(pID) == pValue)
+				{
 					getLog().info("Successfully set parameter");
 					break;
 				}
@@ -3845,43 +4318,50 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		 * within its timeout time, it should re-send the PARAM_SET message.
 		 */
 	}
-	
-	//NOT TESTED
+
+	// TESTED
 	private void setParam(String pID, float pValue, byte tSystem,
-			byte tComponent) 
+			byte tComponent)
 	{
-		if (paramList.containsKey(pID)) {
+		if (paramList.containsKey(pID))
+		{
 			Map<String, Object> tempParameterSet;
 			msg_param_set req = new msg_param_set();
 			req.target_component = tComponent;
 			req.target_system = tSystem;
 			req.param_value = pValue;
-			req.param_id = Arrays
-					.copyOf(pID.getBytes(StandardCharsets.US_ASCII), 16);
+			req.param_id = Arrays.copyOf(
+					pID.getBytes(StandardCharsets.US_ASCII), 16);
 			req.param_type = paramType.get(pID);
 			byte tempByte[] = req.pack().encodePacket();
 			tempParameterSet = Maps.newHashMap();
 			tempParameterSet.put("comm", Arrays.toString(tempByte));
-			//sendOutputJson(publishers[0], tempParameterSet);
+			sendOutputJson(publishers[0], tempParameterSet);
 			getLog().debug(
 					"REQUESTING SET PARAMETER : " + Arrays.toString(tempByte));
 
 			Date start = new Date();
 			int retry = 3;
-			while (true) {
-				if (!((start.getTime() + 700) > System.currentTimeMillis())) {
-					if (retry > 0) {
+			while (true)
+			{
+				if (!((start.getTime() + 700) > System.currentTimeMillis()))
+				{
+					if (retry > 0)
+					{
 						sendOutputJson(publishers[0], tempParameterSet);
 						getLog().debug("REQUESTING SET PARAMETER AGAIN ");
 						start = new Date();
 						retry--;
 						continue;
-					} else {
+					}
+					else
+					{
 						getLog().error("Timeout on set Parameter");
 						break;
 					}
 				}
-				if (paramList.get(pID) == pValue) {
+				if (paramList.get(pID) == pValue)
+				{
 					getLog().info("Successfully set parameter");
 					break;
 				}
@@ -3901,11 +4381,10 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		 * parameters. If the sending GCS did not receive a PARAM_VALUE message
 		 * within its timeout time, it should re-send the PARAM_SET message.
 		 */
-		
-	}
-	
 
-	private void setMode() 
+	}
+
+	private void setMode()
 	{
 
 	}
