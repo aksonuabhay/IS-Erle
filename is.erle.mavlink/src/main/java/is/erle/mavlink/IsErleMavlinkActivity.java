@@ -4383,7 +4383,177 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		 */
 
 	}
+	
+	public void doRebootAutopilot()
+    {
+        int param1 = 1;
+        if (targetSystem != 0 && targetComponent != 0)
+        {
+            doCommand((short) MAV_CMD.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, param1, 0, 0, 0, 0, 0, 0);
+        }
+        else
+        {
 
+            for (short a = 0; a < 255; a++)
+            {
+                doCommand((short)MAV_CMD.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, param1, 0, 0, 0, 0, 0, 0,(byte)a,(byte) 0);
+            }
+        }
+    }
+
+	public void doRebootAutopilot(byte tSystem, byte tComponent)
+    {
+        int param1 = 1;
+        if (tSystem != 0 && tComponent != 0)
+        {
+            doCommand((short) MAV_CMD.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, param1, 0, 0, 0, 0, 0, 0,tSystem,tComponent);
+        }
+        else
+        {
+
+            for (short a = 0; a < 255; a++)
+            {
+                doCommand((short)MAV_CMD.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, param1, 0, 0, 0, 0, 0, 0,(byte)a,(byte) 0);
+            }
+        }
+    }
+	
+	public void doShutdownAutopilot()
+    {
+        int param1 = 2;
+        if (targetSystem != 0 && targetComponent != 0)
+        {
+            doCommand((short) MAV_CMD.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, param1, 0, 0, 0, 0, 0, 0);
+        }
+        else
+        {
+
+            for (short a = 0; a < 255; a++)
+            {
+                doCommand((short)MAV_CMD.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, param1, 0, 0, 0, 0, 0, 0,(byte)a,(byte) 0);
+            }
+        }
+    }
+	
+	public void doShutdownAutopilot(byte tSystem, byte tComponent)
+    {
+        int param1 = 2;
+        if (tSystem != 0 && tComponent != 0)
+        {
+            doCommand((short) MAV_CMD.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, param1, 0, 0, 0, 0, 0, 0,tSystem,tComponent);
+        }
+        else
+        {
+
+            for (short a = 0; a < 255; a++)
+            {
+                doCommand((short)MAV_CMD.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, param1, 0, 0, 0, 0, 0, 0,(byte)a,(byte) 0);
+            }
+        }
+    }
+	
+	public void doBootloaderReboot()
+    {
+        int param1 = 3;
+        if (targetSystem != 0 && targetComponent != 0)
+        {
+            doCommand((short) MAV_CMD.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, param1, 0, 0, 0, 0, 0, 0);
+        }
+        else
+        {
+
+            for (short a = 0; a < 255; a++)
+            {
+                doCommand((short)MAV_CMD.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, param1, 0, 0, 0, 0, 0, 0,(byte)a,(byte) 0);
+            }
+        }
+    }
+
+	public void doBootloaderReboot(byte tSystem, byte tComponent)
+    {
+        int param1 = 3;
+        if (tSystem != 0 && tComponent != 0)
+        {
+            doCommand((short) MAV_CMD.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, param1, 0, 0, 0, 0, 0, 0,tSystem,tComponent);
+        }
+        else
+        {
+
+            for (short a = 0; a < 255; a++)
+            {
+                doCommand((short)MAV_CMD.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, param1, 0, 0, 0, 0, 0, 0,(byte)a,(byte) 0);
+            }
+        }
+    }
+	
+	public void doSystemReboot()
+    {
+        int param2 = 1;
+        if (targetSystem != 0 && targetComponent != 0)
+        {
+            doCommand((short) MAV_CMD.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, 0, param2, 0, 0, 0, 0, 0);
+        }
+        else
+        {
+
+            for (short a = 0; a < 255; a++)
+            {
+                doCommand((short)MAV_CMD.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, 0, param2, 0, 0, 0, 0, 0,(byte)a,(byte) 0);
+            }
+        }
+    }
+
+	public void doSystemReboot(byte tSystem, byte tComponent)
+    {
+        int param2 = 1;
+        if (tSystem != 0 && tComponent != 0)
+        {
+            doCommand((short) MAV_CMD.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, 0, param2, 0, 0, 0, 0, 0,tSystem,tComponent);
+        }
+        else
+        {
+
+            for (short a = 0; a < 255; a++)
+            {
+                doCommand((short)MAV_CMD.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, 0, param2, 0, 0, 0, 0, 0,(byte)a,(byte) 0);
+            }
+        }
+    }
+	
+	public void doSystemShutdown()
+    {
+        int param2 = 2;
+        if (targetSystem != 0 && targetComponent != 0)
+        {
+            doCommand((short) MAV_CMD.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, 0, param2, 0, 0, 0, 0, 0);
+        }
+        else
+        {
+
+            for (short a = 0; a < 255; a++)
+            {
+                doCommand((short)MAV_CMD.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, 0, param2, 0, 0, 0, 0, 0,(byte)a,(byte) 0);
+            }
+        }
+    }
+
+	public void doSystemShutdown(byte tSystem, byte tComponent)
+    {
+        int param2 = 2;
+        if (tSystem != 0 && tComponent != 0)
+        {
+            doCommand((short) MAV_CMD.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, 0, param2, 0, 0, 0, 0, 0,tSystem,tComponent);
+        }
+        else
+        {
+
+            for (short a = 0; a < 255; a++)
+            {
+                doCommand((short)MAV_CMD.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, 0, param2, 0, 0, 0, 0, 0,(byte)a,(byte) 0);
+            }
+        }
+    }
+	
 	private void setMode()
 	{
 
