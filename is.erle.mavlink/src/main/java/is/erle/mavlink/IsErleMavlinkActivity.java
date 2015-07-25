@@ -3258,7 +3258,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	}
 
 
-	private void readMissionListStart()
+	private boolean readMissionListStart()
 	{
 		msg_mission_request_list reqMissionList = new msg_mission_request_list();
 		reqMissionList.target_component = targetComponent;
@@ -3287,13 +3287,13 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				else
 				{
 					getLog().error("Timeout on request list");
-					break;
+					return false;
 				}
 			}
 			if (!(readWaypointCount == -1))
 			{
 				getLog().info("Successfully get a waypoint count message");
-				break;
+				return true;
 			}
 		}
 		/*
@@ -3301,7 +3301,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		 */
 	}
 
-	private void readMissionListStart(byte tSystem, byte tComponent)
+	private boolean readMissionListStart(byte tSystem, byte tComponent)
 	{
 		msg_mission_request_list reqMissionList = new msg_mission_request_list();
 		reqMissionList.target_component = tComponent;
@@ -3330,13 +3330,13 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				else
 				{
 					getLog().error("Timeout on request list");
-					break;
+					return false;
 				}
 			}
 			if (!(readWaypointCount == -1))
 			{
 				getLog().info("Successfully get a waypoint count message");
-				break;
+				return true;
 			}
 		}
 		/*
@@ -3344,27 +3344,27 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		 */
 	}
 
-	private void setMissionCount(short count)
+	private boolean setMissionCount(short count)
 	{
 		/*
 		 * Called by mission count message receive case
 		 */
 		readWaypointCount = count;
 		readWaypointList = new ArrayList<String[]>(count);
-		sendWPRequest((short) 0);
+		return sendWPRequest((short) 0);
 	}
 
-	private void setMissionCount(short count, byte tSystem, byte tComponent)
+	private boolean setMissionCount(short count, byte tSystem, byte tComponent)
 	{
 		/*
 		 * Called by mission count message receive case
 		 */
 		readWaypointCount = count;
 		readWaypointList = new ArrayList<String[]>(count);
-		sendWPRequest((short) 0, tSystem, tComponent);
+		return sendWPRequest((short) 0, tSystem, tComponent);
 	}
 
-	private void sendWPRequest(short i)
+	private boolean sendWPRequest(short i)
 	{
 		/*
 		 * Called by setMissionCount and updateReadWaypointList
@@ -3398,13 +3398,13 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				else
 				{
 					getLog().error("Timeout on waypoint read");
-					break;
+					return false;
 				}
 			}
 			if (readWaypointList.size() == (i + 1))
 			{
 				getLog().info("Successfully get waypoint data");
-				break;
+				return true;
 			}
 		}
 		/*
@@ -3412,7 +3412,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		 */
 	}
 
-	private void sendWPRequest(short i, byte tSystem, byte tComponent)
+	private boolean sendWPRequest(short i, byte tSystem, byte tComponent)
 	{
 		/*
 		 * Called by setMissionCount and updateReadWaypointList
@@ -3446,13 +3446,13 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				else
 				{
 					getLog().error("Timeout on waypoint read");
-					break;
+					return false;
 				}
 			}
 			if (readWaypointList.size() == (i + 1))
 			{
 				getLog().info("Successfully get waypoint data");
-				break;
+				return true;
 			}
 		}
 		/*
@@ -3570,7 +3570,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	}
 
 	// Untested
-	private void setCurrentActiveWP(short currentSequence)
+	private boolean setCurrentActiveWP(short currentSequence)
 	{
 		msg_mission_set_current missionCurrent = new msg_mission_set_current();
 		missionCurrent.seq = currentSequence;
@@ -3601,13 +3601,13 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				else
 				{
 					getLog().error("Timeout on set current active Waypoint");
-					break;
+					return false;
 				}
 			}
 			if (currentSequence == missionCurrentSeq)
 			{
 				getLog().info("Successfully set current active Waypoint");
-				break;
+				return true;
 			}
 		}
 		/*
@@ -3618,7 +3618,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	// Untested
 
 	// Untested
-	private void setCurrentActiveWP(short currentSequence, byte tSystem,
+	private boolean setCurrentActiveWP(short currentSequence, byte tSystem,
 			byte tComponent)
 	{
 		msg_mission_set_current missionCurrent = new msg_mission_set_current();
@@ -3650,13 +3650,13 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				else
 				{
 					getLog().error("Timeout on set current active Waypoint");
-					break;
+					return false;
 				}
 			}
 			if (currentSequence == missionCurrentSeq)
 			{
 				getLog().info("Successfully set current active Waypoint");
-				break;
+				return true;
 			}
 		}
 		/*
@@ -3665,7 +3665,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	}
 
 	// Untested
-	private void clearMissionList()
+	private boolean clearMissionList()
 	{
 		msg_mission_clear_all missionClear = new msg_mission_clear_all();
 		missionClear.target_component = targetComponent;
@@ -3696,19 +3696,19 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				else
 				{
 					getLog().error("Timeout on clear Mission list");
-					break;
+					return false;
 				}
 			}
 			if (!isMissionCleared)
 			{
 				getLog().info("Successfully clear Mission list");
-				break;
+				return true;
 			}
 		}
 	}
 
 	// Untested
-	private void clearMissionList(byte tSystem, byte tComponent)
+	private boolean clearMissionList(byte tSystem, byte tComponent)
 	{
 		msg_mission_clear_all missionClear = new msg_mission_clear_all();
 		missionClear.target_component = tComponent;
@@ -3739,33 +3739,33 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				else
 				{
 					getLog().error("Timeout on clear Mission list");
-					break;
+					return false;
 				}
 			}
 			if (!isMissionCleared)
 			{
 				getLog().info("Successfully clear Mission list");
-				break;
+				return true;
 			}
 		}
 	}
 
 	// Not Tested
-	public void doARM(boolean armit)
+	public boolean doARM(boolean armit)
 	{
-		doCommand((short) MAV_CMD.MAV_CMD_COMPONENT_ARM_DISARM, armit ? 1 : 0,
+		return doCommand((short) MAV_CMD.MAV_CMD_COMPONENT_ARM_DISARM, armit ? 1 : 0,
 				21196, 0, 0, 0, 0, 0);
 	}
 
 	// Not Tested
-	public void doARM(boolean armit, byte tSystem, byte tComponent)
+	public boolean doARM(boolean armit, byte tSystem, byte tComponent)
 	{
-		doCommand((short) MAV_CMD.MAV_CMD_COMPONENT_ARM_DISARM, armit ? 1 : 0,
+		return doCommand((short) MAV_CMD.MAV_CMD_COMPONENT_ARM_DISARM, armit ? 1 : 0,
 				21196, 0, 0, 0, 0, 0, tSystem, tComponent);
 	}
 
 	// Not Tested
-	public void doCommand(short actionid, float p1, float p2, float p3,
+	public boolean doCommand(short actionid, float p1, float p2, float p3,
 			float p4, float p5, float p6, float p7)
 	{
 		msg_command_long req = new msg_command_long();
@@ -3806,13 +3806,13 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				else
 				{
 					getLog().error("Timeout on send command");
-					break;
+					return false;
 				}
 			}
 			if (!isCommandSent)
 			{
 				getLog().info("Successfully send command");
-				break;
+				return true;
 			}
 		}
 		/*
@@ -3821,7 +3821,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	}
 
 	// Not Tested
-	public void doCommand(short actionid, float p1, float p2, float p3,
+	public boolean doCommand(short actionid, float p1, float p2, float p3,
 			float p4, float p5, float p6, float p7, byte tSystem,
 			byte tComponent)
 	{
@@ -3863,13 +3863,13 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				else
 				{
 					getLog().error("Timeout on send command");
-					break;
+					return false;
 				}
 			}
 			if (!isCommandSent)
 			{
 				getLog().info("Successfully send command");
-				break;
+				return true;
 			}
 		}
 		/*
@@ -3881,7 +3881,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	 * Tested - This function reads all the parameters stored on the drone.
 	 * WARNING - Never call this function when the drone is in air
 	 */
-	private void readParameterListStart()
+	private boolean readParameterListStart()
 	{
 		paramList = new ConcurrentHashMap<String, Double>(600);
 		paramType = new HashMap<String, Byte>(600);
@@ -3889,21 +3889,21 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		paramIndex = 0;
 		paramTotal = 1;
 		receiveParamList = true;
-		readParamList();
+		return readParamList();
 	}
 
 	/*
 	 * This function should not be called before the readParameterListStart
 	 * function as it initializes the critical components to be used
 	 */
-	private void readParamList()
+	private boolean readParamList()
 	{
 		if (paramList == null || paramType == null
 				|| paramReceivedIndexes == null)
 		{
 			getLog().error(
 					"Use readParameterListStart function instead of this");
-			return;
+			return false;
 		}
 		msg_param_request_list req = new msg_param_request_list();
 		req.target_component = targetComponent;
@@ -3934,14 +3934,14 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 					else
 					{
 						getLog().error("Timeout on get Parameter List");
-						break;
+						return false;
 					}
 				}
 			}
 			if (!receiveParamList)
 			{
 				getLog().info("Successfully get parameter list");
-				break;
+				return true;
 			}
 		}
 		/*
@@ -3952,7 +3952,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	/*
 	 * Gets a single Parameter from the drone.
 	 */
-	private void getParam(short index)
+	private boolean getParam(short index)
 	{
 		msg_param_request_read req = new msg_param_request_read();
 		req.target_system = targetSystem;
@@ -3983,13 +3983,13 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				else
 				{
 					getLog().error("Timeout on get Parameter");
-					break;
+					return false;
 				}
 			}
 			if (!receiveParam)
 			{
 				getLog().info("Successfully get parameter");
-				break;
+				return true;
 			}
 		}
 		/*
@@ -4000,7 +4000,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	/*
 	 * Gets a single Parameter from the drone.
 	 */
-	private void getParam(String id)
+	private boolean getParam(String id)
 	{
 		msg_param_request_read req = new msg_param_request_read();
 		req.target_system = targetSystem;
@@ -4032,13 +4032,13 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				else
 				{
 					getLog().error("Timeout on get Parameter");
-					break;
+					return false;
 				}
 			}
 			if (!receiveParam)
 			{
 				getLog().info("Successfully get parameter");
-				break;
+				return true;
 			}
 		}
 		/*
@@ -4051,7 +4051,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	 * WARNING - Never call this function when the drone is in air This is a
 	 * function overload with specific target system and component
 	 */
-	private void readParameterListStart(byte tSystem, byte tComponent)
+	private boolean readParameterListStart(byte tSystem, byte tComponent)
 	{
 		paramList = new HashMap<String, Double>(600);
 		paramType = new HashMap<String, Byte>(600);
@@ -4059,7 +4059,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		paramIndex = 0;
 		paramTotal = 1;
 		receiveParamList = true;
-		readParamList(tSystem, tComponent);
+		return readParamList(tSystem, tComponent);
 	}
 
 	/*
@@ -4067,14 +4067,14 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	 * function as it initializes the critical components to be used This is a
 	 * function overload with specific target system and component
 	 */
-	private void readParamList(byte tSystem, byte tComponent)
+	private boolean readParamList(byte tSystem, byte tComponent)
 	{
 		if (paramList == null || paramType == null
 				|| paramReceivedIndexes == null)
 		{
 			getLog().error(
 					"Use readParameterListStart function instead of this");
-			return;
+			return false;
 		}
 		msg_param_request_list req = new msg_param_request_list();
 		req.target_component = tComponent;
@@ -4105,14 +4105,14 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 					else
 					{
 						getLog().error("Timeout on get Parameter List");
-						break;
+						return false;
 					}
 				}
 			}
 			if (!receiveParamList)
 			{
 				getLog().info("Successfully get parameter list");
-				break;
+				return true;
 			}
 		}
 		/*
@@ -4124,7 +4124,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	 * This is a function overload with specific target system and component
 	 * Gets a single Parameter from the drone.
 	 */
-	private void getParam(short index, byte tSystem, byte tComponent)
+	private boolean getParam(short index, byte tSystem, byte tComponent)
 	{
 		msg_param_request_read req = new msg_param_request_read();
 		req.target_system = tSystem;
@@ -4155,13 +4155,13 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				else
 				{
 					getLog().error("Timeout on get Parameter");
-					break;
+					return false;
 				}
 			}
 			if (!receiveParam)
 			{
 				getLog().info("Successfully get parameter");
-				break;
+				return true;
 			}
 		}
 		/*
@@ -4173,7 +4173,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	 * This is a function overload with specific target system and component
 	 * Gets a single Parameter from the drone.
 	 */
-	private void getParam(String id, byte tSystem, byte tComponent)
+	private boolean getParam(String id, byte tSystem, byte tComponent)
 	{
 		msg_param_request_read req = new msg_param_request_read();
 		req.target_system = tSystem;
@@ -4205,13 +4205,13 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				else
 				{
 					getLog().error("Timeout on get Parameter");
-					break;
+					return false;
 				}
 			}
 			if (!receiveParam)
 			{
 				getLog().info("Successfully get parameter");
-				break;
+				return true;
 			}
 		}
 		/*
@@ -4257,7 +4257,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	}
 
 	// TESTED
-	private void setParam(String pID, float pValue)
+	private boolean setParam(String pID, float pValue)
 	{
 		if (paramList.containsKey(pID))
 		{
@@ -4293,19 +4293,20 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 					else
 					{
 						getLog().error("Timeout on set Parameter");
-						break;
+						return false;
 					}
 				}
 				if (paramList.get(pID) == pValue)
 				{
 					getLog().info("Successfully set parameter");
-					break;
+					return true;
 				}
 			}
 		}
 		else
 		{
 			getLog().warn("No such parameter on the drone");
+			return false;
 		}
 		/**
 		 * Set a parameter value TEMPORARILY to RAM. It will be reset to default
@@ -4320,7 +4321,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	}
 
 	// TESTED
-	private void setParam(String pID, float pValue, byte tSystem,
+	private boolean setParam(String pID, float pValue, byte tSystem,
 			byte tComponent)
 	{
 		if (paramList.containsKey(pID))
@@ -4357,19 +4358,20 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 					else
 					{
 						getLog().error("Timeout on set Parameter");
-						break;
+						return false;
 					}
 				}
 				if (paramList.get(pID) == pValue)
 				{
 					getLog().info("Successfully set parameter");
-					break;
+					return true;
 				}
 			}
 		}
 		else
 		{
 			getLog().warn("No such parameter on the drone");
+			return false;
 		}
 		/**
 		 * Set a parameter value TEMPORARILY to RAM. It will be reset to default
@@ -4384,7 +4386,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 
 	}
 	
-	public void doRebootAutopilot()
+	public boolean doRebootAutopilot()
     {
         int param1 = 1;
         if (targetSystem != 0 && targetComponent != 0)
@@ -4396,12 +4398,13 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 
             for (short a = 0; a < 255; a++)
             {
-                doCommand((short)MAV_CMD.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, param1, 0, 0, 0, 0, 0, 0,(byte)a,(byte) 0);
+               doCommand((short)MAV_CMD.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, param1, 0, 0, 0, 0, 0, 0,(byte)a,(byte) 0);
             }
         }
+        return true;
     }
 
-	public void doRebootAutopilot(byte tSystem, byte tComponent)
+	public boolean doRebootAutopilot(byte tSystem, byte tComponent)
     {
         int param1 = 1;
         if (tSystem != 0 && tComponent != 0)
@@ -4416,9 +4419,10 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
                 doCommand((short)MAV_CMD.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, param1, 0, 0, 0, 0, 0, 0,(byte)a,(byte) 0);
             }
         }
+        return true;
     }
 	
-	public void doShutdownAutopilot()
+	public boolean doShutdownAutopilot()
     {
         int param1 = 2;
         if (targetSystem != 0 && targetComponent != 0)
@@ -4433,9 +4437,10 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
                 doCommand((short)MAV_CMD.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, param1, 0, 0, 0, 0, 0, 0,(byte)a,(byte) 0);
             }
         }
+        return true;
     }
 	
-	public void doShutdownAutopilot(byte tSystem, byte tComponent)
+	public boolean doShutdownAutopilot(byte tSystem, byte tComponent)
     {
         int param1 = 2;
         if (tSystem != 0 && tComponent != 0)
@@ -4450,9 +4455,10 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
                 doCommand((short)MAV_CMD.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, param1, 0, 0, 0, 0, 0, 0,(byte)a,(byte) 0);
             }
         }
+        return true;
     }
 	
-	public void doBootloaderReboot()
+	public boolean doBootloaderReboot()
     {
         int param1 = 3;
         if (targetSystem != 0 && targetComponent != 0)
@@ -4467,9 +4473,10 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
                 doCommand((short)MAV_CMD.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, param1, 0, 0, 0, 0, 0, 0,(byte)a,(byte) 0);
             }
         }
+        return true;
     }
 
-	public void doBootloaderReboot(byte tSystem, byte tComponent)
+	public boolean doBootloaderReboot(byte tSystem, byte tComponent)
     {
         int param1 = 3;
         if (tSystem != 0 && tComponent != 0)
@@ -4484,9 +4491,10 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
                 doCommand((short)MAV_CMD.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, param1, 0, 0, 0, 0, 0, 0,(byte)a,(byte) 0);
             }
         }
+        return true;
     }
 	
-	public void doSystemReboot()
+	public boolean doSystemReboot()
     {
         int param2 = 1;
         if (targetSystem != 0 && targetComponent != 0)
@@ -4501,9 +4509,10 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
                 doCommand((short)MAV_CMD.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, 0, param2, 0, 0, 0, 0, 0,(byte)a,(byte) 0);
             }
         }
+        return true;
     }
 
-	public void doSystemReboot(byte tSystem, byte tComponent)
+	public boolean doSystemReboot(byte tSystem, byte tComponent)
     {
         int param2 = 1;
         if (tSystem != 0 && tComponent != 0)
@@ -4518,9 +4527,10 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
                 doCommand((short)MAV_CMD.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, 0, param2, 0, 0, 0, 0, 0,(byte)a,(byte) 0);
             }
         }
+        return true;
     }
 	
-	public void doSystemShutdown()
+	public boolean doSystemShutdown()
     {
         int param2 = 2;
         if (targetSystem != 0 && targetComponent != 0)
@@ -4535,9 +4545,10 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
                 doCommand((short)MAV_CMD.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, 0, param2, 0, 0, 0, 0, 0,(byte)a,(byte) 0);
             }
         }
+        return true;
     }
 
-	public void doSystemShutdown(byte tSystem, byte tComponent)
+	public boolean doSystemShutdown(byte tSystem, byte tComponent)
     {
         int param2 = 2;
         if (tSystem != 0 && tComponent != 0)
@@ -4552,6 +4563,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
                 doCommand((short)MAV_CMD.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, 0, param2, 0, 0, 0, 0, 0,(byte)a,(byte) 0);
             }
         }
+        return true;
     }
 	
 	private void setMode()
