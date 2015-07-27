@@ -84,8 +84,6 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		try
 		{
 			dataXML = new XMLParamParser(inputFile);
-			getLog().info(
-					dataXML.getParamDataXml("FLTMODE1", "Values", "ArduCopter2"));
 		}
 		catch (SAXException e)
 		{
@@ -4599,9 +4597,72 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
         return true;
     }
 	
-	private void setMode()
+	private boolean setMode(String mode)
 	{
-
+		Map<String, Short> modeMap = dataXML.getParamOptions("FLTMODE1",
+				"ArduCopter2");
+		if (modeMap.containsKey(mode))
+		{
+			msg_set_mode req = new msg_set_mode();
+			req.base_mode = MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED;
+			req.target_system = targetSystem;
+			req.custom_mode = modeMap.get(mode);
+			byte tempByte[] = req.pack().encodePacket();
+			Map<String, Object> tempModeSet;
+			tempModeSet = Maps.newHashMap();
+			tempModeSet.put("comm", Arrays.toString(tempByte));
+			sendOutputJson(publishers[0], tempModeSet);
+			getLog().debug("REQUESTING SET MODE : " + Arrays.toString(tempByte));
+			try
+			{
+				Thread.sleep(1000);
+			}
+			catch (InterruptedException e)
+			{
+				getLog().error(e);
+			}
+			sendOutputJson(publishers[0], tempModeSet);
+			return true;
+		}
+		else
+		{
+			getLog().warn("Mode type not found in the Parameter file");
+		}
+		return false;
+	}
+	
+	private boolean setMode(String mode, byte tSystem)
+	{
+		Map<String, Short> modeMap = dataXML.getParamOptions("FLTMODE1",
+				"ArduCopter2");
+		if (modeMap.containsKey(mode))
+		{
+			msg_set_mode req = new msg_set_mode();
+			req.base_mode = MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED;
+			req.target_system = tSystem;
+			req.custom_mode = modeMap.get(mode);
+			byte tempByte[] = req.pack().encodePacket();
+			Map<String, Object> tempModeSet;
+			tempModeSet = Maps.newHashMap();
+			tempModeSet.put("comm", Arrays.toString(tempByte));
+			sendOutputJson(publishers[0], tempModeSet);
+			getLog().debug("REQUESTING SET MODE : " + Arrays.toString(tempByte));
+			try
+			{
+				Thread.sleep(1000);
+			}
+			catch (InterruptedException e)
+			{
+				getLog().error(e);
+			}
+			sendOutputJson(publishers[0], tempModeSet);
+			return true;
+		}
+		else
+		{
+			getLog().warn("Mode type not found in the Parameter file");
+		}
+		return false;
 	}
 }
 
