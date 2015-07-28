@@ -16,10 +16,20 @@ import com.MAVLink.common.*;
 import com.MAVLink.enums.*;
 import com.MAVLink.pixhawk.*;
 import com.google.common.collect.Maps;
+
+import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.Class;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
+
+import javax.sound.sampled.DataLine;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.xml.sax.SAXException;
+
+
 /**
  * A simple Interactive Spaces Java-based activity.
  */
@@ -58,6 +68,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	private short paramTotal;
 	private boolean receiveParamList, receiveParam;
 	
+	private File inputFile;
+	private XMLParamParser dataXML;
+	
     @Override
     public void onActivitySetup() {
         getLog().info("Activity is.erle.mavlink setup");
@@ -66,6 +79,26 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
         responseGlobal = new int[1000];
         mavParser = new Parser();
         heartbeatReceiveFlag = false;
+        String directory = getActivityFilesystem().getInstallDirectory().getAbsolutePath() +"/ParameterMetaDataBackup.xml";
+        inputFile = new File(directory);
+		try
+		{
+			dataXML = new XMLParamParser(inputFile);
+			getLog().info(
+					dataXML.getParamDataXml("FLTMODE1", "Values", "ArduCopter2"));
+		}
+		catch (SAXException e)
+		{
+			e.printStackTrace();
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+		catch (ParserConfigurationException e)
+		{
+			e.printStackTrace();
+		}
     }
 
     @Override

@@ -40,4 +40,8 @@
       </property>
     </configuration>
   </activity>
+  
+  <resources>
+    <resource sourceFile="src/main/Resources/ParameterMetaDataBackup.xml" />
+  </resources>
 </project>
