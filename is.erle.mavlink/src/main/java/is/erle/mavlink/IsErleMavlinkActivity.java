@@ -4788,6 +4788,39 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			}
 		}
 	}
+	
+	public void injectGpsData(byte[] data, int length)
+	{
+		msg_gps_inject_data req = new msg_gps_inject_data();
+		req.data = new byte[110];
+		req.len = (byte) length;
+		req.data = Arrays.copyOf(data, length);
+		req.target_system = targetSystem;
+		req.target_component = targetComponent;
+		Map<String, Object> tempInjectGpsData;
+		byte tempByte[] = req.pack().encodePacket();
+		tempInjectGpsData = Maps.newHashMap();
+		tempInjectGpsData.put("comm", Arrays.toString(tempByte));
+		sendOutputJson(publishers[0], tempInjectGpsData);
+		getLog().debug("INJECTING GPS DATA : " + Arrays.toString(tempByte));
+	}
+	
+	public void injectGpsData(byte[] data, int length, byte tSystem,
+			byte tComponent)
+	{
+		msg_gps_inject_data req = new msg_gps_inject_data();
+		req.data = new byte[110];
+		req.len = (byte) length;
+		req.data = Arrays.copyOf(data, length);
+		req.target_system = tSystem;
+		req.target_component = tComponent;
+		Map<String, Object> tempInjectGpsData;
+		byte tempByte[] = req.pack().encodePacket();
+		tempInjectGpsData = Maps.newHashMap();
+		tempInjectGpsData.put("comm", Arrays.toString(tempByte));
+		sendOutputJson(publishers[0], tempInjectGpsData);
+		getLog().debug("INJECTING GPS DATA : " + Arrays.toString(tempByte));
+	}
 
 }
 
