@@ -22,6 +22,25 @@ public class XMLParamParser
 	private File xmlFile;
 	private Document xmlDocument;
 	
+    public final String PARAMDELIMETER = "@";
+    public final String PATHDELIMETER = ",";
+    public final String PARAM = "Param";
+    public final String GROUP = "Group";
+    public final String PATH = "Path";
+    
+    public final String DISPLAYNAME = "DisplayName";
+    public final String DESCRIPTION = "Description";
+    public final String UNITS = "Units";
+    public final String RANGE = "Range";
+    public final String VALUES = "Values";
+    public final String INCREMENT = "Increment";
+    public final String USER = "User";
+    public final String REBOOTREQUIRED = "RebootRequired";
+    public final String BITMASK = "Bitmask";
+    
+    public final String ADVANCED = "Advanced";
+    public final String STANDARD = "Standard";
+    
 	public File getFile()
 	{
 		return xmlFile;
@@ -109,24 +128,105 @@ public class XMLParamParser
 	public HashMap<String, Short> getParamOptions(String nodeKey,
 			String vehicleType)
 	{
-		return null;
+		HashMap<String, Short> valueMap = null;
+		if (!(xmlDocument == null))
+		{
+			String rawData = getParamDataXml(nodeKey, VALUES, vehicleType);
+			if (!(rawData.isEmpty()))
+			{
+				String[] values = rawData.split(",");
+				for (int i = 0; i < values.length; i++)
+				{
+					try
+					{
+						String[] valuePart = values[i].split(":");
+						valueMap.put(valuePart[1],
+								Short.parseShort(valuePart[0].trim()));
+					}
+					catch (NumberFormatException e)
+					{
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+		return valueMap;
 	}
 	
 	public HashMap<String, Short> getParamBitMask(String nodeKey,
 			String vehicleType)
 	{
-		return null;
+		HashMap<String, Short> valueMap = null;
+		if (!(xmlDocument == null))
+		{
+			String rawData = getParamDataXml(nodeKey, BITMASK, vehicleType);
+			if (!(rawData.isEmpty()))
+			{
+				String[] values = rawData.split(",");
+				for (int i = 0; i < values.length; i++)
+				{
+					try
+					{
+						String[] valuePart = values[i].split(":");
+						valueMap.put(valuePart[1],
+								Short.parseShort(valuePart[0].trim()));
+					}
+					catch (NumberFormatException e)
+					{
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+		return valueMap;
 	}
 	
 	public boolean getParamRebootRequired(String nodeKey, String vehicleType)
 	{
-		return false;
+		boolean answer = false;
+		if (!(xmlDocument == null))
+		{
+			String rawData = getParamDataXml(nodeKey, REBOOTREQUIRED, vehicleType);
+			if (!(rawData.isEmpty()))
+			{
+				try
+				{
+					answer = Boolean.parseBoolean(rawData);
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+				}
+			}
+		}
+		return answer;
 	}
 	
-	public MinMaxPair<Integer> getParamRange(String nodeKey, String vehicleType)
+	public MinMaxPair<Float> getParamRange(String nodeKey, String vehicleType)
 	{
-		MinMaxPair<Integer> temp = null;
-		return temp;
+		MinMaxPair<Float> pair = null;
+		if (!(xmlDocument == null))
+		{
+			String rawData = getParamDataXml(nodeKey, RANGE, vehicleType);
+			if (!(rawData.isEmpty()))
+			{
+				String[] values = rawData.split(" ");
+				if (values.length == 2)
+				{
+					try
+					{
+						float min = Float.parseFloat(values[0].trim());
+						float max = Float.parseFloat(values[1].trim());
+						pair = new MinMaxPair<Float>(min, max);
+					}
+					catch (NumberFormatException e)
+					{
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+		return pair;
 	}
 	
 	
