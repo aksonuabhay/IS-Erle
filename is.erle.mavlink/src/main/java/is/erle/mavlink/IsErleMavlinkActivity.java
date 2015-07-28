@@ -16,7 +16,6 @@ import com.MAVLink.common.*;
 import com.MAVLink.enums.*;
 import com.MAVLink.pixhawk.*;
 import com.google.common.collect.Maps;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -24,7 +23,8 @@ import java.lang.Class;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 
-import javax.sound.sampled.DataLine;
+import javafx.geometry.Point3D;
+
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
@@ -67,6 +67,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	private short paramIndex;
 	private short paramTotal;
 	private boolean receiveParamList, receiveParam;
+	
+	private MinMaxPair<Point3D> allowedArea=null;
+	private byte allowedAreaFrame;
 	
 	private File inputFile;
 	private XMLParamParser dataXML;
@@ -1631,6 +1634,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 					tempMavSafetyAllowedArea.put("gps" , tempSafetyAllowedArea);
 					sendOutputJson(publishers[2], tempMavSafetyAllowedArea);
 					getLog().debug(tempSafetyAllowedArea);
+					saveAllowedArea(mavSafetyAllowedArea);
 				}
 			}
 			break;
@@ -4664,6 +4668,127 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		}
 		return false;
 	}
+	
+	private void saveAllowedArea(msg_safety_allowed_area allowed)
+	{
+		Point3D tempMin= new Point3D(allowed.p1x, allowed.p1y, allowed.p1z);
+		Point3D tempMax = new Point3D(allowed.p2x, allowed.p2y, allowed.p2z);
+		allowedArea = new MinMaxPair<Point3D>(tempMin,tempMax);
+		allowedAreaFrame = allowed.frame;
+	}
+	
+	private boolean setAllowedArea(Point3D minLatLongAlt,
+			Point3D maxLatLongAlt, byte frame)
+	{
+		MinMaxPair<Point3D> prevAllowedArea = allowedArea;
+		allowedArea = null;
+		msg_safety_set_allowed_area req = new msg_safety_set_allowed_area();
+		req.target_system = targetSystem;
+		req.target_component = targetComponent;
+		req.p1x = (float) minLatLongAlt.getX();
+		req.p1y = (float) minLatLongAlt.getY();
+		req.p1z = (float) minLatLongAlt.getZ();
+		req.p2x = (float) maxLatLongAlt.getX();
+		req.p2y = (float) maxLatLongAlt.getY();
+		req.p2z = (float) maxLatLongAlt.getZ();
+		req.frame = frame;
+		Map<String, Object> tempAllowedAreaSet;
+		byte tempByte[] = req.pack().encodePacket();
+		tempAllowedAreaSet = Maps.newHashMap();
+		tempAllowedAreaSet.put("comm", Arrays.toString(tempByte));
+		sendOutputJson(publishers[0], tempAllowedAreaSet);
+		getLog().debug(
+				"REQUESTING SET SAFETY AREA : " + Arrays.toString(tempByte));
+
+		Date start = new Date();
+		int retry = 3;
+		while (true)
+		{
+			if (!((start.getTime() + 700) > System.currentTimeMillis()))
+			{
+				if (retry > 0)
+				{
+					sendOutputJson(publishers[0], tempAllowedAreaSet);
+					getLog().debug("REQUESTING SET SAFETY AREA AGAIN ");
+					start = new Date();
+					retry--;
+					continue;
+				}
+				else
+				{
+					getLog().error("Timeout on set safety area");
+					allowedArea = prevAllowedArea;
+					return false;
+				}
+			}
+			if (allowedArea != null)
+			{
+				if (allowedArea.getMin().equals(minLatLongAlt)
+						&& allowedArea.getMax().equals(maxLatLongAlt))
+				{
+					getLog().info("Successfully set safety area");
+					return true;
+				}
+			}
+		}
+	}
+	
+	private boolean setAllowedArea(Point3D minLatLongAlt,
+			Point3D maxLatLongAlt, byte frame, byte tSystem, byte tComponent)
+	{
+		MinMaxPair<Point3D> prevAllowedArea = allowedArea;
+		allowedArea = null;
+		msg_safety_set_allowed_area req = new msg_safety_set_allowed_area();
+		req.target_system = tSystem;
+		req.target_component = tComponent;
+		req.p1x = (float) minLatLongAlt.getX();
+		req.p1y = (float) minLatLongAlt.getY();
+		req.p1z = (float) minLatLongAlt.getZ();
+		req.p2x = (float) maxLatLongAlt.getX();
+		req.p2y = (float) maxLatLongAlt.getY();
+		req.p2z = (float) maxLatLongAlt.getZ();
+		req.frame = frame;
+		Map<String, Object> tempAllowedAreaSet;
+		byte tempByte[] = req.pack().encodePacket();
+		tempAllowedAreaSet = Maps.newHashMap();
+		tempAllowedAreaSet.put("comm", Arrays.toString(tempByte));
+		sendOutputJson(publishers[0], tempAllowedAreaSet);
+		getLog().debug(
+				"REQUESTING SET SAFETY AREA : " + Arrays.toString(tempByte));
+
+		Date start = new Date();
+		int retry = 3;
+		while (true)
+		{
+			if (!((start.getTime() + 700) > System.currentTimeMillis()))
+			{
+				if (retry > 0)
+				{
+					sendOutputJson(publishers[0], tempAllowedAreaSet);
+					getLog().debug("REQUESTING SET SAFETY AREA AGAIN ");
+					start = new Date();
+					retry--;
+					continue;
+				}
+				else
+				{
+					getLog().error("Timeout on set safety area");
+					allowedArea = prevAllowedArea;
+					return false;
+				}
+			}
+			if (allowedArea != null)
+			{
+				if (allowedArea.getMin().equals(minLatLongAlt)
+						&& allowedArea.getMax().equals(maxLatLongAlt))
+				{
+					getLog().info("Successfully set safety area");
+					return true;
+				}
+			}
+		}
+	}
+
 }
 
 
