@@ -71,6 +71,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	private MinMaxPair<Point3D> allowedArea=null;
 	private byte allowedAreaFrame;
 	
+	private Point3D globalGpsOrigin;
+	
 	private File inputFile;
 	private XMLParamParser dataXML;
 	
@@ -1563,6 +1565,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				tempMavGpsGlobalOrigin.put("gps" , tempGpsGlobalOrigin);
 				sendOutputJson(publishers[2], tempMavGpsGlobalOrigin);
 				getLog().debug(tempGpsGlobalOrigin);
+				saveGlobalGpsOrigin(mavGpsGlobalOrigin);
 			}
 			break;
 
@@ -4820,6 +4823,116 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		tempInjectGpsData.put("comm", Arrays.toString(tempByte));
 		sendOutputJson(publishers[0], tempInjectGpsData);
 		getLog().debug("INJECTING GPS DATA : " + Arrays.toString(tempByte));
+	}
+	
+	public void saveGlobalGpsOrigin(msg_gps_global_origin msg)
+	{
+		float tempLat = (float) (msg.latitude / 10000000.0);
+		float tempLon = (float) (msg.longitude / 10000000.0);
+		float tempAlt = (float) (msg.altitude / 10000000.0);
+		globalGpsOrigin = new Point3D(tempLat, tempLon, tempAlt);
+	}
+
+	// Not Tested
+	public boolean setGlobalGpsOrigin(Point3D latLonAlt)
+	{
+		Point3D prevGlobalGpsOrigin = globalGpsOrigin;
+		globalGpsOrigin = null;
+		msg_set_gps_global_origin req = new msg_set_gps_global_origin();
+		req.longitude = (int) (latLonAlt.getX() * 10000000);
+		req.latitude = (int) (latLonAlt.getY() * 10000000);
+		req.altitude = (int) (latLonAlt.getZ() * 1000);
+		req.target_system = targetSystem;
+		Map<String, Object> tempGlobalGpsOrigin;
+		byte tempByte[] = req.pack().encodePacket();
+		tempGlobalGpsOrigin = Maps.newHashMap();
+		tempGlobalGpsOrigin.put("comm", Arrays.toString(tempByte));
+		sendOutputJson(publishers[0], tempGlobalGpsOrigin);
+		getLog().debug(
+				"SETTING GLOBAL GPS ORIGIN : " + Arrays.toString(tempByte));
+
+		Date start = new Date();
+		int retry = 3;
+		while (true)
+		{
+			if (!((start.getTime() + 700) > System.currentTimeMillis()))
+			{
+				if (retry > 0)
+				{
+					sendOutputJson(publishers[0], tempGlobalGpsOrigin);
+					getLog().debug("REQUESTING SET GLOBAL GPS ORIGIN AGAIN ");
+					start = new Date();
+					retry--;
+					continue;
+				}
+				else
+				{
+					getLog().error("Timeout on set global gps origin");
+					globalGpsOrigin = prevGlobalGpsOrigin;
+					return false;
+				}
+			}
+			if (globalGpsOrigin != null)
+			{
+				if (globalGpsOrigin.equals(latLonAlt)
+						&& globalGpsOrigin.equals(latLonAlt))
+				{
+					getLog().info("Successfully set global gps origin");
+					return true;
+				}
+			}
+		}
+	}
+
+	// Not Tested
+	public boolean setGlobalGpsOrigin(Point3D latLonAlt, byte tSystem)
+	{
+		Point3D prevGlobalGpsOrigin = globalGpsOrigin;
+		globalGpsOrigin = null;
+		msg_set_gps_global_origin req = new msg_set_gps_global_origin();
+		req.longitude = (int) (latLonAlt.getX() * 10000000);
+		req.latitude = (int) (latLonAlt.getY() * 10000000);
+		req.altitude = (int) (latLonAlt.getZ() * 1000);
+		req.target_system = tSystem;
+		Map<String, Object> tempGlobalGpsOrigin;
+		byte tempByte[] = req.pack().encodePacket();
+		tempGlobalGpsOrigin = Maps.newHashMap();
+		tempGlobalGpsOrigin.put("comm", Arrays.toString(tempByte));
+		sendOutputJson(publishers[0], tempGlobalGpsOrigin);
+		getLog().debug(
+				"SETTING GLOBAL GPS ORIGIN : " + Arrays.toString(tempByte));
+
+		Date start = new Date();
+		int retry = 3;
+		while (true)
+		{
+			if (!((start.getTime() + 700) > System.currentTimeMillis()))
+			{
+				if (retry > 0)
+				{
+					sendOutputJson(publishers[0], tempGlobalGpsOrigin);
+					getLog().debug("REQUESTING SET GLOBAL GPS ORIGIN AGAIN ");
+					start = new Date();
+					retry--;
+					continue;
+				}
+				else
+				{
+					getLog().error("Timeout on set global gps origin");
+					globalGpsOrigin = prevGlobalGpsOrigin;
+					return false;
+				}
+			}
+			if (globalGpsOrigin != null)
+			{
+				if (globalGpsOrigin.equals(latLonAlt)
+						&& globalGpsOrigin.equals(latLonAlt))
+				{
+					getLog().info("Successfully set global gps origin");
+					return true;
+				}
+			}
+		}
 	}
 
 }
