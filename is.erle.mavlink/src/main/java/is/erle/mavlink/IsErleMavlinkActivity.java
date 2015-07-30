@@ -23,7 +23,7 @@ import java.lang.Class;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 
-import javafx.geometry.Point3D;
+//import javafx.geometry.Point3D;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -68,10 +68,10 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	private short paramTotal;
 	private boolean receiveParamList, receiveParam;
 	
-	private MinMaxPair<Point3D> allowedArea=null;
+	//private MinMaxPair<Point3D> allowedArea=null;
 	private byte allowedAreaFrame;
 	
-	private Point3D globalGpsOrigin;
+	//private Point3D globalGpsOrigin;
 	
 	private File inputFile;
 	private XMLParamParser dataXML;
@@ -122,23 +122,18 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 //		sendOutputJson(getConfiguration().getRequiredPropertyString(CONFIGURATION_PUBLISHER_NAME), temp);
 //		sendOutputJson("outputCOM_M", temp);
         //For waypoint list read test case
-        try {
+       /* try {
 			Thread.sleep(10000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
-		}
+		}*/
         //readMissionListStart();
-        readParameterListStart();
+        /*readParameterListStart();
         try {
 			Thread.sleep(20000);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-        getLog().info(paramList);
-        getLog().info(paramType);
-        setParam("RC6_TRIM",1300);
-        getLog().info(paramList);
+		}*/
     }
 
     @Override
@@ -273,7 +268,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				Map<String, Object> tempMapMission = Maps.newHashMap();
 				tempMapMission.put("comm", Arrays.toString(tempByte));
 				sendOutputJson(publishers[0], tempMapMission);
-				getLog().info("SENDING MISSION ITEM: "+Arrays.toString(tempByte));
+				getLog().debug("SENDING MISSION ITEM: "+Arrays.toString(tempByte));
     		}
     		
     	}
@@ -1304,7 +1299,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				
 				Map<String, Object> tempMapMissionRequest = Maps.newHashMap();
 				tempMapMissionRequest.put("mission", tempMissionRequest);
-				sendOutputJson(publishers[2], tempMapMissionRequest);
+				sendOutputJson(publishers[1], tempMapMissionRequest);
 				getLog().debug(tempMissionRequest);
 			}
 			break;
@@ -1565,7 +1560,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				tempMavGpsGlobalOrigin.put("gps" , tempGpsGlobalOrigin);
 				sendOutputJson(publishers[2], tempMavGpsGlobalOrigin);
 				getLog().debug(tempGpsGlobalOrigin);
-				saveGlobalGpsOrigin(mavGpsGlobalOrigin);
+				//saveGlobalGpsOrigin(mavGpsGlobalOrigin);
 			}
 			break;
 
@@ -1637,7 +1632,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 					tempMavSafetyAllowedArea.put("gps" , tempSafetyAllowedArea);
 					sendOutputJson(publishers[2], tempMavSafetyAllowedArea);
 					getLog().debug(tempSafetyAllowedArea);
-					saveAllowedArea(mavSafetyAllowedArea);
+					//saveAllowedArea(mavSafetyAllowedArea);
 				}
 			}
 			break;
@@ -4672,7 +4667,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		return false;
 	}
 	
-	private void saveAllowedArea(msg_safety_allowed_area allowed)
+	/*private void saveAllowedArea(msg_safety_allowed_area allowed)
 	{
 		Point3D tempMin= new Point3D(allowed.p1x, allowed.p1y, allowed.p1z);
 		Point3D tempMax = new Point3D(allowed.p2x, allowed.p2y, allowed.p2z);
@@ -4790,7 +4785,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				}
 			}
 		}
-	}
+	}*/
 	
 	public void injectGpsData(byte[] data, int length)
 	{
@@ -4825,7 +4820,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		getLog().debug("INJECTING GPS DATA : " + Arrays.toString(tempByte));
 	}
 	
-	public void saveGlobalGpsOrigin(msg_gps_global_origin msg)
+	/*public void saveGlobalGpsOrigin(msg_gps_global_origin msg)
 	{
 		float tempLat = (float) (msg.latitude / 10000000.0);
 		float tempLon = (float) (msg.longitude / 10000000.0);
@@ -4933,7 +4928,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				}
 			}
 		}
-	}
+	}*/
 
 }
 
