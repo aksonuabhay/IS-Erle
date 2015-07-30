@@ -61,6 +61,11 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
 				if (lineCount != 1) 
 				{
 					currentLine =currentLine.trim();
+					if (!checkColumnLength(currentLine))
+					{
+						getLog().error("Aborting file read");
+						return;
+					}
 					waypointCount = Short.parseShort(currentLine.substring(0,currentLine.indexOf(SEPARATOR) )); // Not sure that tab is the separator 
 				}
 
@@ -180,6 +185,41 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
 			}
 
 		}
+	}
+    
+    private boolean checkColumnLength(String column)
+    {
+		int separatorCount = 0;
+		for (int i = 0; i < column.length(); i++)
+		{
+			if (column.charAt(i) == SEPARATOR.charAt(0))
+			{
+				separatorCount++;
+			}
+		}
+		int contentCount = column.split(SEPARATOR).length;
+		if (!((separatorCount == 11) | (contentCount == 12)))
+		{
+			getLog().error(
+					"Separator count is not 11 and content count is not 12");
+			return false;
+		}
+		else
+		{
+			if (separatorCount!=11)
+			{
+				getLog().warn("Separator count is not equal to 11");
+			}
+			else if (contentCount !=12) 
+			{
+				getLog().warn("Content count is not equal to 12");
+			}
+			else 
+			{
+				getLog().debug("Column length matches expectations");
+			}
+		}
+		return true;
 	}
 }
 
