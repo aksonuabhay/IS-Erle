@@ -63,9 +63,16 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
 					currentLine =currentLine.trim();
 					if (!checkColumnLength(currentLine))
 					{
-						getLog().error("Aborting file read");
+						getLog().error("Aborting file read due to clomun length inconsistency");
 						return;
 					}
+					
+					if (!checkColumnContent(currentLine))
+					{
+						getLog().error("Aborting file read due to clomun content inconsistency");
+						return;
+					}
+					
 					waypointCount = Short.parseShort(currentLine.substring(0,currentLine.indexOf(SEPARATOR) )); // Not sure that tab is the separator 
 				}
 
@@ -85,7 +92,7 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
 		{
 			getLog().error(e);
 		}
-        waypointCount+=1; //So as to accomodate array index 0
+        waypointCount+=1; //So as to accommodate array index 0
         wpSendFlag = new boolean[waypointCount];
         for (int i = 0; i < wpSendFlag.length; i++) {
 			wpSendFlag[i] = false;
@@ -186,9 +193,9 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
 
 		}
 	}
-    
-    private boolean checkColumnLength(String column)
-    {
+
+	private boolean checkColumnLength(String column)
+	{
 		int separatorCount = 0;
 		for (int i = 0; i < column.length(); i++)
 		{
@@ -206,20 +213,65 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
 		}
 		else
 		{
-			if (separatorCount!=11)
+			if (separatorCount != 11)
 			{
 				getLog().warn("Separator count is not equal to 11");
 			}
-			else if (contentCount !=12) 
+			else if (contentCount != 12)
 			{
 				getLog().warn("Content count is not equal to 12");
 			}
-			else 
+			else
 			{
 				getLog().debug("Column length matches expectations");
 			}
 		}
 		return true;
+	}
+    
+	private boolean checkColumnContent(String column)
+	{
+		column = column.trim();
+		String[] splitColumn = column.split(SEPARATOR);
+		boolean[] isCorrect = new boolean[splitColumn.length];
+		boolean flagAbort = false;
+		for (int i = 0; i < splitColumn.length; i++)
+		{
+			isCorrect[i] = isDouble(splitColumn[i]);
+			if (!isCorrect[i])
+			{
+				flagAbort = true;
+			}
+
+		}
+		if (flagAbort)
+		{
+			String msgAbort = "The following columns are not convertible to double : ";
+			for (int i = 0; i < isCorrect.length; i++)
+			{
+				if (isCorrect[i])
+				{
+					msgAbort += Integer.toString(i) + " ";
+				}
+			}
+			getLog().error(msgAbort);
+			return false;
+		}
+		getLog().debug("All the values in the column are parseable to double");
+		return true;
+	}
+
+	private boolean isDouble(String value)
+	{
+		try
+		{
+			Double.parseDouble(value);
+			return true;
+		}
+		catch (NumberFormatException e)
+		{
+			return false;
+		}
 	}
 }
 
