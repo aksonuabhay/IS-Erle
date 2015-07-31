@@ -61,15 +61,15 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
 				if (lineCount != 1) 
 				{
 					currentLine =currentLine.trim();
-					if (!checkColumnLength(currentLine))
+					if (!checkRowLength(currentLine))
 					{
-						getLog().error("Aborting file read due to column length inconsistency");
+						getLog().error("Aborting file read due to row length inconsistency");
 						return;
 					}
 					
-					if (!checkColumnContent(currentLine))
+					if (!checkRowContent(currentLine))
 					{
-						getLog().error("Aborting file read due to column content inconsistency");
+						getLog().error("Aborting file read due to row content inconsistency");
 						return;
 					}
 					
@@ -200,17 +200,17 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
 		}
 	}
 
-	private boolean checkColumnLength(String column)
+	private boolean checkRowLength(String row)
 	{
 		int separatorCount = 0;
-		for (int i = 0; i < column.length(); i++)
+		for (int i = 0; i < row.length(); i++)
 		{
-			if (column.charAt(i) == SEPARATOR.charAt(0))
+			if (row.charAt(i) == SEPARATOR.charAt(0))
 			{
 				separatorCount++;
 			}
 		}
-		int contentCount = column.split(SEPARATOR).length;
+		int contentCount = row.split(SEPARATOR).length;
 		if (!((separatorCount == 11) | (contentCount == 12)))
 		{
 			getLog().error(
@@ -229,21 +229,21 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
 			}
 			else
 			{
-				getLog().debug("Column length matches expectations");
+				getLog().debug("Row length matches expectations");
 			}
 		}
 		return true;
 	}
     
-	private boolean checkColumnContent(String column)
+	private boolean checkRowContent(String row)
 	{
-		column = column.trim();
-		String[] splitColumn = column.split(SEPARATOR);
-		boolean[] isCorrect = new boolean[splitColumn.length];
+		row = row.trim();
+		String[] splitRow = row.split(SEPARATOR);
+		boolean[] isCorrect = new boolean[splitRow.length];
 		boolean flagAbort = false;
-		for (int i = 0; i < splitColumn.length; i++)
+		for (int i = 0; i < splitRow.length; i++)
 		{
-			isCorrect[i] = isDouble(splitColumn[i]);
+			isCorrect[i] = isDouble(splitRow[i]);
 			if (!isCorrect[i])
 			{
 				flagAbort = true;
@@ -252,7 +252,7 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
 		}
 		if (flagAbort)
 		{
-			String msgAbort = "The following columns are not convertible to double : ";
+			String msgAbort = "The following rows are not convertible to double : ";
 			for (int i = 0; i < isCorrect.length; i++)
 			{
 				if (isCorrect[i])
@@ -263,7 +263,7 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
 			getLog().error(msgAbort);
 			return false;
 		}
-		getLog().debug("All the values in the column are parseable to double");
+		getLog().debug("All the values in the row are parseable to double");
 		return true;
 	}
 
@@ -293,7 +293,7 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
 		}
 	}
 	
-	private boolean checkCoordinateFrame(String column)
+	private boolean checkCoordinateFrame(String row)
 	{
 		/*
 		 * MAV_FRAME_GLOBAL = 0; Global coordinate frame, WGS84 coordinate
@@ -354,12 +354,12 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
 		 * 
 		 * MAV_FRAME_ENUM_END = 12;
 		 */
-		String[] splitColumn = column.trim().split(SEPARATOR);
+		String[] splitRow = row.trim().split(SEPARATOR);
 		int coordinateFrame;
 
-		if (isInteger(splitColumn[2]))
+		if (isInteger(splitRow[2]))
 		{
-			coordinateFrame = Integer.parseInt(splitColumn[2]);
+			coordinateFrame = Integer.parseInt(splitRow[2]);
 		}
 		else
 		{
@@ -369,24 +369,24 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
 		if (coordinateFrame < 0 | coordinateFrame >= 12 | coordinateFrame == 2)
 		{
 			getLog().error(
-					splitColumn[0]
-							+ " column does not contain a valid coordinate frame.");
+					splitRow[0]
+							+ " row does not contain a valid coordinate frame.");
 			return false;
 		}
 
-		if (splitColumn[0].equals("0"))
+		if (splitRow[0].equals("0"))
 		{
 			if ((coordinateFrame != 0) & (coordinateFrame != 5))
 			{
 				getLog().error(
-						"First column does not contain home coordinates in Global Coordinate system.");
+						"First row does not contain home coordinates in Global Coordinate system.");
 				return false;
 			}
 			else
 			{
 				if (coordinateFrame == 5)
 				{
-					if (!isLatLonAltInt(splitColumn))
+					if (!isLatLonAltInt(splitRow))
 					{
 						return false;
 					}
@@ -398,40 +398,40 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
 			if ((coordinateFrame != 3) & (coordinateFrame != 6))
 			{
 				getLog().warn(
-						splitColumn[0]
-								+ " column does not contain coordinates in Global Relative Altitude Coordinate system.");
+						splitRow[0]
+								+ " row does not contain coordinates in Global Relative Altitude Coordinate system.");
 			}
 			else
 			{
 				if (coordinateFrame == 6 | coordinateFrame == 11 | coordinateFrame == 5)
 				{
-					if (!isLatLonAltInt(splitColumn))
+					if (!isLatLonAltInt(splitRow))
 					{
 						getLog().error(
-								splitColumn[0]
-										+ " column has double values but coordinate frame specified as integer.");
+								splitRow[0]
+										+ " row has double values but coordinate frame specified as integer.");
 						return false;
 					}
 				}
 				if (coordinateFrame == 8)
 				{
 					getLog().error(
-							splitColumn[0]
-									+ " column uses BODY_NED coordinate frame. This is to be used in cases involving external position control using accelaration control and not a mission.");
+							splitRow[0]
+									+ " row uses BODY_NED coordinate frame. This is to be used in cases involving external position control using accelaration control and not a mission.");
 					return false;
 				}
 				if (coordinateFrame == 9)
 				{
 					getLog().error(
-							splitColumn[0]
-									+ " column uses BODY_OFFSET_NED coordinate frame. This is to be used in cases involving obstacle avoidance using accelearation control and not a mission.");
+							splitRow[0]
+									+ " row uses BODY_OFFSET_NED coordinate frame. This is to be used in cases involving obstacle avoidance using accelearation control and not a mission.");
 					return false;
 				}
 				if (coordinateFrame == 7)
 				{
 					getLog().error(
-							splitColumn[0]
-									+ " column uses LOCAL_OFFSET_NED coordinate frame. This is to be used in a mission.");
+							splitRow[0]
+									+ " row uses LOCAL_OFFSET_NED coordinate frame. This is to be used in a mission.");
 					return false;
 				}
 			}
@@ -439,20 +439,20 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
 		return true;
 	}
 
-	private boolean isLatLonAltInt(String [] columnArray)
+	private boolean isLatLonAltInt(String [] rowArray)
 	{
 		boolean flag = true;
-		if (!isInteger(columnArray[8]))
+		if (!isInteger(rowArray[8]))
 		{
 			getLog().error("Longitude in double but coordinate frame in Global Integer.");
 			flag = false;
 		}
-		if (!isInteger(columnArray[9]))
+		if (!isInteger(rowArray[9]))
 		{
 			getLog().error("Latitude in double but coordinate frame in Global Integer.");
 			flag = false;
 		}
-		if (!isInteger(columnArray[10]))
+		if (!isInteger(rowArray[10]))
 		{
 			getLog().error("Altitude in double but coordinate frame in Global Integer.");
 			flag = false;

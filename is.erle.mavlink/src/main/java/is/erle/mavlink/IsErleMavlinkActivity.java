@@ -1560,7 +1560,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				tempMavGpsGlobalOrigin.put("gps" , tempGpsGlobalOrigin);
 				sendOutputJson(publishers[2], tempMavGpsGlobalOrigin);
 				getLog().debug(tempGpsGlobalOrigin);
-				//saveGlobalGpsOrigin(mavGpsGlobalOrigin);
+				saveGlobalGpsOrigin(mavGpsGlobalOrigin);
 			}
 			break;
 
@@ -1632,7 +1632,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 					tempMavSafetyAllowedArea.put("gps" , tempSafetyAllowedArea);
 					sendOutputJson(publishers[2], tempMavSafetyAllowedArea);
 					getLog().debug(tempSafetyAllowedArea);
-					//saveAllowedArea(mavSafetyAllowedArea);
+					saveAllowedArea(mavSafetyAllowedArea);
 				}
 			}
 			break;
@@ -4825,7 +4825,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		float tempLat = (float) (msg.latitude / 10000000.0);
 		float tempLon = (float) (msg.longitude / 10000000.0);
 		float tempAlt = (float) (msg.altitude / 10000000.0);
-		globalGpsOrigin = new Point3D(tempLat, tempLon, tempAlt);
+		globalGpsOrigin = new Point3D(tempLon, tempLat, tempAlt);
 	}
 
 	// Not Tested
