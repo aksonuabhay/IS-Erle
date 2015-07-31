@@ -68,10 +68,10 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	private short paramTotal;
 	private boolean receiveParamList, receiveParam;
 	
-	//private MinMaxPair<Point3D> allowedArea=null;
+	private MinMaxPair<Point3D> allowedArea=null;
 	private byte allowedAreaFrame;
 	
-	//private Point3D globalGpsOrigin;
+	private Point3D globalGpsOrigin;
 	
 	private File inputFile;
 	private XMLParamParser dataXML;
@@ -4667,7 +4667,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		return false;
 	}
 	
-	/*private void saveAllowedArea(msg_safety_allowed_area allowed)
+	private void saveAllowedArea(msg_safety_allowed_area allowed)
 	{
 		Point3D tempMin= new Point3D(allowed.p1x, allowed.p1y, allowed.p1z);
 		Point3D tempMax = new Point3D(allowed.p2x, allowed.p2y, allowed.p2z);
@@ -4785,7 +4785,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				}
 			}
 		}
-	}*/
+	}
 	
 	public void injectGpsData(byte[] data, int length)
 	{
@@ -4820,7 +4820,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		getLog().debug("INJECTING GPS DATA : " + Arrays.toString(tempByte));
 	}
 	
-	/*public void saveGlobalGpsOrigin(msg_gps_global_origin msg)
+	public void saveGlobalGpsOrigin(msg_gps_global_origin msg)
 	{
 		float tempLat = (float) (msg.latitude / 10000000.0);
 		float tempLon = (float) (msg.longitude / 10000000.0);
@@ -4928,7 +4928,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				}
 			}
 		}
-	}*/
+	}
 
 }
 
