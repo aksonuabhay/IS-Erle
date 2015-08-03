@@ -5044,7 +5044,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			}
 		}
 	}
-	
+
 	// NOT TESTED
 	public boolean getLogEntry()
 	{
@@ -5096,6 +5096,36 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				}
 			}
 		}
+	}
+	
+	//NOT TESTED
+	public void eraseLog()
+	{
+		msg_log_erase req = new msg_log_erase();
+		req.target_system = targetSystem;
+		req.target_component = targetComponent;
+		Map<String, Object> tempEraseLog;
+		byte tempByte[] = req.pack().encodePacket();
+		tempEraseLog = Maps.newHashMap();
+		tempEraseLog.put("comm", Arrays.toString(tempByte));
+		sendOutputJson(publishers[0], tempEraseLog);
+		getLog().debug("ERASING LOG : " + Arrays.toString(tempByte));
+		sendOutputJson(publishers[0], tempEraseLog);
+	}
+	
+	// NOT TESTED
+	public void eraseLog(byte tSystem, byte tComponent)
+	{
+		msg_log_erase req = new msg_log_erase();
+		req.target_system = tSystem;
+		req.target_component = tComponent;
+		Map<String, Object> tempEraseLog;
+		byte tempByte[] = req.pack().encodePacket();
+		tempEraseLog = Maps.newHashMap();
+		tempEraseLog.put("comm", Arrays.toString(tempByte));
+		sendOutputJson(publishers[0], tempEraseLog);
+		getLog().debug("ERASING LOG : " + Arrays.toString(tempByte));
+		sendOutputJson(publishers[0], tempEraseLog);
 	}
 }
 
