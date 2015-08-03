@@ -76,6 +76,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	private File inputFile;
 	private XMLParamParser dataXML;
 	
+	private List<msg_log_entry> logEntry = new ArrayList<msg_log_entry>();
+	
     @Override
     public void onActivitySetup() {
         getLog().info("Activity is.erle.mavlink setup");
@@ -2660,6 +2662,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				tempMavLogEntry.put("data", tempLogEntry);
 				sendOutputJson(publishers[2], tempMavLogEntry);
 				getLog().debug(tempLogEntry);
+				saveLogEntry(mavLogEntry);
 			}
 			break;
 
@@ -4929,7 +4932,171 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			}
 		}
 	}
+	
+	//NOT TESTED
+	public boolean getLogEntry(short startno, short end)
+	{
+		int size = logEntry.size();
+		msg_log_request_list req = new msg_log_request_list();
+		req.start = startno;
+		req.end = end;
+		req.target_system = targetSystem;
+		req.target_component = targetComponent;
+		Map<String, Object> tempGetLogEntry;
+		byte tempByte[] = req.pack().encodePacket();
+		tempGetLogEntry = Maps.newHashMap();
+		tempGetLogEntry.put("comm", Arrays.toString(tempByte));
+		sendOutputJson(publishers[0], tempGetLogEntry);
+		getLog().debug("GETTING LOG ENTRY : " + Arrays.toString(tempByte));
 
+		Date start = new Date();
+		int retry = 3;
+		while (true)
+		{
+			if (!((start.getTime() + 700) > System.currentTimeMillis()))
+			{
+				if (retry > 0)
+				{
+					sendOutputJson(publishers[0], tempGetLogEntry);
+					getLog().debug("REQUESTING GET LOG ENTRY AGAIN ");
+					start = new Date();
+					retry--;
+					continue;
+				}
+				else
+				{
+					getLog().error("Timeout on get log entry");
+					return false;
+				}
+			}
+			if (logEntry.size() == (size + 1))
+			{
+				if (logEntry.get(size).id >= startno
+						&& logEntry.get(size).id <= end)
+				{
+					getLog().info("Successfully get log entry");
+					return true;
+				}
+				else 
+				{
+					logEntry.remove(size);
+					return false;
+				}
+			}
+		}
+	}
+	
+	private void saveLogEntry(msg_log_entry entry)
+	{
+		logEntry.add(entry);
+	}
+
+	// NOT TESTED
+	public boolean getLogEntry(short startno, short end, byte tSystem,
+			byte tComponent)
+	{
+		int size = logEntry.size();
+		msg_log_request_list req = new msg_log_request_list();
+		req.start = startno;
+		req.end = end;
+		req.target_system = tSystem;
+		req.target_component = tComponent;
+		Map<String, Object> tempGetLogEntry;
+		byte tempByte[] = req.pack().encodePacket();
+		tempGetLogEntry = Maps.newHashMap();
+		tempGetLogEntry.put("comm", Arrays.toString(tempByte));
+		sendOutputJson(publishers[0], tempGetLogEntry);
+		getLog().debug("GETTING LOG ENTRY : " + Arrays.toString(tempByte));
+
+		Date start = new Date();
+		int retry = 3;
+		while (true)
+		{
+			if (!((start.getTime() + 700) > System.currentTimeMillis()))
+			{
+				if (retry > 0)
+				{
+					sendOutputJson(publishers[0], tempGetLogEntry);
+					getLog().debug("REQUESTING GET LOG ENTRY AGAIN ");
+					start = new Date();
+					retry--;
+					continue;
+				}
+				else
+				{
+					getLog().error("Timeout on get log entry");
+					return false;
+				}
+			}
+			if (logEntry.size() == (size + 1))
+			{
+				if (logEntry.get(size).id >= startno
+						&& logEntry.get(size).id <= end)
+				{
+					getLog().info("Successfully get log entry");
+					return true;
+				}
+				else
+				{
+					logEntry.remove(size);
+					return false;
+				}
+			}
+		}
+	}
+	
+	// NOT TESTED
+	public boolean getLogEntry()
+	{
+		int size = logEntry.size();
+		msg_log_request_list req = new msg_log_request_list();
+		req.start = 0;
+		req.end = (short) 0xffff;
+		req.target_system = targetSystem;
+		req.target_component = targetSystem;
+		Map<String, Object> tempGetLogEntry;
+		byte tempByte[] = req.pack().encodePacket();
+		tempGetLogEntry = Maps.newHashMap();
+		tempGetLogEntry.put("comm", Arrays.toString(tempByte));
+		sendOutputJson(publishers[0], tempGetLogEntry);
+		getLog().debug("GETTING LOG ENTRY : " + Arrays.toString(tempByte));
+
+		Date start = new Date();
+		int retry = 3;
+		while (true)
+		{
+			if (!((start.getTime() + 700) > System.currentTimeMillis()))
+			{
+				if (retry > 0)
+				{
+					sendOutputJson(publishers[0], tempGetLogEntry);
+					getLog().debug("REQUESTING GET LOG ENTRY AGAIN ");
+					start = new Date();
+					retry--;
+					continue;
+				}
+				else
+				{
+					getLog().error("Timeout on get log entry");
+					return false;
+				}
+			}
+			if (logEntry.size() == (size + 1))
+			{
+				if (logEntry.get(size).id >= req.start
+						&& logEntry.get(size).id <= req.end)
+				{
+					getLog().info("Successfully get log entry");
+					return true;
+				}
+				else
+				{
+					logEntry.remove(size);
+					return false;
+				}
+			}
+		}
+	}
 }
 
 
