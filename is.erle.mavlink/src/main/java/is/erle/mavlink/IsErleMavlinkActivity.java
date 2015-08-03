@@ -5127,6 +5127,48 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		getLog().debug("ERASING LOG : " + Arrays.toString(tempByte));
 		sendOutputJson(publishers[0], tempEraseLog);
 	}
+	
+	//NOT TESTED
+	public boolean getLogList()
+	{
+		logEntry = new ArrayList<msg_log_entry>();
+		if (getLogEntry())
+		{
+			int lastLogNumber = logEntry.get(0).last_log_num;
+			int logCount = logEntry.get(0).num_logs;
+			for (int i = (lastLogNumber - logCount +1); i <= lastLogNumber; i++)
+			{
+				if (!getLogEntry((short) i, (short)i))
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+		return false;
+	}
+	
+	//NOT TESTED
+	public boolean getLogList(byte tSystem, byte tComponent)
+	{
+		logEntry = new ArrayList<msg_log_entry>();
+		if (getLogEntry((short) 0,(short) 0xffff ,tSystem , tComponent))
+		{
+			int lastLogNumber = logEntry.get(0).last_log_num;
+			int logCount = logEntry.get(0).num_logs;
+			for (int i = (lastLogNumber - logCount +1); i <= lastLogNumber; i++)
+			{
+				if (!getLogEntry((short) i, (short)i,tSystem , tComponent))
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+		return false;
+	}
+	
+
 }
 
 
