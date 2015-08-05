@@ -284,33 +284,78 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
     	}
     }
     
-    private void handleCaptainMessage(String[] message)
+	private void handleCaptainMessage(String[] message)
 	{
 		/*
-		 * enum CommandOptions HEARTBEAT, READ_MISSION, WRITE_MISSION,
-		 * SET_CURRENT_ACTIVE_WP, CLEAR_MISSION, ARM, READ_PARAMETER_LIST_START,
-		 * GET_PARAMETER_LIST, GET_PARAMETER, SET_PARAMETER, AUTOPILOT_REBOOT,
-		 * AUTOPILOT_SHUTDOWN, BOOTLOADER_REBOOT, SYSTEM_SHUTDOWN,
-		 * SYSTEM_REBOOT, SET_MODE, SET_ALLOWED_AREA, SET_GPS_ORIGIN,
-		 * READ_LOG_ENTRY, GET_LOG_ENTRY, READ_LOG_DATA, GET_LOG_DATA
+		 * enum CommandOptions HEARTBEAT, READ_MISSION,GET_MISSION,
+		 * WRITE_MISSION, SET_CURRENT_ACTIVE_WP, CLEAR_MISSION, ARM,
+		 * READ_PARAMETER_LIST_START, GET_PARAMETER_LIST, GET_PARAMETER,
+		 * SET_PARAMETER, AUTOPILOT_REBOOT, AUTOPILOT_SHUTDOWN,
+		 * BOOTLOADER_REBOOT, SYSTEM_SHUTDOWN, SYSTEM_REBOOT, SET_MODE,
+		 * SET_ALLOWED_AREA, SET_GPS_ORIGIN, READ_LOG_ENTRY, GET_LOG_ENTRY,
+		 * READ_LOG_DATA, GET_LOG_DATA
 		 */
 		int c = Integer.parseInt(message[0]);
 		switch (c)
 		{
-		//HEARTBEAT
+		// HEARTBEAT
 		case 0:
 			String heartbeatSend = heartbeat.toString();
 			heartbeat = null;
 			Map<String, Object> tempHeartbeat = Maps.newHashMap();
 			tempHeartbeat.put("command", heartbeatSend);
-			sendOutputJson(publishers[0], tempHeartbeat);
-			getLog().debug("SENDING MISSION ITEM: "+heartbeatSend);
+			sendOutputJson(publishers[3], tempHeartbeat);
+			getLog().debug("SENDING MISSION ITEM: " + heartbeatSend);
+			break;
+
+		// READ MISSION LIST
+		case 1:
+			boolean result = false;
+			Map<String, Object> tempMissionRead = Maps.newHashMap();
+			if (message.length == 1)
+			{
+				result = readMissionListStart();
+			}
+			else if (message.length == 3)
+			{
+				byte system = Byte.parseByte(message[1]);
+				byte component = Byte.parseByte(message[2]);
+				result = readMissionListStart((byte) system, (byte) component);
+			}
+			else
+			{
+				tempMissionRead.put("command", "BADCMD");
+				sendOutputJson(publishers[3], tempMissionRead);
+				return;
+			}
+
+			if (result)
+			{
+				Date start = new Date();
+				while (readWaypointCount != -1
+						&& (System.currentTimeMillis() - start.getTime()) < 5000)
+					;
+				if (!(readWaypointCount == -1))
+				{
+					tempMissionRead.put("command", "FAIL");
+					sendOutputJson(publishers[3], tempMissionRead);
+					return;
+				}
+				tempMissionRead.put("command", "SUCCESS");
+				sendOutputJson(publishers[3], tempMissionRead);
+			}
+			else
+			{
+				tempMissionRead.put("command", "FAIL");
+				sendOutputJson(publishers[3], tempMissionRead);
+				return;
+			}
 			break;
 
 		default:
 			break;
 		}
-		
+
 	}
 
 	/*
