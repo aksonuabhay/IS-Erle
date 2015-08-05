@@ -11,7 +11,32 @@ import interactivespaces.util.concurrency.ManagedCommand;
 public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 
 	private ManagedCommand monitorCaptainThread,heartbeatThread;
-	
+	enum CommandOptions
+	{
+		HEARTBEAT,
+		READ_MISSION,
+		GET_MISSION,
+		WRITE_MISSION,
+		SET_CURRENT_ACTIVE_WP,
+		CLEAR_MISSION,
+		ARM,
+		READ_PARAMETER_LIST_START,
+		GET_PARAMETER_LIST,
+		GET_PARAMETER,
+		SET_PARAMETER,
+		AUTOPILOT_REBOOT,
+		AUTOPILOT_SHUTDOWN,
+		BOOTLOADER_REBOOT,
+		SYSTEM_SHUTDOWN,
+		SYSTEM_REBOOT,
+		SET_MODE,
+		SET_ALLOWED_AREA,
+		SET_GPS_ORIGIN,
+		READ_LOG_ENTRY,
+		GET_LOG_ENTRY,
+		READ_LOG_DATA,
+		GET_LOG_DATA
+	};
 	
     @Override
     public void onActivitySetup() {

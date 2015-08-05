@@ -53,6 +53,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	
 	private int responseGlobal[];
 	
+	private msg_heartbeat heartbeat;
+	
 	private ArrayList<String []> readWaypointList;
 	private short readWaypointCount = -1, missionCurrentSeq;
 	private boolean isMissionCleared;
@@ -75,6 +77,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	private XMLParamParser dataXML;
 	
 	private List<msg_log_entry> logEntry = new ArrayList<msg_log_entry>();
+	
 	
     @Override
     public void onActivitySetup() {
@@ -276,10 +279,41 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
     	else if (channelName.equals(subscribers[2]))
     	{
     		//Captain message handling here
+    		String tempString[] = message.get("command").toString().split("-");
+    		handleCaptainMessage(tempString);
     	}
     }
     
-    /*
+    private void handleCaptainMessage(String[] message)
+	{
+		/*
+		 * enum CommandOptions HEARTBEAT, READ_MISSION, WRITE_MISSION,
+		 * SET_CURRENT_ACTIVE_WP, CLEAR_MISSION, ARM, READ_PARAMETER_LIST_START,
+		 * GET_PARAMETER_LIST, GET_PARAMETER, SET_PARAMETER, AUTOPILOT_REBOOT,
+		 * AUTOPILOT_SHUTDOWN, BOOTLOADER_REBOOT, SYSTEM_SHUTDOWN,
+		 * SYSTEM_REBOOT, SET_MODE, SET_ALLOWED_AREA, SET_GPS_ORIGIN,
+		 * READ_LOG_ENTRY, GET_LOG_ENTRY, READ_LOG_DATA, GET_LOG_DATA
+		 */
+		int c = Integer.parseInt(message[0]);
+		switch (c)
+		{
+		//HEARTBEAT
+		case 0:
+			String heartbeatSend = heartbeat.toString();
+			heartbeat = null;
+			Map<String, Object> tempHeartbeat = Maps.newHashMap();
+			tempHeartbeat.put("command", heartbeatSend);
+			sendOutputJson(publishers[0], tempHeartbeat);
+			getLog().debug("SENDING MISSION ITEM: "+heartbeatSend);
+			break;
+
+		default:
+			break;
+		}
+		
+	}
+
+	/*
      * Use this function to get a variable name which is equal to certain value
      * Intended for getting variables in the enum folder of mavlink package
      */
@@ -837,6 +871,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				tempMavHeartbeat.put("data", tempHeartbeat);
 				sendOutputJson(publishers[2], tempMavHeartbeat);
 				getLog().debug(tempHeartbeat);
+				heartbeat = mavHeartbeat;
 			}
 			break;
 
@@ -3675,17 +3710,17 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	/*
 	 * Gets a single Parameter from the drone.
 	 */
-	private boolean getParam(short index)
+	private boolean readParam(short index)
 	{
-		return getParam(index, targetSystem, targetComponent);
+		return readParam(index, targetSystem, targetComponent);
 	}
 
 	/*
 	 * Gets a single Parameter from the drone.
 	 */
-	private boolean getParam(String id)
+	private boolean readParam(String id)
 	{
-		return getParam(id, targetSystem, targetComponent);
+		return readParam(id, targetSystem, targetComponent);
 	}
 
 	/*
@@ -3766,7 +3801,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	 * This is a function overload with specific target system and component
 	 * Gets a single Parameter from the drone.
 	 */
-	private boolean getParam(short index, byte tSystem, byte tComponent)
+	private boolean readParam(short index, byte tSystem, byte tComponent)
 	{
 		msg_param_request_read req = new msg_param_request_read();
 		req.target_system = tSystem;
@@ -3815,7 +3850,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	 * This is a function overload with specific target system and component
 	 * Gets a single Parameter from the drone.
 	 */
-	private boolean getParam(String id, byte tSystem, byte tComponent)
+	private boolean readParam(String id, byte tSystem, byte tComponent)
 	{
 		msg_param_request_read req = new msg_param_request_read();
 		req.target_system = tSystem;
@@ -3885,7 +3920,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			}
 			else
 			{
-				// getParam(paramIndex);
+				// readParam(paramIndex);
 			}
 		}
 		else
@@ -3896,6 +3931,17 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			receiveParam = false;
 		}
 
+	}
+	
+	@SuppressWarnings("unused")
+	private double getParam(String ID)
+	{
+		return paramList.get(ID);
+	}
+	
+	private Map<String , Double> getParamList()
+	{
+		return paramList;
 	}
 
 	// TESTED
