@@ -1,6 +1,9 @@
 package is.erle.captain;
 
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
+import com.google.common.collect.Maps;
 
 import interactivespaces.activity.impl.ros.BaseRoutableRosActivity;
 import interactivespaces.util.concurrency.ManagedCommand;
@@ -11,6 +14,17 @@ import interactivespaces.util.concurrency.ManagedCommand;
 public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 
 	private ManagedCommand monitorCaptainThread,heartbeatThread;
+	
+	private static final String CONFIGURATION_PUBLISHER_NAME = "space.activity.routes.outputs";
+	private static final String CONFIGURATION_SUBSCRIBER_NAME = "space.activity.routes.inputs";
+	private static String publishers[];
+	private static String subscribers[];
+	
+	/*
+	 * Do not change the order of the command options. Everything depends on the
+	 * ordering of this enum. So if you need to add command , add it at last and
+	 * then update mavlink activity to process this commadn
+	 */
 	enum CommandOptions
 	{
 		HEARTBEAT,
@@ -41,6 +55,9 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
     @Override
     public void onActivitySetup() {
         getLog().info("Activity is.erle.captain setup");
+        publishers = getConfiguration().getRequiredPropertyString(CONFIGURATION_PUBLISHER_NAME).split(":");
+        subscribers = getConfiguration().getRequiredPropertyString(CONFIGURATION_SUBSCRIBER_NAME).split(":");
+        
         heartbeatThread = getManagedCommands().scheduleWithFixedDelay(new Runnable() {
 
 			public void run() {
@@ -83,4 +100,54 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
     public void onActivityCleanup() {
         getLog().info("Activity is.erle.captain cleanup");
     }
+    
+	private void sendCommand(CommandOptions opt, byte targetSystem,
+			byte targetComponent)
+	{
+		String command = opt.ordinal() + "-" + Byte.toString(targetSystem)
+				+ "-" + Byte.toString(targetComponent);
+		Map<String, Object> commandMap = Maps.newHashMap();
+		commandMap.put("command", command);
+		sendOutputJson(publishers[0], commandMap);
+	}
+
+	private void sendCommand(CommandOptions opt)
+	{
+		String command = Integer.toString(opt.ordinal());
+		Map<String, Object> commandMap = Maps.newHashMap();
+		commandMap.put("command", command);
+		sendOutputJson(publishers[0], commandMap);
+	}
+
+	private void sendCommand(CommandOptions opt, String[] param)
+	{
+		String command = Integer.toString(opt.ordinal());
+		for (int i = 0; i < param.length; i++)
+		{
+			command += "-" + param;
+		}
+		Map<String, Object> commandMap = Maps.newHashMap();
+		commandMap.put("command", command);
+		sendOutputJson(publishers[0], commandMap);
+	}
+	
+	private void sendCommand(CommandOptions opt, String param)
+	{
+		String command = Integer.toString(opt.ordinal())+"-" +param;
+		Map<String, Object> commandMap = Maps.newHashMap();
+		commandMap.put("command", command);
+		sendOutputJson(publishers[0], commandMap);
+	}
+	
+	/*
+	 * Not recommended for use
+	 */
+	private void sendCommand(String cmd)
+	{
+		Map<String, Object> commandMap = Maps.newHashMap();
+		commandMap.put("command", cmd);
+		sendOutputJson(publishers[0], commandMap);
+	}
+    
+    
 }
