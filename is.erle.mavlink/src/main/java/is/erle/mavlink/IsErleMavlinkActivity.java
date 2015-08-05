@@ -6,8 +6,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import interactivespaces.activity.impl.ros.BaseRoutableRosActivity;
 
 import com.MAVLink.*;
@@ -3580,27 +3578,27 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	}
 
 	// Not Tested
-	public boolean doARM(boolean armit)
+	private boolean doARM(boolean armit)
 	{
 		return doARM(armit, targetSystem, targetComponent);
 	}
 
 	// Not Tested
-	public boolean doARM(boolean armit, byte tSystem, byte tComponent)
+	private boolean doARM(boolean armit, byte tSystem, byte tComponent)
 	{
 		return doCommand((short) MAV_CMD.MAV_CMD_COMPONENT_ARM_DISARM, armit ? 1 : 0,
 				21196, 0, 0, 0, 0, 0, tSystem, tComponent);
 	}
 
 	// Not Tested
-	public boolean doCommand(short actionid, float p1, float p2, float p3,
+	private boolean doCommand(short actionid, float p1, float p2, float p3,
 			float p4, float p5, float p6, float p7)
 	{
 		return doCommand(actionid, p1, p2, p3, p4, p5, p6, p7, targetSystem, targetComponent);
 	}
 
 	// Not Tested
-	public boolean doCommand(short actionid, float p1, float p2, float p3,
+	private boolean doCommand(short actionid, float p1, float p2, float p3,
 			float p4, float p5, float p6, float p7, byte tSystem,
 			byte tComponent)
 	{
@@ -3972,12 +3970,12 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 
 	}
 	
-	public boolean doRebootAutopilot()
+	private boolean doRebootAutopilot()
     {
 		return doRebootAutopilot(targetSystem, targetComponent);
     }
 
-	public boolean doRebootAutopilot(byte tSystem, byte tComponent)
+	private boolean doRebootAutopilot(byte tSystem, byte tComponent)
     {
         int param1 = 1;
         if (tSystem != 0 && tComponent != 0)
@@ -3995,12 +3993,12 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
         return true;
     }
 	
-	public boolean doShutdownAutopilot()
+	private boolean doShutdownAutopilot()
     {
 		return doShutdownAutopilot(targetSystem, targetComponent);
     }
 	
-	public boolean doShutdownAutopilot(byte tSystem, byte tComponent)
+	private boolean doShutdownAutopilot(byte tSystem, byte tComponent)
     {
         int param1 = 2;
         if (tSystem != 0 && tComponent != 0)
@@ -4018,12 +4016,12 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
         return true;
     }
 	
-	public boolean doBootloaderReboot()
+	private boolean doBootloaderReboot()
     {
 		return doBootloaderReboot(targetSystem, targetComponent);
     }
 
-	public boolean doBootloaderReboot(byte tSystem, byte tComponent)
+	private boolean doBootloaderReboot(byte tSystem, byte tComponent)
     {
         int param1 = 3;
         if (tSystem != 0 && tComponent != 0)
@@ -4041,12 +4039,12 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
         return true;
     }
 	
-	public boolean doSystemReboot()
+	private boolean doSystemReboot()
     {
 		return doSystemReboot(targetSystem, targetComponent);
     }
 
-	public boolean doSystemReboot(byte tSystem, byte tComponent)
+	private boolean doSystemReboot(byte tSystem, byte tComponent)
     {
         int param2 = 1;
         if (tSystem != 0 && tComponent != 0)
@@ -4064,12 +4062,12 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
         return true;
     }
 	
-	public boolean doSystemShutdown()
+	private boolean doSystemShutdown()
     {
 		return doSystemShutdown(targetSystem, targetComponent);
     }
 
-	public boolean doSystemShutdown(byte tSystem, byte tComponent)
+	private boolean doSystemShutdown(byte tSystem, byte tComponent)
     {
         int param2 = 2;
         if (tSystem != 0 && tComponent != 0)
@@ -4196,12 +4194,12 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		}
 	}
 	
-	public void injectGpsData(byte[] data, int length)
+	private void injectGpsData(byte[] data, int length)
 	{
 		injectGpsData(data, length, targetSystem, targetComponent);
 	}
 	
-	public void injectGpsData(byte[] data, int length, byte tSystem,
+	private void injectGpsData(byte[] data, int length, byte tSystem,
 			byte tComponent)
 	{
 		msg_gps_inject_data req = new msg_gps_inject_data();
@@ -4218,7 +4216,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		getLog().debug("INJECTING GPS DATA : " + Arrays.toString(tempByte));
 	}
 	
-	public void saveGlobalGpsOrigin(msg_gps_global_origin msg)
+	private void saveGlobalGpsOrigin(msg_gps_global_origin msg)
 	{
 		float tempLat = (float) (msg.latitude / 10000000.0);
 		float tempLon = (float) (msg.longitude / 10000000.0);
@@ -4227,13 +4225,13 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	}
 
 	// Not Tested
-	public boolean setGlobalGpsOrigin(Point3D latLonAlt)
+	private boolean setGlobalGpsOrigin(Point3D latLonAlt)
 	{
 		return setGlobalGpsOrigin(latLonAlt, targetSystem);
 	}
 
 	// Not Tested
-	public boolean setGlobalGpsOrigin(Point3D latLonAlt, byte tSystem)
+	private boolean setGlobalGpsOrigin(Point3D latLonAlt, byte tSystem)
 	{
 		Point3D prevGlobalGpsOrigin = globalGpsOrigin;
 		globalGpsOrigin = null;
@@ -4284,9 +4282,14 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	}
 	
 	//NOT TESTED
-	public boolean getLogEntry(short startno, short end)
+	private boolean getLogEntry(short startno, short end)
 	{
 		return getLogEntry(startno, end, targetSystem, targetComponent);
+	}
+	
+	private boolean getLogEntry(byte tSystem, byte tComponent)
+	{
+		return getLogEntry((short)0, (short)0xFFFF, tSystem, tComponent);
 	}
 	
 	private void saveLogEntry(msg_log_entry entry)
@@ -4295,7 +4298,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	}
 
 	// NOT TESTED
-	public boolean getLogEntry(short startno, short end, byte tSystem,
+	private boolean getLogEntry(short startno, short end, byte tSystem,
 			byte tComponent)
 	{
 		int size = logEntry.size();
@@ -4349,19 +4352,19 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	}
 
 	// NOT TESTED
-	public boolean getLogEntry()
+	private boolean getLogEntry()
 	{
 		return getLogEntry((short)0, (short)0xFFFF);
 	}
 	
 	//NOT TESTED
-	public void eraseLog()
+	private void eraseLog()
 	{
 		eraseLog(targetSystem, targetComponent);
 	}
 	
 	// NOT TESTED
-	public void eraseLog(byte tSystem, byte tComponent)
+	private void eraseLog(byte tSystem, byte tComponent)
 	{
 		msg_log_erase req = new msg_log_erase();
 		req.target_system = tSystem;
@@ -4376,13 +4379,13 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	}
 	
 	//NOT TESTED
-	public boolean getLogList()
+	private boolean getLogList()
 	{
 		return getLogList(targetSystem, targetComponent);
 	}
 	
 	//NOT TESTED
-	public boolean getLogList(byte tSystem, byte tComponent)
+	private boolean getLogList(byte tSystem, byte tComponent)
 	{
 		logEntry = new ArrayList<msg_log_entry>();
 		if (getLogEntry((short) 0,(short) 0xffff ,tSystem , tComponent))
