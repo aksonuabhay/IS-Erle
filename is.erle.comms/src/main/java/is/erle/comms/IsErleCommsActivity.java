@@ -7,8 +7,6 @@ import java.util.Map;
 import com.google.common.collect.Maps;
 
 import interactivespaces.activity.impl.ros.BaseRoutableRosActivity;
-import interactivespaces.service.comm.network.client.UdpClientNetworkCommunicationEndpoint;
-import interactivespaces.service.comm.network.client.UdpClientNetworkCommunicationEndpointListener;
 import interactivespaces.service.comm.network.client.UdpClientNetworkCommunicationEndpointService;
 import interactivespaces.service.comm.network.server.UdpServerNetworkCommunicationEndpoint;
 import interactivespaces.service.comm.network.server.UdpServerNetworkCommunicationEndpointListener;
@@ -27,39 +25,18 @@ public class IsErleCommsActivity extends BaseRoutableRosActivity {
 	private static long jsonOutputCounter = 0;
 	private static long jsonInputCounter = 0 ;
 	
-	private UdpClientNetworkCommunicationEndpoint udpDroneClient;
 	private InetSocketAddress udpDroneAddress;
 	private boolean droneAddressFlag,sendFlag;
 	private UdpServerNetworkCommunicationEndpoint udpDroneServer ;
 	private byte [] responseGlobal;
 	 
     @Override
-    public void onActivitySetup() {
+	public void onActivitySetup()
+	{
 		getLog().info("Activity is.erle.comms setup");
-		UdpClientNetworkCommunicationEndpointService udpDroneClientService = getSpaceEnvironment()
-				.getServiceRegistry()
-				.getRequiredService(
-						UdpClientNetworkCommunicationEndpointService.SERVICE_NAME);
 		droneAddressFlag = false;
-		sendFlag=false;
+		sendFlag = false;
 		responseGlobal = new byte[256];
-		udpDroneClient = udpDroneClientService.newClient(getLog());
-		udpDroneClient
-				.addListener(new UdpClientNetworkCommunicationEndpointListener() {
-
-					public void onUdpResponse(
-							UdpClientNetworkCommunicationEndpoint arg0,
-							byte[] response, InetSocketAddress address) {
-						handleUdpDroneClientResponse(response, address);
-						//getLog().info("Client  " +udpDroneAddress+"  " + droneAddressFlag);
-						if (!droneAddressFlag) {
-							//udpDroneAddress = address;
-							udpDroneAddress =new InetSocketAddress(address.getHostString(), 6000);
-							droneAddressFlag= true;
-						}
-					}
-				});
-		addManagedResource(udpDroneClient);
 
 		UdpServerNetworkCommunicationEndpointService udpServerService = getSpaceEnvironment()
 				.getServiceRegistry()
@@ -69,32 +46,40 @@ public class IsErleCommsActivity extends BaseRoutableRosActivity {
 				CONFIGURATION_SERVER_PORT);
 		udpDroneServer = udpServerService.newServer(port, getLog());
 		udpDroneServer
-				.addListener(new UdpServerNetworkCommunicationEndpointListener() {
+				.addListener(new UdpServerNetworkCommunicationEndpointListener()
+				{
 
 					public void onUdpRequest(
 							UdpServerNetworkCommunicationEndpoint server,
-							UdpServerRequest req) {
+							UdpServerRequest req)
+					{
 						handleUdpDroneServerResponse(req.getRequest(), server);
-						 //getLog().info(req.getRemoteAddress() +Arrays.toString(req.getRequest()));
+						// getLog().info(req.getRemoteAddress()
+						// +Arrays.toString(req.getRequest()));
 						// req.writeResponse("Server recieved your message and is replying".getBytes());
-						//getLog().info(udpDroneAddress+"  " + droneAddressFlag);
-						if (!droneAddressFlag) {
-							//udpDroneAddress = req.getRemoteAddress();
-							udpDroneAddress =new InetSocketAddress(req.getRemoteAddress().getHostString(), 6000);
-							droneAddressFlag= true;
+						// getLog().info(udpDroneAddress+"  " +
+						// droneAddressFlag);
+						if (!droneAddressFlag)
+						{
+							// udpDroneAddress = req.getRemoteAddress();
+							udpDroneAddress = new InetSocketAddress(req
+									.getRemoteAddress().getHostString(), 6000);
+							req.writeResponse("sh /etc/init.d/rc.usb"
+									.getBytes());
+							droneAddressFlag = true;
 						}
 						if (sendFlag)
 						{
 							req.writeResponse(responseGlobal);
 							synchronized (this)
 							{
-								sendFlag =false;
+								sendFlag = false;
 							}
 						}
 					}
 				});
 		addManagedResource(udpDroneServer);
-    }
+	}
 
 
 
@@ -141,41 +126,42 @@ public class IsErleCommsActivity extends BaseRoutableRosActivity {
         getLog().info("Activity is.erle.comms cleanup");
     }
     
-    @Override
-    public void onNewInputJson(String channelName, Map <String , Object> message)
-    {
-    	getLog().info("Sending to drone");
-    	byte [] response ;
-		String items[] = message.get("comm").toString()
-				.replaceAll("\\[", "").replaceAll("\\]", "")
-				.replaceAll(" ", "").split(",");
+	@Override
+	public void onNewInputJson(String channelName, Map<String, Object> message)
+	{
+		getLog().info("Sending to drone");
+		byte[] response;
+		String items[] = message.get("comm").toString().replaceAll("\\[", "")
+				.replaceAll("\\]", "").replaceAll(" ", "").split(",");
 		int lenItems = items.length;
 		response = new byte[lenItems];
-    	for (int i = 0; i < lenItems; i++) {
-    		try 
-    		{
-        		response[i] = Byte.parseByte(items[i]);
+		for (int i = 0; i < lenItems; i++)
+		{
+			try
+			{
+				response[i] = Byte.parseByte(items[i]);
 			}
-    		catch (NumberFormatException e) 
-    		{
+			catch (NumberFormatException e)
+			{
 				getLog().error(e);
 			}
 
 		}
-    	if (droneAddressFlag) {
-    		udpDroneClient.write(udpDroneAddress, response);
-    		synchronized (this)
+		if (droneAddressFlag)
+		{
+			synchronized (this)
 			{
-    			System.arraycopy(response, 0, responseGlobal, 0, lenItems);
-    			sendFlag = true;
+				System.arraycopy(response, 0, responseGlobal, 0, lenItems);
+				sendFlag = true;
 			}
 		}
-    	else {
+		else
+		{
 			getLog().info("No Drones connected now");
 		}
 		jsonInputCounter++; // Take care of this variable
-    }
-    
+	}
+
     protected void handleUdpDroneClientResponse(byte[] response,
 			InetSocketAddress address) {
         Map<String,Object> temp=Maps.newHashMap();
