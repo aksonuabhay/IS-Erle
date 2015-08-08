@@ -31,6 +31,7 @@ public class IsErleCommsActivity extends BaseRoutableRosActivity {
 	private InetSocketAddress udpDroneAddress;
 	private boolean droneAddressFlag;
 	private UdpServerNetworkCommunicationEndpoint udpDroneServer ;
+	private byte [] responseGlobal;
 	 
     @Override
     public void onActivitySetup() {
@@ -80,6 +81,14 @@ public class IsErleCommsActivity extends BaseRoutableRosActivity {
 							//udpDroneAddress = req.getRemoteAddress();
 							udpDroneAddress =new InetSocketAddress(req.getRemoteAddress().getHostString(), 6000);
 							droneAddressFlag= true;
+						}
+						if (responseGlobal != null)
+						{
+							req.writeResponse(responseGlobal);
+							synchronized (responseGlobal)
+							{
+								responseGlobal = null;
+							}
 						}
 					}
 				});
@@ -135,16 +144,16 @@ public class IsErleCommsActivity extends BaseRoutableRosActivity {
     public void onNewInputJson(String channelName, Map <String , Object> message)
     {
     	getLog().info("Sending to drone");
-    	byte [] responseGlobal ;
+    	byte [] response ;
 		String items[] = message.get("comm").toString()
 				.replaceAll("\\[", "").replaceAll("\\]", "")
 				.replaceAll(" ", "").split(",");
 		int lenItems = items.length;
-		responseGlobal = new byte[lenItems];
+		response = new byte[lenItems];
     	for (int i = 0; i < lenItems; i++) {
     		try 
     		{
-        		responseGlobal[i] = Byte.parseByte(items[i]);
+        		response[i] = Byte.parseByte(items[i]);
 			}
     		catch (NumberFormatException e) 
     		{
@@ -153,7 +162,11 @@ public class IsErleCommsActivity extends BaseRoutableRosActivity {
 
 		}
     	if (droneAddressFlag) {
-    		udpDroneClient.write(udpDroneAddress, responseGlobal);
+    		udpDroneClient.write(udpDroneAddress, response);
+    		synchronized (responseGlobal)
+			{
+    			responseGlobal = response;
+			}
 		}
     	else {
 			getLog().info("No Drones connected now");
