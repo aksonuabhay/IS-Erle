@@ -51,7 +51,7 @@ public class IsErleCommsActivity extends BaseRoutableRosActivity {
 							UdpClientNetworkCommunicationEndpoint arg0,
 							byte[] response, InetSocketAddress address) {
 						handleUdpDroneClientResponse(response, address);
-						getLog().info("Client  " +udpDroneAddress+"  " + droneAddressFlag);
+						//getLog().info("Client  " +udpDroneAddress+"  " + droneAddressFlag);
 						if (!droneAddressFlag) {
 							//udpDroneAddress = address;
 							udpDroneAddress =new InetSocketAddress(address.getHostString(), 6000);
@@ -75,9 +75,9 @@ public class IsErleCommsActivity extends BaseRoutableRosActivity {
 							UdpServerNetworkCommunicationEndpoint server,
 							UdpServerRequest req) {
 						handleUdpDroneServerResponse(req.getRequest(), server);
-						 getLog().info(req.getRemoteAddress() +Arrays.toString(req.getRequest()));
+						 //getLog().info(req.getRemoteAddress() +Arrays.toString(req.getRequest()));
 						// req.writeResponse("Server recieved your message and is replying".getBytes());
-						getLog().info(udpDroneAddress+"  " + droneAddressFlag);
+						//getLog().info(udpDroneAddress+"  " + droneAddressFlag);
 						if (!droneAddressFlag) {
 							//udpDroneAddress = req.getRemoteAddress();
 							udpDroneAddress =new InetSocketAddress(req.getRemoteAddress().getHostString(), 6000);
