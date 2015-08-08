@@ -48,6 +48,10 @@ public class IsErleCommsActivity extends BaseRoutableRosActivity {
 							UdpClientNetworkCommunicationEndpoint arg0,
 							byte[] response, InetSocketAddress address) {
 						handleUdpDroneClientResponse(response, address);
+						if (!droneAddressFlag) {
+							udpDroneAddress = address;
+							droneAddressFlag= true;
+						}
 					}
 				});
 		addManagedResource(udpDroneClient);
@@ -75,7 +79,7 @@ public class IsErleCommsActivity extends BaseRoutableRosActivity {
 						}
 					}
 				});
-		addManagedResource(udpDroneServer);
+		//addManagedResource(udpDroneServer);
     }
 
 
