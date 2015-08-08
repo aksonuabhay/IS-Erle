@@ -224,8 +224,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 					Map<String, Object> tempMapMission = Maps.newHashMap();
 					tempMapMission.put("comm", Arrays.toString(tempByte));
 					sendOutputJson(publishers[0], tempMapMission);
-					getLog().debug("SENDING COUNT : "+Arrays.toString(tempByte));
-					getLog().debug("TARGET SYSTEM : " + targetSystem +" TARGET COMPONENT : " + targetComponent);
+					getLog().info("SENDING COUNT : "+Arrays.toString(tempByte));
+					getLog().info("TARGET SYSTEM : " + targetSystem +" TARGET COMPONENT : " + targetComponent);
 				} 
 				else {
 					getLog().error("Did not receive a heartbeat packet till now");
@@ -271,7 +271,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				Map<String, Object> tempMapMission = Maps.newHashMap();
 				tempMapMission.put("comm", Arrays.toString(tempByte));
 				sendOutputJson(publishers[0], tempMapMission);
-				getLog().debug("SENDING MISSION ITEM: "+Arrays.toString(tempByte));
+				getLog().info("SENDING MISSION ITEM: "+Arrays.toString(tempByte));
     		}
     		
     	}
