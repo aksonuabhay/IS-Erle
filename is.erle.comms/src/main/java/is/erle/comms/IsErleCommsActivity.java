@@ -29,7 +29,7 @@ public class IsErleCommsActivity extends BaseRoutableRosActivity {
 	
 	private UdpClientNetworkCommunicationEndpoint udpDroneClient;
 	private InetSocketAddress udpDroneAddress;
-	private boolean droneAddressFlag;
+	private boolean droneAddressFlag,sendFlag;
 	private UdpServerNetworkCommunicationEndpoint udpDroneServer ;
 	private byte [] responseGlobal;
 	 
@@ -41,6 +41,8 @@ public class IsErleCommsActivity extends BaseRoutableRosActivity {
 				.getRequiredService(
 						UdpClientNetworkCommunicationEndpointService.SERVICE_NAME);
 		droneAddressFlag = false;
+		sendFlag=false;
+		responseGlobal = new byte[256];
 		udpDroneClient = udpDroneClientService.newClient(getLog());
 		udpDroneClient
 				.addListener(new UdpClientNetworkCommunicationEndpointListener() {
@@ -73,8 +75,7 @@ public class IsErleCommsActivity extends BaseRoutableRosActivity {
 							UdpServerNetworkCommunicationEndpoint server,
 							UdpServerRequest req) {
 						handleUdpDroneServerResponse(req.getRequest(), server);
-						// getLog().info(req.getRemoteAddress() +
-						// "<- client sent server -> ");
+						 getLog().info(req.getRemoteAddress() +Arrays.toString(req.getRequest()));
 						// req.writeResponse("Server recieved your message and is replying".getBytes());
 						getLog().info(udpDroneAddress+"  " + droneAddressFlag);
 						if (!droneAddressFlag) {
@@ -82,12 +83,12 @@ public class IsErleCommsActivity extends BaseRoutableRosActivity {
 							udpDroneAddress =new InetSocketAddress(req.getRemoteAddress().getHostString(), 6000);
 							droneAddressFlag= true;
 						}
-						if (responseGlobal != null)
+						if (sendFlag)
 						{
 							req.writeResponse(responseGlobal);
-							synchronized (responseGlobal)
+							synchronized (this)
 							{
-								responseGlobal = null;
+								sendFlag =false;
 							}
 						}
 					}
@@ -163,9 +164,10 @@ public class IsErleCommsActivity extends BaseRoutableRosActivity {
 		}
     	if (droneAddressFlag) {
     		udpDroneClient.write(udpDroneAddress, response);
-    		synchronized (responseGlobal)
+    		synchronized (this)
 			{
-    			responseGlobal = response;
+    			System.arraycopy(response, 0, responseGlobal, 0, lenItems);
+    			sendFlag = true;
 			}
 		}
     	else {
