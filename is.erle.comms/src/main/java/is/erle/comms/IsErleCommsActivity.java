@@ -50,7 +50,8 @@ public class IsErleCommsActivity extends BaseRoutableRosActivity {
 						handleUdpDroneClientResponse(response, address);
 						getLog().info("Client  " +udpDroneAddress+"  " + droneAddressFlag);
 						if (!droneAddressFlag) {
-							udpDroneAddress = address;
+							//udpDroneAddress = address;
+							udpDroneAddress =new InetSocketAddress(address.getHostString(), 6000);
 							droneAddressFlag= true;
 						}
 					}
@@ -76,7 +77,8 @@ public class IsErleCommsActivity extends BaseRoutableRosActivity {
 						// req.writeResponse("Server recieved your message and is replying".getBytes());
 						getLog().info(udpDroneAddress+"  " + droneAddressFlag);
 						if (!droneAddressFlag) {
-							udpDroneAddress = req.getRemoteAddress();
+							//udpDroneAddress = req.getRemoteAddress();
+							udpDroneAddress =new InetSocketAddress(req.getRemoteAddress().getHostString(), 6000);
 							droneAddressFlag= true;
 						}
 					}
@@ -151,7 +153,7 @@ public class IsErleCommsActivity extends BaseRoutableRosActivity {
 
 		}
     	if (droneAddressFlag) {
-    	   	udpDroneClient.write(udpDroneAddress, responseGlobal);
+    		udpDroneClient.write(udpDroneAddress, responseGlobal);
 		}
     	else {
 			getLog().info("No Drones connected now");
