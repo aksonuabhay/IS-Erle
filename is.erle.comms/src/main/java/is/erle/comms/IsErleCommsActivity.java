@@ -48,6 +48,7 @@ public class IsErleCommsActivity extends BaseRoutableRosActivity {
 							UdpClientNetworkCommunicationEndpoint arg0,
 							byte[] response, InetSocketAddress address) {
 						handleUdpDroneClientResponse(response, address);
+						getLog().info("Client  " +udpDroneAddress+"  " + droneAddressFlag);
 						if (!droneAddressFlag) {
 							udpDroneAddress = address;
 							droneAddressFlag= true;
@@ -73,13 +74,14 @@ public class IsErleCommsActivity extends BaseRoutableRosActivity {
 						// getLog().info(req.getRemoteAddress() +
 						// "<- client sent server -> ");
 						// req.writeResponse("Server recieved your message and is replying".getBytes());
+						getLog().info(udpDroneAddress+"  " + droneAddressFlag);
 						if (!droneAddressFlag) {
 							udpDroneAddress = req.getRemoteAddress();
 							droneAddressFlag= true;
 						}
 					}
 				});
-		//addManagedResource(udpDroneServer);
+		addManagedResource(udpDroneServer);
     }
 
 
@@ -101,6 +103,7 @@ public class IsErleCommsActivity extends BaseRoutableRosActivity {
 //        Map<String,Object> temp=Maps.newHashMap();
 //        temp.put(Long.toString(jsonOutputCounter++), "ACTIVATE");
 //        sendOutputJson("output", temp);
+        
     }
 
     @Override
@@ -129,6 +132,7 @@ public class IsErleCommsActivity extends BaseRoutableRosActivity {
     @Override
     public void onNewInputJson(String channelName, Map <String , Object> message)
     {
+    	getLog().info("Sending to drone");
     	byte [] responseGlobal ;
 		String items[] = message.get("comm").toString()
 				.replaceAll("\\[", "").replaceAll("\\]", "")
