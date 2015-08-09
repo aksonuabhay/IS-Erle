@@ -25,6 +25,7 @@ import java.nio.charset.StandardCharsets;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.xml.sax.SAXException;
 
 
@@ -352,6 +353,144 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			{
 				tempMissionRead.put("command", "FAIL");
 				sendOutputJson(publishers[3], tempMissionRead);
+				return;
+			}
+			break;
+
+		// GET_MISSION
+		case 2:
+			Map<String, Object> tempMission = Maps.newHashMap();
+			if (readWaypointList.isEmpty())
+			{
+				tempMission.put("command", "NULL");
+				sendOutputJson(publishers[3], tempMission);
+				return;
+			}
+			else
+			{
+				tempMission.put("command",
+						Arrays.deepToString(readWaypointList.toArray()));
+				sendOutputJson(publishers[3], tempMission);
+				/*
+				 * Complimentary function for processing this string String
+				 * [][]back= new String[2][2]; for (int i=0; i<result.length
+				 * ;i++) { back[i] = result[i].replaceAll("\\[",""
+				 * ).replaceAll("\\]","").replaceAll(" ","").split(","); for
+				 * (String s:back[i]) { System.out.println(s); } }
+				 */
+			}
+			break;
+
+		// WRITE MISSION
+		case 3:
+
+			break;
+
+		// SET CURRENT ACTIVE WP
+		case 4:
+			boolean resultSetWP = false;
+			Map<String, Object> tempSetCurrentWP = Maps.newHashMap();
+			if (message.length == 2)
+			{
+				resultSetWP = setCurrentActiveWP(Short.parseShort(message[1]));
+			}
+			else if (message.length == 4)
+			{
+				byte system = Byte.parseByte(message[2]);
+				byte component = Byte.parseByte(message[3]);
+				resultSetWP = setCurrentActiveWP(Short.parseShort(message[1]),
+						(byte) system, (byte) component);
+			}
+			else
+			{
+				tempSetCurrentWP.put("command", "BADCMD");
+				sendOutputJson(publishers[3], tempSetCurrentWP);
+				return;
+			}
+
+			if (resultSetWP)
+			{
+				tempSetCurrentWP.put("command", "SUCCESS");
+				sendOutputJson(publishers[3], tempSetCurrentWP);
+			}
+			else
+			{
+				tempSetCurrentWP.put("command", "FAIL");
+				sendOutputJson(publishers[3], tempSetCurrentWP);
+				return;
+			}
+			break;
+
+		// CLEAR MISSION
+		case 5:
+			boolean resultClearMission = false;
+			Map<String, Object> tempClearMission = Maps.newHashMap();
+			if (message.length == 1)
+			{
+				resultClearMission = clearMissionList();
+			}
+			else if (message.length == 3)
+			{
+				byte system = Byte.parseByte(message[2]);
+				byte component = Byte.parseByte(message[3]);
+				resultClearMission = clearMissionList((byte) system,
+						(byte) component);
+			}
+			else
+			{
+				tempClearMission.put("command", "BADCMD");
+				sendOutputJson(publishers[3], tempClearMission);
+				return;
+			}
+
+			if (resultClearMission)
+			{
+				tempClearMission.put("command", "SUCCESS");
+				sendOutputJson(publishers[3], tempClearMission);
+			}
+			else
+			{
+				tempClearMission.put("command", "FAIL");
+				sendOutputJson(publishers[3], tempClearMission);
+				return;
+			}
+			break;
+
+		// ARM
+		case 6:
+			boolean resultARM = false;
+			Map<String, Object> tempARM = Maps.newHashMap();
+			if (message.length == 1)
+			{
+				resultARM = doARM(true);
+			}
+			else if (message.length == 2)
+			{
+				resultARM = doARM(Boolean.parseBoolean(message[1]));
+			}
+			else if (message.length == 4)
+			{
+				byte system = Byte.parseByte(message[2]);
+				byte component = Byte.parseByte(message[3]);
+				resultARM = doARM(Boolean.parseBoolean(message[1]),
+						(byte) system, (byte) component);
+			}
+			else
+			{
+				tempARM.put("command", "BADCMD");
+				sendOutputJson(publishers[3], tempARM);
+				return;
+			}
+
+			if (resultARM)
+			{
+				tempARM.put("command", "SUCCESS");
+				sendOutputJson(publishers[3], tempARM);
+			}
+			else
+			{
+				tempARM.put("command", "FAIL");
+				sendOutputJson(publishers[3], tempARM);
 				return;
 			}
 			break;
