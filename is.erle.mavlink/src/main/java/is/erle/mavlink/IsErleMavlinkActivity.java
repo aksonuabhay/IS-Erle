@@ -120,6 +120,10 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
     @Override
     public void onActivityActivate() {
         getLog().info("Activity is.erle.mavlink activate");
+        getDataStream(MAV_DATA_STREAM.MAV_DATA_STREAM_POSITION, 1);
+        getDataStream(MAV_DATA_STREAM.MAV_DATA_STREAM_RAW_SENSORS, 1);
+       // getDataStream(MAV_DATA_STREAM.MAV_DATA_STREAM_RAW_CONTROLLER, 1);
+        getDataStream(MAV_DATA_STREAM.MAV_DATA_STREAM_RC_CHANNELS, 1);
 //		Map<String, Object> temp = Maps.newHashMap();
 //		temp.put("mission", "START");
 //		sendOutputJson(getConfiguration().getRequiredPropertyString(CONFIGURATION_PUBLISHER_NAME), temp);
@@ -4495,7 +4499,62 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		return false;
 	}
 	
+	private boolean rateCheck(double pps, int rate)
+	{
+		if (pps == Double.POSITIVE_INFINITY || pps == Double.NEGATIVE_INFINITY)
+		{
+			return false;
+		}
+		else if (rate == 0 && pps == 0)
+		{
+			return true;
+		}
+		else if (rate == 1 && pps >= 0.5 && pps < 2)
+		{
+			return true;
+		}
+		else if (rate == 3 && pps >= 2 && pps < 5)
+		{
+			return true;
+		}
+		else if (rate == 10 && pps >= 5 && pps < 15)
+		{
+			return true;
+		}
+		else if (rate > 15 && pps >= 15)
+		{
+			return true;
+		}
+		return false;
+	}
+	
+	private void getDataStream(int id, int i, boolean startStop,
+			byte tSystem, byte tComponent)
+	{
+		msg_request_data_stream req = new msg_request_data_stream();
+		req.target_system = tSystem;
+		req.target_component = tComponent;
+		req.req_stream_id = (byte) id;
+		req.req_message_rate = (short) i;
+		req.start_stop = (byte) (startStop ? 1 : 0);
+		Map<String, Object> tempRequestDataStream;
+		byte tempByte[] = req.pack().encodePacket();
+		tempRequestDataStream = Maps.newHashMap();
+		tempRequestDataStream.put("comm", Arrays.toString(tempByte));
+		sendOutputJson(publishers[0], tempRequestDataStream);
+		getLog().debug("REQUESTING DATA STREAM : " + Arrays.toString(tempByte));
+		sendOutputJson(publishers[0], tempRequestDataStream);
+	}
+	
+	private void getDataStream(int id, int i, byte tSystem, byte tComponent)
+	{
+		getDataStream(id, i, true, tSystem, tComponent);
+	}
 
+	private void getDataStream(int id, int i)
+	{
+		getDataStream(id, i, targetSystem, targetComponent);
+	}
 }
 
 
