@@ -635,8 +635,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 					sendOutputJson(publishers[3], tempSetParameter);
 					return;
 				}
-				byte system = Byte.parseByte(message[2]);
-				byte component = Byte.parseByte(message[3]);
+				byte system = Byte.parseByte(message[3]);
+				byte component = Byte.parseByte(message[4]);
 				resultSetParameter = setParam(message[1], fValue,
 						(byte) system, (byte) component);
 			}
@@ -660,7 +660,216 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			}
 			break;
 			
-			//, AUTOPILOT_REBOOT, AUTOPILOT_SHUTDOWN,
+			// AUTOPILOT_REBOOT
+		case 11:
+			boolean resultAutoPilotReboot = false;
+			Map<String, Object> tempAutoPilotReboot = Maps.newHashMap();
+			if (message.length == 1)
+			{
+				resultAutoPilotReboot = doRebootAutopilot();
+			}
+			else if (message.length == 3)
+			{
+				byte system = Byte.parseByte(message[2]);
+				byte component = Byte.parseByte(message[3]);
+				resultAutoPilotReboot = doRebootAutopilot((byte) system,
+						(byte) component);
+			}
+			else
+			{
+				tempAutoPilotReboot.put("command", "BADCMD");
+				sendOutputJson(publishers[3], tempAutoPilotReboot);
+				return;
+			}
+
+			if (resultAutoPilotReboot)
+			{
+				tempAutoPilotReboot.put("command", "SUCCESS");
+				sendOutputJson(publishers[3], tempAutoPilotReboot);
+			}
+			else
+			{
+				tempAutoPilotReboot.put("command", "FAIL");
+				sendOutputJson(publishers[3], tempAutoPilotReboot);
+				return;
+			}
+			break;
+			
+			// AUTOPILOT_SHUTDOWN
+		case 12:
+			boolean resultAutoPilotShutDown = false;
+			Map<String, Object> tempAutoPilotShutDown = Maps.newHashMap();
+			if (message.length == 1)
+			{
+				resultAutoPilotShutDown = doShutdownAutopilot();
+			}
+			else if (message.length == 3)
+			{
+				byte system = Byte.parseByte(message[2]);
+				byte component = Byte.parseByte(message[3]);
+				resultAutoPilotShutDown = doShutdownAutopilot((byte) system,
+						(byte) component);
+			}
+			else
+			{
+				tempAutoPilotShutDown.put("command", "BADCMD");
+				sendOutputJson(publishers[3], tempAutoPilotShutDown);
+				return;
+			}
+
+			if (resultAutoPilotShutDown)
+			{
+				tempAutoPilotShutDown.put("command", "SUCCESS");
+				sendOutputJson(publishers[3], tempAutoPilotShutDown);
+			}
+			else
+			{
+				tempAutoPilotShutDown.put("command", "FAIL");
+				sendOutputJson(publishers[3], tempAutoPilotShutDown);
+				return;
+			}
+			break;
+			
+			// BOOTLOADER_REBOOT
+		case 13:
+			boolean resultBootloaderReboot = false;
+			Map<String, Object> tempBootloaderReboot = Maps.newHashMap();
+			if (message.length == 1)
+			{
+				resultBootloaderReboot = doBootloaderReboot();
+			}
+			else if (message.length == 3)
+			{
+				byte system = Byte.parseByte(message[2]);
+				byte component = Byte.parseByte(message[3]);
+				resultBootloaderReboot = doBootloaderReboot((byte) system,
+						(byte) component);
+			}
+			else
+			{
+				tempBootloaderReboot.put("command", "BADCMD");
+				sendOutputJson(publishers[3], tempBootloaderReboot);
+				return;
+			}
+
+			if (resultBootloaderReboot)
+			{
+				tempBootloaderReboot.put("command", "SUCCESS");
+				sendOutputJson(publishers[3], tempBootloaderReboot);
+			}
+			else
+			{
+				tempBootloaderReboot.put("command", "FAIL");
+				sendOutputJson(publishers[3], tempBootloaderReboot);
+				return;
+			}
+			break;
+			
+			// SYSTEM_SHUTDOWN
+		case 14:
+			boolean resultSystemShutDown = false;
+			Map<String, Object> tempSystemShutDown = Maps.newHashMap();
+			if (message.length == 1)
+			{
+				resultSystemShutDown = doSystemShutdown();
+			}
+			else if (message.length == 3)
+			{
+				byte system = Byte.parseByte(message[2]);
+				byte component = Byte.parseByte(message[3]);
+				resultSystemShutDown = doSystemShutdown((byte) system,
+						(byte) component);
+			}
+			else
+			{
+				tempSystemShutDown.put("command", "BADCMD");
+				sendOutputJson(publishers[3], tempSystemShutDown);
+				return;
+			}
+
+			if (resultSystemShutDown)
+			{
+				tempSystemShutDown.put("command", "SUCCESS");
+				sendOutputJson(publishers[3], tempSystemShutDown);
+			}
+			else
+			{
+				tempSystemShutDown.put("command", "FAIL");
+				sendOutputJson(publishers[3], tempSystemShutDown);
+				return;
+			}
+			break;
+			
+			// SYSTEM_REBOOT
+		case 15:
+			boolean resultSystemReboot = false;
+			Map<String, Object> tempSystemReboot = Maps.newHashMap();
+			if (message.length == 1)
+			{
+				resultSystemReboot = doSystemReboot();
+			}
+			else if (message.length == 3)
+			{
+				byte system = Byte.parseByte(message[2]);
+				byte component = Byte.parseByte(message[3]);
+				resultSystemReboot = doSystemReboot((byte) system,
+						(byte) component);
+			}
+			else
+			{
+				tempSystemReboot.put("command", "BADCMD");
+				sendOutputJson(publishers[3], tempSystemReboot);
+				return;
+			}
+
+			if (resultSystemReboot)
+			{
+				tempSystemReboot.put("command", "SUCCESS");
+				sendOutputJson(publishers[3], tempSystemReboot);
+			}
+			else
+			{
+				tempSystemReboot.put("command", "FAIL");
+				sendOutputJson(publishers[3], tempSystemReboot);
+				return;
+			}
+			break;
+			
+			// SET_MODE
+		case 16:
+			boolean resultSetMode = false;
+			Map<String, Object> tempSetMode = Maps.newHashMap();
+			if (message.length == 2)
+			{
+				resultSetMode = setMode(message[1]);
+			}
+			else if (message.length == 3)
+			{
+				byte system = Byte.parseByte(message[2]);
+				resultSetMode = setMode(message[1],(byte) system);
+			}
+			else
+			{
+				tempSetMode.put("command", "BADCMD");
+				sendOutputJson(publishers[3], tempSetMode);
+				return;
+			}
+
+			if (resultSetMode)
+			{
+				tempSetMode.put("command", "SUCCESS");
+				sendOutputJson(publishers[3], tempSetMode);
+			}
+			else
+			{
+				tempSetMode.put("command", "FAIL");
+				sendOutputJson(publishers[3], tempSetMode);
+				return;
+			}
+			break;
+			
+			//SET_ALLOWED_AREA, SET_GPS_ORIGIN, READ_LOG_ENTRY, GET_LOG_ENTRY,
+			// READ_LOG_DATA, GET_LOG_DATA
 		default:
 			break;
 		}
