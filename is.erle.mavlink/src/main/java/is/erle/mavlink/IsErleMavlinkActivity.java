@@ -360,24 +360,33 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		// GET_MISSION
 		case 2:
 			Map<String, Object> tempMission = Maps.newHashMap();
-			if (readWaypointList.isEmpty())
+			if (message.length == 1)
 			{
-				tempMission.put("command", "NULL");
-				sendOutputJson(publishers[3], tempMission);
-				return;
+				if (readWaypointList.isEmpty())
+				{
+					tempMission.put("command", "NULL");
+					sendOutputJson(publishers[3], tempMission);
+					return;
+				}
+				else
+				{
+					tempMission.put("command",
+							Arrays.deepToString(readWaypointList.toArray()));
+					sendOutputJson(publishers[3], tempMission);
+					/*
+					 * Complimentary function for processing this string String
+					 * [][]back= new String[2][2]; for (int i=0; i<result.length
+					 * ;i++) { back[i] = result[i].replaceAll("\\[",""
+					 * ).replaceAll("\\]","").replaceAll(" ","").split(","); for
+					 * (String s:back[i]) { System.out.println(s); } }
+					 */
+				}
 			}
 			else
 			{
-				tempMission.put("command",
-						Arrays.deepToString(readWaypointList.toArray()));
+				tempMission.put("command", "BADCMD");
 				sendOutputJson(publishers[3], tempMission);
-				/*
-				 * Complimentary function for processing this string String
-				 * [][]back= new String[2][2]; for (int i=0; i<result.length
-				 * ;i++) { back[i] = result[i].replaceAll("\\[",""
-				 * ).replaceAll("\\]","").replaceAll(" ","").split(","); for
-				 * (String s:back[i]) { System.out.println(s); } }
-				 */
+				return;
 			}
 			break;
 
@@ -495,6 +504,163 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			}
 			break;
 
+			// READ PARAMETER LIST START 
+		case 7:
+			boolean resultParameterList = false;
+			Map<String, Object> tempReadParameterListStart = Maps.newHashMap();
+			if (message.length == 1)
+			{
+				resultParameterList = readParameterListStart();
+			}
+			else if (message.length == 3)
+			{
+				byte system = Byte.parseByte(message[1]);
+				byte component = Byte.parseByte(message[2]);
+				resultParameterList = readParameterListStart((byte) system, (byte) component);
+			}
+			else
+			{
+				tempReadParameterListStart.put("command", "BADCMD");
+				sendOutputJson(publishers[3], tempReadParameterListStart);
+				return;
+			}
+
+			if (resultParameterList)
+			{
+				tempReadParameterListStart.put("command", "SUCCESS");
+				sendOutputJson(publishers[3], tempReadParameterListStart);
+			}
+			else
+			{
+				tempReadParameterListStart.put("command", "FAIL");
+				sendOutputJson(publishers[3], tempReadParameterListStart);
+				return;
+			}
+			break;
+			
+			// GET PARAMETER LIST
+		case 8:
+			Map<String, Object> tempParameterList = Maps.newHashMap();
+			if (message.length == 1)
+			{
+				if (paramList.isEmpty())
+				{
+					tempParameterList.put("command", "NULL");
+					sendOutputJson(publishers[3], tempParameterList);
+					return;
+				}
+				else
+				{
+					tempParameterList.put("command", paramList); // Needs to be checked thoroughly
+					sendOutputJson(publishers[3], tempParameterList);
+					/*
+					 * Cast it to Map<String,Double> to make it useful.
+					 */
+				}
+			}
+			else
+			{
+				tempParameterList.put("command", "BADCMD");
+				sendOutputJson(publishers[3], tempParameterList);
+				return;
+			}
+			break;
+			
+			// GET PARAMETER
+		case 9:
+			Map<String, Object> tempParameter = Maps.newHashMap();
+			if (message.length == 2)
+			{
+				if (paramList.isEmpty())
+				{
+					tempParameter.put("command", "NULL");
+					sendOutputJson(publishers[3], tempParameter);
+					return;
+				}
+				else
+				{
+					if (paramList.containsKey(message[1]))
+					{
+						tempParameter.put("command", paramList.get(message[1])
+								.toString());
+						sendOutputJson(publishers[3], tempParameter);
+					}
+					else
+					{
+						tempParameter.put("command", "FAIL");
+						sendOutputJson(publishers[3], tempParameter);
+					}
+					/*
+					 * Use Double.parseDouble to make it useful.
+					 */
+				}
+			}
+			else
+			{
+				tempParameter.put("command", "BADCMD");
+				sendOutputJson(publishers[3], tempParameter);
+				return;
+			}
+			break;
+			
+			//SET_PARAMETER
+		case 10:
+			boolean resultSetParameter = false;
+			Map<String, Object> tempSetParameter = Maps.newHashMap();
+			if (message.length == 3)
+			{
+				float fValue;
+				try
+				{
+					fValue = Float.parseFloat(message[2]);
+				}
+				catch (NumberFormatException e)
+				{
+					tempSetParameter.put("command", "BADCMD");
+					sendOutputJson(publishers[3], tempSetParameter);
+					return;
+				}
+				resultSetParameter = setParam(message[1], fValue);
+			}
+			else if (message.length == 5)
+			{
+				float fValue;
+				try
+				{
+					fValue = Float.parseFloat(message[2]);
+				}
+				catch (NumberFormatException e)
+				{
+					tempSetParameter.put("command", "BADCMD");
+					sendOutputJson(publishers[3], tempSetParameter);
+					return;
+				}
+				byte system = Byte.parseByte(message[2]);
+				byte component = Byte.parseByte(message[3]);
+				resultSetParameter = setParam(message[1], fValue,
+						(byte) system, (byte) component);
+			}
+			else
+			{
+				tempSetParameter.put("command", "BADCMD");
+				sendOutputJson(publishers[3], tempSetParameter);
+				return;
+			}
+
+			if (resultSetParameter)
+			{
+				tempSetParameter.put("command", "SUCCESS");
+				sendOutputJson(publishers[3], tempSetParameter);
+			}
+			else
+			{
+				tempSetParameter.put("command", "FAIL");
+				sendOutputJson(publishers[3], tempSetParameter);
+				return;
+			}
+			break;
+			
+			//, AUTOPILOT_REBOOT, AUTOPILOT_SHUTDOWN,
 		default:
 			break;
 		}
