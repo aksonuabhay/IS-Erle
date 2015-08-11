@@ -24,8 +24,6 @@ import java.nio.charset.StandardCharsets;
 //import javafx.geometry.Point3D;
 
 import javax.xml.parsers.ParserConfigurationException;
-
-import org.apache.commons.lang.ArrayUtils;
 import org.xml.sax.SAXException;
 
 
@@ -307,7 +305,16 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		 * SET_ALLOWED_AREA, SET_GPS_ORIGIN, READ_LOG_ENTRY, GET_LOG_ENTRY,
 		 * READ_LOG_DATA, GET_LOG_DATA
 		 */
-		int c = Integer.parseInt(message[0]);
+		int c = 0;
+		try
+		{
+			c = Integer.parseInt(message[0]);
+		}
+		catch (NumberFormatException e1)
+		{
+			getLog().error("Bad Command Type from Captain Activity");
+			getLog().error(e1);
+		}
 		switch (c)
 		{
 		// HEARTBEAT
@@ -330,9 +337,18 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			}
 			else if (message.length == 3)
 			{
-				byte system = Byte.parseByte(message[1]);
-				byte component = Byte.parseByte(message[2]);
-				result = readMissionListStart((byte) system, (byte) component);
+				byte system = 0;
+				byte component = 0;
+				try
+				{
+					system = Byte.parseByte(message[1]);
+					component = Byte.parseByte(message[2]);
+				}
+				catch (NumberFormatException e)
+				{
+					getLog().error(e);
+				}
+				result = readMissionListStart(system, component);
 			}
 			else
 			{
@@ -408,14 +424,31 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			Map<String, Object> tempSetCurrentWP = Maps.newHashMap();
 			if (message.length == 2)
 			{
-				resultSetWP = setCurrentActiveWP(Short.parseShort(message[1]));
+				try
+				{
+					resultSetWP = setCurrentActiveWP(Short
+							.parseShort(message[1]));
+				}
+				catch (NumberFormatException e)
+				{
+					getLog().error(e);
+				}
 			}
 			else if (message.length == 4)
 			{
-				byte system = Byte.parseByte(message[2]);
-				byte component = Byte.parseByte(message[3]);
-				resultSetWP = setCurrentActiveWP(Short.parseShort(message[1]),
-						(byte) system, (byte) component);
+				byte system = 0;
+				byte component = 0;
+				try
+				{
+					system = Byte.parseByte(message[2]);
+					component = Byte.parseByte(message[3]);
+					resultSetWP = setCurrentActiveWP(
+							Short.parseShort(message[1]), system, component);
+				}
+				catch (NumberFormatException e)
+				{
+					getLog().error(e);
+				}
 			}
 			else
 			{
@@ -447,10 +480,18 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			}
 			else if (message.length == 3)
 			{
-				byte system = Byte.parseByte(message[2]);
-				byte component = Byte.parseByte(message[3]);
-				resultClearMission = clearMissionList((byte) system,
-						(byte) component);
+				byte system = 0;
+				byte component = 0;
+				try
+				{
+					system = Byte.parseByte(message[1]);
+					component = Byte.parseByte(message[2]);
+				}
+				catch (NumberFormatException e)
+				{
+					getLog().error(e);
+				}
+				resultClearMission = clearMissionList(system, component);
 			}
 			else
 			{
@@ -482,14 +523,28 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			}
 			else if (message.length == 2)
 			{
-				resultARM = doARM(Boolean.parseBoolean(message[1]));
+				try
+				{
+					resultARM = doARM(Boolean.parseBoolean(message[1]));
+				}
+				catch (Exception e)
+				{
+					getLog().error(e);
+				}
 			}
 			else if (message.length == 4)
 			{
-				byte system = Byte.parseByte(message[2]);
-				byte component = Byte.parseByte(message[3]);
-				resultARM = doARM(Boolean.parseBoolean(message[1]),
-						(byte) system, (byte) component);
+				try
+				{
+					byte system = Byte.parseByte(message[2]);
+					byte component = Byte.parseByte(message[3]);
+					resultARM = doARM(Boolean.parseBoolean(message[1]), system,
+							component);
+				}
+				catch (NumberFormatException e)
+				{
+					getLog().error(e);
+				}
 			}
 			else
 			{
@@ -511,7 +566,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			}
 			break;
 
-			// READ PARAMETER LIST START 
+		// READ PARAMETER LIST START
 		case 7:
 			boolean resultParameterList = false;
 			Map<String, Object> tempReadParameterListStart = Maps.newHashMap();
@@ -521,9 +576,17 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			}
 			else if (message.length == 3)
 			{
-				byte system = Byte.parseByte(message[1]);
-				byte component = Byte.parseByte(message[2]);
-				resultParameterList = readParameterListStart((byte) system, (byte) component);
+				try
+				{
+					byte system = Byte.parseByte(message[1]);
+					byte component = Byte.parseByte(message[2]);
+					resultParameterList = readParameterListStart(system,
+							component);
+				}
+				catch (NumberFormatException e)
+				{
+					getLog().error(e);
+				}
 			}
 			else
 			{
@@ -544,8 +607,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				return;
 			}
 			break;
-			
-			// GET PARAMETER LIST
+
+		// GET PARAMETER LIST
 		case 8:
 			Map<String, Object> tempParameterList = Maps.newHashMap();
 			if (message.length == 1)
@@ -558,7 +621,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				}
 				else
 				{
-					tempParameterList.put("command", paramList); // Needs to be checked thoroughly
+					tempParameterList.put("command", paramList); // Needs to be
+																	// checked
+																	// thoroughly
 					sendOutputJson(publishers[3], tempParameterList);
 					/*
 					 * Cast it to Map<String,Double> to make it useful.
@@ -572,8 +637,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				return;
 			}
 			break;
-			
-			// GET PARAMETER
+
+		// GET PARAMETER
 		case 9:
 			Map<String, Object> tempParameter = Maps.newHashMap();
 			if (message.length == 2)
@@ -609,8 +674,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				return;
 			}
 			break;
-			
-			//SET_PARAMETER
+
+		// SET_PARAMETER
 		case 10:
 			boolean resultSetParameter = false;
 			Map<String, Object> tempSetParameter = Maps.newHashMap();
@@ -623,6 +688,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				}
 				catch (NumberFormatException e)
 				{
+					getLog().error(e);
 					tempSetParameter.put("command", "BADCMD");
 					sendOutputJson(publishers[3], tempSetParameter);
 					return;
@@ -635,17 +701,18 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				try
 				{
 					fValue = Float.parseFloat(message[2]);
+					byte system = Byte.parseByte(message[3]);
+					byte component = Byte.parseByte(message[4]);
+					resultSetParameter = setParam(message[1], fValue, system,
+							component);
 				}
 				catch (NumberFormatException e)
 				{
+					getLog().error(e);
 					tempSetParameter.put("command", "BADCMD");
 					sendOutputJson(publishers[3], tempSetParameter);
 					return;
 				}
-				byte system = Byte.parseByte(message[3]);
-				byte component = Byte.parseByte(message[4]);
-				resultSetParameter = setParam(message[1], fValue,
-						(byte) system, (byte) component);
 			}
 			else
 			{
@@ -666,8 +733,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				return;
 			}
 			break;
-			
-			// AUTOPILOT_REBOOT
+
+		// AUTOPILOT_REBOOT
 		case 11:
 			boolean resultAutoPilotReboot = false;
 			Map<String, Object> tempAutoPilotReboot = Maps.newHashMap();
@@ -677,10 +744,16 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			}
 			else if (message.length == 3)
 			{
-				byte system = Byte.parseByte(message[2]);
-				byte component = Byte.parseByte(message[3]);
-				resultAutoPilotReboot = doRebootAutopilot((byte) system,
-						(byte) component);
+				try
+				{
+					byte system = Byte.parseByte(message[1]);
+					byte component = Byte.parseByte(message[2]);
+					resultAutoPilotReboot = doRebootAutopilot(system, component);
+				}
+				catch (NumberFormatException e)
+				{
+					getLog().error(e);
+				}
 			}
 			else
 			{
@@ -701,8 +774,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				return;
 			}
 			break;
-			
-			// AUTOPILOT_SHUTDOWN
+
+		// AUTOPILOT_SHUTDOWN
 		case 12:
 			boolean resultAutoPilotShutDown = false;
 			Map<String, Object> tempAutoPilotShutDown = Maps.newHashMap();
@@ -712,10 +785,17 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			}
 			else if (message.length == 3)
 			{
-				byte system = Byte.parseByte(message[2]);
-				byte component = Byte.parseByte(message[3]);
-				resultAutoPilotShutDown = doShutdownAutopilot((byte) system,
-						(byte) component);
+				try
+				{
+					byte system = Byte.parseByte(message[1]);
+					byte component = Byte.parseByte(message[2]);
+					resultAutoPilotShutDown = doShutdownAutopilot(system,
+							component);
+				}
+				catch (NumberFormatException e)
+				{
+					getLog().error(e);
+				}
 			}
 			else
 			{
@@ -736,8 +816,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				return;
 			}
 			break;
-			
-			// BOOTLOADER_REBOOT
+
+		// BOOTLOADER_REBOOT
 		case 13:
 			boolean resultBootloaderReboot = false;
 			Map<String, Object> tempBootloaderReboot = Maps.newHashMap();
@@ -747,10 +827,17 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			}
 			else if (message.length == 3)
 			{
-				byte system = Byte.parseByte(message[2]);
-				byte component = Byte.parseByte(message[3]);
-				resultBootloaderReboot = doBootloaderReboot((byte) system,
-						(byte) component);
+				try
+				{
+					byte system = Byte.parseByte(message[1]);
+					byte component = Byte.parseByte(message[2]);
+					resultBootloaderReboot = doBootloaderReboot(system,
+							component);
+				}
+				catch (NumberFormatException e)
+				{
+					getLog().error(e);
+				}
 			}
 			else
 			{
@@ -771,8 +858,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				return;
 			}
 			break;
-			
-			// SYSTEM_SHUTDOWN
+
+		// SYSTEM_SHUTDOWN
 		case 14:
 			boolean resultSystemShutDown = false;
 			Map<String, Object> tempSystemShutDown = Maps.newHashMap();
@@ -782,10 +869,16 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			}
 			else if (message.length == 3)
 			{
-				byte system = Byte.parseByte(message[2]);
-				byte component = Byte.parseByte(message[3]);
-				resultSystemShutDown = doSystemShutdown((byte) system,
-						(byte) component);
+				try
+				{
+					byte system = Byte.parseByte(message[1]);
+					byte component = Byte.parseByte(message[2]);
+					resultSystemShutDown = doSystemShutdown(system, component);
+				}
+				catch (NumberFormatException e)
+				{
+					getLog().error(e);
+				}
 			}
 			else
 			{
@@ -806,8 +899,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				return;
 			}
 			break;
-			
-			// SYSTEM_REBOOT
+
+		// SYSTEM_REBOOT
 		case 15:
 			boolean resultSystemReboot = false;
 			Map<String, Object> tempSystemReboot = Maps.newHashMap();
@@ -817,10 +910,16 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			}
 			else if (message.length == 3)
 			{
-				byte system = Byte.parseByte(message[2]);
-				byte component = Byte.parseByte(message[3]);
-				resultSystemReboot = doSystemReboot((byte) system,
-						(byte) component);
+				try
+				{
+					byte system = Byte.parseByte(message[1]);
+					byte component = Byte.parseByte(message[2]);
+					resultSystemReboot = doSystemReboot(system, component);
+				}
+				catch (NumberFormatException e)
+				{
+					getLog().error(e);
+				}
 			}
 			else
 			{
@@ -841,8 +940,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				return;
 			}
 			break;
-			
-			// SET_MODE
+
+		// SET_MODE
 		case 16:
 			boolean resultSetMode = false;
 			Map<String, Object> tempSetMode = Maps.newHashMap();
@@ -852,8 +951,15 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			}
 			else if (message.length == 3)
 			{
-				byte system = Byte.parseByte(message[2]);
-				resultSetMode = setMode(message[1],(byte) system);
+				try
+				{
+					byte system = Byte.parseByte(message[2]);
+					resultSetMode = setMode(message[1], system);
+				}
+				catch (NumberFormatException e)
+				{
+					getLog().error(e);
+				}
 			}
 			else
 			{
@@ -874,8 +980,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				return;
 			}
 			break;
-			
-			//SET_ALLOWED_AREA
+
+		// SET_ALLOWED_AREA
 		case 17:
 			boolean resultSetAllowedArea = false;
 			Map<String, Object> tempSetAllowedArea = Maps.newHashMap();
@@ -943,8 +1049,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				return;
 			}
 			break;
-			
-			// SET_GPS_ORIGIN
+
+		// SET_GPS_ORIGIN
 		case 18:
 			boolean resultSetGpsOrigin = false;
 			Map<String, Object> tempSetGpsOrigin = Maps.newHashMap();
@@ -1000,8 +1106,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				return;
 			}
 			break;
-			
-			//READ_LOG_ENTRY
+
+		// READ_LOG_ENTRY
 		case 19:
 			boolean resultReadLogEntry = false;
 			Map<String, Object> tempReadLogEntry = Maps.newHashMap();
@@ -1011,18 +1117,18 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			}
 			else if (message.length == 3)
 			{
-				byte system = 0,component=0;
+				byte system = 0, component = 0;
 
 				try
 				{
-					system = Byte.parseByte(message[2]);
-					component = Byte.parseByte(message[3]);
+					system = Byte.parseByte(message[1]);
+					component = Byte.parseByte(message[2]);
 				}
 				catch (NumberFormatException e)
 				{
 					getLog().error(e);
 				}
-				resultReadLogEntry = getLogList( system,component);
+				resultReadLogEntry = getLogList(system, component);
 			}
 			else
 			{
@@ -1043,8 +1149,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				return;
 			}
 			break;
-			
-			//GET_LOG_ENTRY
+
+		// GET_LOG_ENTRY
 		case 20:
 			Map<String, Object> tempGetLogEntry = Maps.newHashMap();
 			if (message.length == 1)
@@ -1057,15 +1163,16 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				}
 				else
 				{
-						tempGetLogEntry.put("command", Arrays.deepToString(logEntry.toArray()));
-						sendOutputJson(publishers[3], tempGetLogEntry);
-						/*
-						 * Complimentary function for processing this string String
-						 * [][]back= new String[2][2]; for (int i=0; i<result.length
-						 * ;i++) { back[i] = result[i].replaceAll("\\[",""
-						 * ).replaceAll("\\]","").replaceAll(" ","").split(","); for
-						 * (String s:back[i]) { System.out.println(s); } }
-						 */
+					tempGetLogEntry.put("command",
+							Arrays.deepToString(logEntry.toArray()));
+					sendOutputJson(publishers[3], tempGetLogEntry);
+					/*
+					 * Complimentary function for processing this string String
+					 * [][]back= new String[2][2]; for (int i=0; i<result.length
+					 * ;i++) { back[i] = result[i].replaceAll("\\[",""
+					 * ).replaceAll("\\]","").replaceAll(" ","").split(","); for
+					 * (String s:back[i]) { System.out.println(s); } }
+					 */
 				}
 			}
 			else
@@ -1075,17 +1182,17 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				return;
 			}
 			break;
-			
-			// READ_LOG_DATA
+
+		// READ_LOG_DATA
 		case 21:
-			//Still to write the function
+			// Still to write the function
 			break;
-			
-			//GET_LOG_DATA
+
+		// GET_LOG_DATA
 		case 22:
-			//Still to write the function
+			// Still to write the function
 			break;
-			
+
 		default:
 			break;
 		}
