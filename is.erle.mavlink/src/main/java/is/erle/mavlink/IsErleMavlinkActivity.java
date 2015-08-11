@@ -121,10 +121,10 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
     @Override
     public void onActivityActivate() {
         getLog().info("Activity is.erle.mavlink activate");
-        getDataStream(MAV_DATA_STREAM.MAV_DATA_STREAM_POSITION, 1);
-        getDataStream(MAV_DATA_STREAM.MAV_DATA_STREAM_RAW_SENSORS, 1);
+        getDataStream(MAV_DATA_STREAM.MAV_DATA_STREAM_ALL, 5);
+       // getDataStream(MAV_DATA_STREAM.MAV_DATA_STREAM_RAW_SENSORS, 1);
        // getDataStream(MAV_DATA_STREAM.MAV_DATA_STREAM_RAW_CONTROLLER, 1);
-        getDataStream(MAV_DATA_STREAM.MAV_DATA_STREAM_RC_CHANNELS, 1);
+       // getDataStream(MAV_DATA_STREAM.MAV_DATA_STREAM_RC_CHANNELS, 1);
 //		Map<String, Object> temp = Maps.newHashMap();
 //		temp.put("mission", "START");
 //		sendOutputJson(getConfiguration().getRequiredPropertyString(CONFIGURATION_PUBLISHER_NAME), temp);
@@ -142,6 +142,13 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}*/
+        for (String [] temp:readWaypointList)
+        {
+        	for (int i=0; i<temp.length ; i++)
+        	{
+        		getLog().info(temp[i]);
+        	}
+        }
     }
 
     @Override

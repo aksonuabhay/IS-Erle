@@ -2,11 +2,16 @@ package is.erle.comms;
 
 import java.net.InetSocketAddress;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Map;
+import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
 
 import com.google.common.collect.Maps;
 
 import interactivespaces.activity.impl.ros.BaseRoutableRosActivity;
+import interactivespaces.service.comm.network.client.UdpClientNetworkCommunicationEndpoint;
+import interactivespaces.service.comm.network.client.UdpClientNetworkCommunicationEndpointListener;
 import interactivespaces.service.comm.network.client.UdpClientNetworkCommunicationEndpointService;
 import interactivespaces.service.comm.network.server.UdpServerNetworkCommunicationEndpoint;
 import interactivespaces.service.comm.network.server.UdpServerNetworkCommunicationEndpointListener;
@@ -28,7 +33,13 @@ public class IsErleCommsActivity extends BaseRoutableRosActivity {
 	private InetSocketAddress udpDroneAddress;
 	private boolean droneAddressFlag,sendFlag;
 	private UdpServerNetworkCommunicationEndpoint udpDroneServer ;
-	private byte [] responseGlobal;
+	//private Udp
+	private Queue<byte []> responseGlobal;
+	//private byte [] responseGlobal;
+	
+	private UdpClientNetworkCommunicationEndpoint udpClient;
+	
+	private Date start;
 	 
     @Override
 	public void onActivitySetup()
@@ -36,13 +47,13 @@ public class IsErleCommsActivity extends BaseRoutableRosActivity {
 		getLog().info("Activity is.erle.comms setup");
 		droneAddressFlag = false;
 		sendFlag = false;
-		responseGlobal = new byte[256];
-
+		responseGlobal = new ArrayBlockingQueue<byte[]>(20);
+		start = new Date();
 		UdpServerNetworkCommunicationEndpointService udpServerService = getSpaceEnvironment()
 				.getServiceRegistry()
 				.getRequiredService(
 						UdpServerNetworkCommunicationEndpointService.SERVICE_NAME);
-		int port = getConfiguration().getRequiredPropertyInteger(
+		final int port = getConfiguration().getRequiredPropertyInteger(
 				CONFIGURATION_SERVER_PORT);
 		udpDroneServer = udpServerService.newServer(port, getLog());
 		udpDroneServer
@@ -63,22 +74,40 @@ public class IsErleCommsActivity extends BaseRoutableRosActivity {
 						{
 							// udpDroneAddress = req.getRemoteAddress();
 							udpDroneAddress = new InetSocketAddress(req
-									.getRemoteAddress().getHostString(), 6000);
-							req.writeResponse("sh /etc/init.d/rc.usb"
-									.getBytes());
+									.getRemoteAddress().getHostString(), port);
+							//req.writeResponse("sh /etc/init.d/rc.usb"
+							//		.getBytes());
 							droneAddressFlag = true;
 						}
 						if (sendFlag)
 						{
-							req.writeResponse(responseGlobal);
+							//req.writeResponse(responseGlobal);
 							synchronized (this)
 							{
+								byte [] temp = responseGlobal.poll();
+								while (temp!=null)
+								{
+									req.writeResponse(temp);
+									temp=responseGlobal.poll();
+								}
 								sendFlag = false;
 							}
 						}
 					}
 				});
 		addManagedResource(udpDroneServer);
+		
+		UdpClientNetworkCommunicationEndpointService udpClientService = getSpaceEnvironment().getServiceRegistry().getRequiredService(UdpClientNetworkCommunicationEndpointService.SERVICE_NAME);
+        udpClient = udpClientService.newClient(getLog());
+        udpClient.addListener(new UdpClientNetworkCommunicationEndpointListener() {
+			
+			public void onUdpResponse(UdpClientNetworkCommunicationEndpoint client,
+					byte[] data, InetSocketAddress address) {
+				handleUdpDroneClientResponse(data, address);
+				getLog().info("In client");
+			}
+		});
+        addManagedResource(udpClient);
 	}
 
 
@@ -97,6 +126,7 @@ public class IsErleCommsActivity extends BaseRoutableRosActivity {
     public void onActivityActivate() {
         getLog().info("Activity is.erle.comms activate");
         jsonOutputCounter = 0;
+        udpDroneAddress = new InetSocketAddress("192.168.7.2", 6000);
 //        Map<String,Object> temp=Maps.newHashMap();
 //        temp.put(Long.toString(jsonOutputCounter++), "ACTIVATE");
 //        sendOutputJson("output", temp);
@@ -149,11 +179,20 @@ public class IsErleCommsActivity extends BaseRoutableRosActivity {
 		}
 		if (droneAddressFlag)
 		{
-			synchronized (this)
+/*			if ((System.currentTimeMillis()-start.getTime()) <1000)
 			{
-				System.arraycopy(response, 0, responseGlobal, 0, lenItems);
-				sendFlag = true;
+				udpClient.write(udpDroneAddress, response);
 			}
+			else
+			{*/
+				synchronized (this)
+				{
+					responseGlobal.add(response);
+					sendFlag = true;
+
+				}
+//			}
+
 		}
 		else
 		{
