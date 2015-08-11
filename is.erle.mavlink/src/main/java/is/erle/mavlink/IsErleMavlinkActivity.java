@@ -346,7 +346,11 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				}
 				catch (NumberFormatException e)
 				{
+					getLog().error("Number format exception in Read Mission List handler");
 					getLog().error(e);
+					tempMissionRead.put("command", "BADCMD");
+					sendOutputJson(publishers[3], tempMissionRead);
+					return;
 				}
 				result = readMissionListStart(system, component);
 			}
@@ -431,7 +435,11 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				}
 				catch (NumberFormatException e)
 				{
+					getLog().error("Number format exception in Set Current Active Way Point handler");
 					getLog().error(e);
+					tempSetCurrentWP.put("command", "BADCMD");
+					sendOutputJson(publishers[3], tempSetCurrentWP);
+					return;
 				}
 			}
 			else if (message.length == 4)
@@ -447,7 +455,11 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				}
 				catch (NumberFormatException e)
 				{
+					getLog().error("Number format exception in Set Current Active Way Point handler");
 					getLog().error(e);
+					tempSetCurrentWP.put("command", "BADCMD");
+					sendOutputJson(publishers[3], tempSetCurrentWP);
+					return;
 				}
 			}
 			else
@@ -489,7 +501,11 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				}
 				catch (NumberFormatException e)
 				{
+					getLog().error("Number format exception in Clear Mission handler");
 					getLog().error(e);
+					tempClearMission.put("command", "BADCMD");
+					sendOutputJson(publishers[3], tempClearMission);
+					return;
 				}
 				resultClearMission = clearMissionList(system, component);
 			}
@@ -529,7 +545,11 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				}
 				catch (Exception e)
 				{
+					getLog().error("Number format exception in do ARM handler");
 					getLog().error(e);
+					tempARM.put("command", "BADCMD");
+					sendOutputJson(publishers[3], tempARM);
+					return;
 				}
 			}
 			else if (message.length == 4)
@@ -543,7 +563,11 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				}
 				catch (NumberFormatException e)
 				{
+					getLog().error("Number format exception in do ARM handler");
 					getLog().error(e);
+					tempARM.put("command", "BADCMD");
+					sendOutputJson(publishers[3], tempARM);
+					return;
 				}
 			}
 			else
@@ -585,7 +609,11 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				}
 				catch (NumberFormatException e)
 				{
+					getLog().error("Number format exception in read Parameter List Start handler");
 					getLog().error(e);
+					tempReadParameterListStart.put("command", "BADCMD");
+					sendOutputJson(publishers[3], tempReadParameterListStart);
+					return;
 				}
 			}
 			else
@@ -688,6 +716,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				}
 				catch (NumberFormatException e)
 				{
+					getLog().error("Number format exception in set Parameter handler");
 					getLog().error(e);
 					tempSetParameter.put("command", "BADCMD");
 					sendOutputJson(publishers[3], tempSetParameter);
@@ -708,6 +737,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				}
 				catch (NumberFormatException e)
 				{
+					getLog().error("Number format exception in set Parameter handler");
 					getLog().error(e);
 					tempSetParameter.put("command", "BADCMD");
 					sendOutputJson(publishers[3], tempSetParameter);
@@ -752,7 +782,11 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				}
 				catch (NumberFormatException e)
 				{
+					getLog().error("Number format exception in AutoPilot reboot handler");
 					getLog().error(e);
+					tempAutoPilotReboot.put("command", "BADCMD");
+					sendOutputJson(publishers[3], tempAutoPilotReboot);
+					return;
 				}
 			}
 			else
@@ -794,7 +828,11 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				}
 				catch (NumberFormatException e)
 				{
+					getLog().error("Number format exception in AutoPilot shutdown handler");
 					getLog().error(e);
+					tempAutoPilotShutDown.put("command", "BADCMD");
+					sendOutputJson(publishers[3], tempAutoPilotShutDown);
+					return;
 				}
 			}
 			else
@@ -836,7 +874,11 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				}
 				catch (NumberFormatException e)
 				{
+					getLog().error("Number format exception in Bootloader reboot handler");
 					getLog().error(e);
+					tempBootloaderReboot.put("command", "BADCMD");
+					sendOutputJson(publishers[3], tempBootloaderReboot);
+					return;
 				}
 			}
 			else
@@ -877,7 +919,11 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				}
 				catch (NumberFormatException e)
 				{
+					getLog().error("Number format exception in System shutdown handler");
 					getLog().error(e);
+					tempSystemShutDown.put("command", "BADCMD");
+					sendOutputJson(publishers[3], tempSystemShutDown);
+					return;
 				}
 			}
 			else
@@ -918,7 +964,11 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				}
 				catch (NumberFormatException e)
 				{
+					getLog().error("Number format exception in System reboot handler");
 					getLog().error(e);
+					tempSystemReboot.put("command", "BADCMD");
+					sendOutputJson(publishers[3], tempSystemReboot);
+					return;
 				}
 			}
 			else
@@ -958,7 +1008,11 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				}
 				catch (NumberFormatException e)
 				{
+					getLog().error("Number format exception in set mode handler");
 					getLog().error(e);
+					tempSetMode.put("command", "BADCMD");
+					sendOutputJson(publishers[3], tempSetMode);
+					return;
 				}
 			}
 			else
@@ -1002,7 +1056,11 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				}
 				catch (NumberFormatException e)
 				{
+					getLog().error("Number format exception in set allowed area handler");
 					getLog().error(e);
+					tempSetAllowedArea.put("command", "BADCMD");
+					sendOutputJson(publishers[3], tempSetAllowedArea);
+					return;
 				}
 				resultSetAllowedArea = setAllowedArea(min, max, frame);
 			}
@@ -1025,7 +1083,11 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				}
 				catch (NumberFormatException e)
 				{
+					getLog().error("Number format exception in set allowed area handler");
 					getLog().error(e);
+					tempSetAllowedArea.put("command", "BADCMD");
+					sendOutputJson(publishers[3], tempSetAllowedArea);
+					return;
 				}
 				resultSetAllowedArea = setAllowedArea(min, max, frame, system,
 						component);
@@ -1065,7 +1127,11 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				}
 				catch (NumberFormatException e)
 				{
+					getLog().error("Number format exception in set Global GPS Origin handler");
 					getLog().error(e);
+					tempSetGpsOrigin.put("command", "BADCMD");
+					sendOutputJson(publishers[3], tempSetGpsOrigin);
+					return;
 				}
 				resultSetGpsOrigin = setGlobalGpsOrigin(origin);
 			}
@@ -1083,7 +1149,11 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				}
 				catch (NumberFormatException e)
 				{
+					getLog().error("Number format exception in set Global GPS Origin handler");
 					getLog().error(e);
+					tempSetGpsOrigin.put("command", "BADCMD");
+					sendOutputJson(publishers[3], tempSetGpsOrigin);
+					return;
 				}
 				resultSetGpsOrigin = setGlobalGpsOrigin(origin, system);
 			}
@@ -1126,7 +1196,11 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				}
 				catch (NumberFormatException e)
 				{
+					getLog().error("Number format exception in read Log Entry handler");
 					getLog().error(e);
+					tempReadLogEntry.put("command", "BADCMD");
+					sendOutputJson(publishers[3], tempReadLogEntry);
+					return;
 				}
 				resultReadLogEntry = getLogList(system, component);
 			}
