@@ -907,8 +907,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 
 				try
 				{
-					system = Byte.parseByte(message[2]);
-					component = Byte.parseByte(message[3]);
+					system = Byte.parseByte(message[8]);
+					component = Byte.parseByte(message[9]);
 					min = new Point3D(Double.parseDouble(message[1]),
 							Double.parseDouble(message[2]),
 							Double.parseDouble(message[3]));
@@ -944,7 +944,64 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			}
 			break;
 			
-			// SET_GPS_ORIGIN, READ_LOG_ENTRY, GET_LOG_ENTRY,
+			// SET_GPS_ORIGIN
+		case 18:
+			boolean resultSetGpsOrigin = false;
+			Map<String, Object> tempSetGpsOrigin = Maps.newHashMap();
+			if (message.length == 4)
+			{
+				Point3D origin = null;
+				try
+				{
+					origin = new Point3D(Double.parseDouble(message[1]),
+							Double.parseDouble(message[2]),
+							Double.parseDouble(message[3]));
+				}
+				catch (NumberFormatException e)
+				{
+					getLog().error(e);
+				}
+				resultSetGpsOrigin = setGlobalGpsOrigin(origin);
+			}
+			else if (message.length == 5)
+			{
+				Point3D origin = null;
+				byte system = 0;
+
+				try
+				{
+					system = Byte.parseByte(message[4]);
+					origin = new Point3D(Double.parseDouble(message[1]),
+							Double.parseDouble(message[2]),
+							Double.parseDouble(message[3]));
+				}
+				catch (NumberFormatException e)
+				{
+					getLog().error(e);
+				}
+				resultSetGpsOrigin = setGlobalGpsOrigin(origin, system);
+			}
+			else
+			{
+				tempSetGpsOrigin.put("command", "BADCMD");
+				sendOutputJson(publishers[3], tempSetGpsOrigin);
+				return;
+			}
+
+			if (resultSetGpsOrigin)
+			{
+				tempSetGpsOrigin.put("command", "SUCCESS");
+				sendOutputJson(publishers[3], tempSetGpsOrigin);
+			}
+			else
+			{
+				tempSetGpsOrigin.put("command", "FAIL");
+				sendOutputJson(publishers[3], tempSetGpsOrigin);
+				return;
+			}
+			break;
+			
+			//READ_LOG_ENTRY, GET_LOG_ENTRY,
 			// READ_LOG_DATA, GET_LOG_DATA
 		default:
 			break;
