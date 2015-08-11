@@ -56,7 +56,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	
 	private msg_heartbeat heartbeat;
 	
-	private ArrayList<String []> readWaypointList;
+	private List<String []> readWaypointList;
 	private short readWaypointCount = -1, missionCurrentSeq;
 	private boolean isMissionCleared;
 	
@@ -1001,8 +1001,91 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			}
 			break;
 			
-			//READ_LOG_ENTRY, GET_LOG_ENTRY,
-			// READ_LOG_DATA, GET_LOG_DATA
+			//READ_LOG_ENTRY
+		case 19:
+			boolean resultReadLogEntry = false;
+			Map<String, Object> tempReadLogEntry = Maps.newHashMap();
+			if (message.length == 1)
+			{
+				resultReadLogEntry = getLogList();
+			}
+			else if (message.length == 3)
+			{
+				byte system = 0,component=0;
+
+				try
+				{
+					system = Byte.parseByte(message[2]);
+					component = Byte.parseByte(message[3]);
+				}
+				catch (NumberFormatException e)
+				{
+					getLog().error(e);
+				}
+				resultReadLogEntry = getLogList( system,component);
+			}
+			else
+			{
+				tempReadLogEntry.put("command", "BADCMD");
+				sendOutputJson(publishers[3], tempReadLogEntry);
+				return;
+			}
+
+			if (resultReadLogEntry)
+			{
+				tempReadLogEntry.put("command", "SUCCESS");
+				sendOutputJson(publishers[3], tempReadLogEntry);
+			}
+			else
+			{
+				tempReadLogEntry.put("command", "FAIL");
+				sendOutputJson(publishers[3], tempReadLogEntry);
+				return;
+			}
+			break;
+			
+			//GET_LOG_ENTRY
+		case 20:
+			Map<String, Object> tempGetLogEntry = Maps.newHashMap();
+			if (message.length == 1)
+			{
+				if (logEntry.isEmpty())
+				{
+					tempGetLogEntry.put("command", "NULL");
+					sendOutputJson(publishers[3], tempGetLogEntry);
+					return;
+				}
+				else
+				{
+						tempGetLogEntry.put("command", Arrays.deepToString(logEntry.toArray()));
+						sendOutputJson(publishers[3], tempGetLogEntry);
+						/*
+						 * Complimentary function for processing this string String
+						 * [][]back= new String[2][2]; for (int i=0; i<result.length
+						 * ;i++) { back[i] = result[i].replaceAll("\\[",""
+						 * ).replaceAll("\\]","").replaceAll(" ","").split(","); for
+						 * (String s:back[i]) { System.out.println(s); } }
+						 */
+				}
+			}
+			else
+			{
+				tempGetLogEntry.put("command", "BADCMD");
+				sendOutputJson(publishers[3], tempGetLogEntry);
+				return;
+			}
+			break;
+			
+			// READ_LOG_DATA
+		case 21:
+			//Still to write the function
+			break;
+			
+			//GET_LOG_DATA
+		case 22:
+			//Still to write the function
+			break;
+			
 		default:
 			break;
 		}
