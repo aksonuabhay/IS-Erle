@@ -875,7 +875,76 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			}
 			break;
 			
-			//SET_ALLOWED_AREA, SET_GPS_ORIGIN, READ_LOG_ENTRY, GET_LOG_ENTRY,
+			//SET_ALLOWED_AREA
+		case 17:
+			boolean resultSetAllowedArea = false;
+			Map<String, Object> tempSetAllowedArea = Maps.newHashMap();
+			if (message.length == 8)
+			{
+				Point3D min = null, max = null;
+				byte frame = 0;
+
+				try
+				{
+					min = new Point3D(Double.parseDouble(message[1]),
+							Double.parseDouble(message[2]),
+							Double.parseDouble(message[3]));
+					max = new Point3D(Double.parseDouble(message[4]),
+							Double.parseDouble(message[5]),
+							Double.parseDouble(message[6]));
+					frame = Byte.parseByte(message[7]);
+				}
+				catch (NumberFormatException e)
+				{
+					getLog().error(e);
+				}
+				resultSetAllowedArea = setAllowedArea(min, max, frame);
+			}
+			else if (message.length == 10)
+			{
+				Point3D min = null, max = null;
+				byte frame = 0, system = 0, component = 0;
+
+				try
+				{
+					system = Byte.parseByte(message[2]);
+					component = Byte.parseByte(message[3]);
+					min = new Point3D(Double.parseDouble(message[1]),
+							Double.parseDouble(message[2]),
+							Double.parseDouble(message[3]));
+					max = new Point3D(Double.parseDouble(message[4]),
+							Double.parseDouble(message[5]),
+							Double.parseDouble(message[6]));
+					frame = Byte.parseByte(message[7]);
+				}
+				catch (NumberFormatException e)
+				{
+					getLog().error(e);
+				}
+				resultSetAllowedArea = setAllowedArea(min, max, frame, system,
+						component);
+			}
+			else
+			{
+				tempSetAllowedArea.put("command", "BADCMD");
+				sendOutputJson(publishers[3], tempSetAllowedArea);
+				return;
+			}
+
+			if (resultSetAllowedArea)
+			{
+				tempSetAllowedArea.put("command", "SUCCESS");
+				sendOutputJson(publishers[3], tempSetAllowedArea);
+			}
+			else
+			{
+				tempSetAllowedArea.put("command", "FAIL");
+				sendOutputJson(publishers[3], tempSetAllowedArea);
+				return;
+			}
+			break;
+			
+			// SET_GPS_ORIGIN, READ_LOG_ENTRY, GET_LOG_ENTRY,
 			// READ_LOG_DATA, GET_LOG_DATA
 		default:
 			break;
