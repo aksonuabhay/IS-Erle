@@ -1267,6 +1267,52 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			// Still to write the function
 			break;
 
+		// UPDATE_TARGET
+		case 23:
+			Map<String, Object> tempUpdateTarget = Maps.newHashMap();
+			if (message.length == 2)
+			{
+				try
+				{
+					targetSystem = Byte.parseByte(message[1]);
+				}
+				catch (NumberFormatException e)
+				{
+					getLog().error("Number format exception in Update Target handler");
+					getLog().error(e);
+					tempUpdateTarget.put("command", "BADCMD");
+					sendOutputJson(publishers[3], tempUpdateTarget);
+					return;
+				}
+				tempUpdateTarget.put("command", "SUCCESS");
+				sendOutputJson(publishers[3], tempUpdateTarget);
+			}
+			else if (message.length == 3)
+			{
+				try
+				{
+					targetSystem = Byte.parseByte(message[1]);
+					targetComponent = Byte.parseByte(message[2]);
+				}
+				catch (NumberFormatException e)
+				{
+					getLog().error("Number format exception in Update Target handler");
+					getLog().error(e);
+					tempUpdateTarget.put("command", "BADCMD");
+					sendOutputJson(publishers[3], tempUpdateTarget);
+					return;
+				}
+				tempUpdateTarget.put("command", "SUCCESS");
+				sendOutputJson(publishers[3], tempUpdateTarget);
+			}
+			else
+			{
+				tempUpdateTarget.put("command", "BADCMD");
+				sendOutputJson(publishers[3], tempUpdateTarget);
+				return;
+			}
+			break;
+			
 		default:
 			break;
 		}

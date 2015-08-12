@@ -31,7 +31,7 @@ public class IsErleCommsActivity extends BaseRoutableRosActivity {
 	private static long jsonInputCounter = 0 ;
 	
 	private InetSocketAddress udpDroneAddress;
-	private boolean droneAddressFlag,sendFlag;
+	private static boolean droneAddressFlag,sendFlag;
 	private UdpServerNetworkCommunicationEndpoint udpDroneServer ;
 	//private Udp
 	private Queue<byte []> responseGlobal;
