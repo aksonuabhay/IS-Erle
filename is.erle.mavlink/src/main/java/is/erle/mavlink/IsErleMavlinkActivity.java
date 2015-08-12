@@ -1832,6 +1832,18 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				sendOutputJson(publishers[2], tempMavHeartbeat);
 				getLog().debug(tempHeartbeat);
 				heartbeat = mavHeartbeat;
+				
+				// For heartbeat topic
+				String heartbeatTopic = mavHeartbeat.sysid + ","
+						+ mavHeartbeat.compid + ","
+						+ mavHeartbeat.mavlink_version + ","
+						+ mavHeartbeat.type + "," + mavHeartbeat.autopilot
+						+ "," + mavHeartbeat.base_mode + ","
+						+ mavHeartbeat.custom_mode + ","
+						+ mavHeartbeat.system_status;
+				tempMavHeartbeat.clear();
+				tempMavHeartbeat.put("heartbeat", heartbeatTopic);
+				sendOutputJson(publishers[4], tempMavHeartbeat);
 			}
 			break;
 

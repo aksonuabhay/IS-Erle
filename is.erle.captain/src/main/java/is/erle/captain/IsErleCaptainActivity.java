@@ -57,7 +57,11 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
         getLog().info("Activity is.erle.captain setup");
         publishers = getConfiguration().getRequiredPropertyString(CONFIGURATION_PUBLISHER_NAME).split(":");
         subscribers = getConfiguration().getRequiredPropertyString(CONFIGURATION_SUBSCRIBER_NAME).split(":");
-        
+        /*
+         * SUBSCRIBER MAPPING
+         * Subscriber[0] -> input (As in general input of Captain activity)
+         * Subscriber[1] -> heartbeat (Published by mavlink activity)
+         */
         heartbeatThread = getManagedCommands().scheduleWithFixedDelay(new Runnable() {
 
 			public void run() {
