@@ -1,6 +1,9 @@
 package is.erle.captain;
 
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import com.google.common.collect.Maps;
@@ -20,6 +23,7 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 	private static String publishers[];
 	private static String subscribers[];
 	
+	private static Map<Byte,Date> heartbeatLastUpdate;
 	/*
 	 * Do not change the order of the command options. Everything depends on the
 	 * ordering of this enum. So if you need to add command , add it at last and
@@ -62,12 +66,42 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
          * Subscriber[0] -> input (As in general input of Captain activity)
          * Subscriber[1] -> heartbeat (Published by mavlink activity)
          */
-        heartbeatThread = getManagedCommands().scheduleWithFixedDelay(new Runnable() {
+		heartbeatLastUpdate = new ConcurrentHashMap<Byte, Date>(); // To provide
+																	// for
+																	// thread
+																	// safety
+		heartbeatThread = getManagedCommands().scheduleWithFixedDelay(
+				new Runnable()
+				{
 
-			public void run() {
-				
-			}
-		},120,20,TimeUnit.SECONDS);
+					public void run()
+					{
+						for (Map.Entry<Byte, Date> entry : heartbeatLastUpdate.entrySet())
+						{
+							if ((System.currentTimeMillis() - entry.getValue()
+									.getTime()) > 2000)
+							{
+								getLog().warn(
+										"Drone with System ID "
+												+ entry.getKey()
+												+ " did not send a heartbeat packet in last 2s");
+							}
+
+							if ((System.currentTimeMillis() - entry.getValue()
+									.getTime()) > 20000)
+							{
+								getLog().warn(
+										"Drone with System ID "
+												+ entry.getKey()
+												+ " did not send a heartbeat packet in last 20s");
+								getLog().warn(
+										"Disconnecting Drone with System ID "
+												+ entry.getKey());
+								heartbeatLastUpdate.remove(entry.getKey());
+							}
+						}
+					}
+				}, 30, 1, TimeUnit.SECONDS);
     }
 
     @Override
@@ -153,5 +187,18 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 		sendOutputJson(publishers[0], commandMap);
 	}
     
-    
+    @Override
+    public void onNewInputJson(String channelName, Map <String , Object> message)
+    {
+		if (channelName.equals(subscribers[0]))
+		{
+
+		}
+		else if (channelName.equals(subscribers[1]))
+		{
+			String [] heartbeatmsg = message.toString().split(",");
+			Byte systemId = Byte.parseByte(heartbeatmsg[0]);
+			heartbeatLastUpdate.put(systemId, new Date());
+		}
+    }
 }
