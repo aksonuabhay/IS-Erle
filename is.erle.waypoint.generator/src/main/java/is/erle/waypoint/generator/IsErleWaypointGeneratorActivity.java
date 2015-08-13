@@ -52,58 +52,7 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
         publisherName = getConfiguration().getRequiredPropertyString(CONFIGURATION_PUBLISHER_NAME);
         subscriberName = getConfiguration().getRequiredPropertyString(CONFIGURATION_SUBSCRIBER_NAME);
         fileWithDirectory = getActivityFilesystem().getInstallDirectory().getAbsolutePath()+"/"+FILE_NAME;
-        int lineCount=1;
-        try 
-        {
-			br = new BufferedReader(new FileReader(fileWithDirectory));
-			while ((currentLine = br.readLine())!=null) 
-			{
-				if (lineCount != 1) 
-				{
-					currentLine =currentLine.trim();
-					if (!checkRowLength(currentLine))
-					{
-						getLog().error("Aborting file read due to row length inconsistency");
-						return;
-					}
-					
-					if (!checkRowContent(currentLine))
-					{
-						getLog().error("Aborting file read due to row content inconsistency");
-						return;
-					}
-					
-					if (!checkCoordinateFrame(currentLine))
-					{
-						getLog().error("Aborting file read due to coordinate frame inconsistency");
-						return;
-					}
-					
-					waypointCount = Short.parseShort(currentLine.substring(0,currentLine.indexOf(SEPARATOR) )); // Not sure that tab is the separator 
-				}
-
-				lineCount++;
-			}
-			if (lineCount != (waypointCount+3)) 
-			{
-				getLog().warn("Waypoint count and number of lines mismatch , recheck mission file ");
-			}
-			br.close();
-		} 
-        catch (FileNotFoundException e) 
-        {
-			getLog().error(e);
-		} 
-        catch (IOException e) 
-		{
-			getLog().error(e);
-		}
-        waypointCount+=1; //So as to accommodate array index 0
-        wpSendFlag = new boolean[waypointCount];
-		for (int i = 0; i < wpSendFlag.length; i++)
-		{
-			wpSendFlag[i] = false;
-		}
+        
     }
 
     @Override
@@ -157,6 +106,7 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
 					.split("-");
 			if (msgFromDrone[0].equals("START"))
 			{
+				processFile();
 				Map<String, Object> temp = Maps.newHashMap();
 				String temps = "START-" + Short.toString(waypointCount);
 				temp.put("mission", temps);
@@ -228,6 +178,69 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
 		}
 	}
 
+	private void processFile()
+	{
+		int lineCount = 1;
+		try
+		{
+			br = new BufferedReader(new FileReader(fileWithDirectory));
+			while ((currentLine = br.readLine()) != null)
+			{
+				if (lineCount != 1)
+				{
+					currentLine = currentLine.trim();
+					if (!checkRowLength(currentLine))
+					{
+						getLog().error(
+								"Aborting file read due to row length inconsistency");
+						return;
+					}
+
+					if (!checkRowContent(currentLine))
+					{
+						getLog().error(
+								"Aborting file read due to row content inconsistency");
+						return;
+					}
+
+					if (!checkCoordinateFrame(currentLine))
+					{
+						getLog().error(
+								"Aborting file read due to coordinate frame inconsistency");
+						return;
+					}
+
+					waypointCount = Short.parseShort(currentLine.substring(0,
+							currentLine.indexOf(SEPARATOR))); // Not sure that
+																// tab is the
+																// separator
+				}
+
+				lineCount++;
+			}
+			if (lineCount != (waypointCount + 3))
+			{
+				getLog().warn(
+						"Waypoint count and number of lines mismatch , recheck mission file ");
+			}
+			br.close();
+		}
+		catch (FileNotFoundException e)
+		{
+			getLog().error(e);
+		}
+		catch (IOException e)
+		{
+			getLog().error(e);
+		}
+		waypointCount += 1; // So as to accommodate array index 0
+		wpSendFlag = new boolean[waypointCount];
+		for (int i = 0; i < wpSendFlag.length; i++)
+		{
+			wpSendFlag[i] = false;
+		}
+	}
+    
 	private boolean checkRowLength(String row)
 	{
 		int separatorCount = 0;
