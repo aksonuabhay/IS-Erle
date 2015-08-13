@@ -100,7 +100,8 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
 		}
         waypointCount+=1; //So as to accommodate array index 0
         wpSendFlag = new boolean[waypointCount];
-        for (int i = 0; i < wpSendFlag.length; i++) {
+		for (int i = 0; i < wpSendFlag.length; i++)
+		{
 			wpSendFlag[i] = false;
 		}
     }
@@ -118,11 +119,11 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
     @Override
     public void onActivityActivate() {
         getLog().info("Activity is.erle.waypoint.generator activate");
-			Map<String, Object> temp = Maps.newHashMap();
-			String temps="START-" + Short.toString(waypointCount);
-			temp.put("mission", temps);
-			sendOutputJson(publisherName, temp);
-			getLog().info(temps);
+		/*Map<String, Object> temp = Maps.newHashMap();
+		String temps = "START-" + Short.toString(waypointCount);
+		temp.put("mission", temps);
+		sendOutputJson(publisherName, temp);
+		getLog().info(temps);*/
     }
 
     @Override
@@ -146,17 +147,30 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
     }
     
     @Override
-    public void onNewInputJson(String channelName, Map <String , Object> message)
-    {
-		if (channelName.equals(subscriberName)) {
+	public void onNewInputJson(String channelName, Map<String, Object> message)
+	{
+		if (channelName.equals(subscriberName))
+		{
 
 			// To Do
 			String msgFromDrone[] = message.get("mission").toString()
 					.split("-");
-			if (msgFromDrone[0].equals("MISSION_REQUEST")) {
-				if (!wpSendFlag[Integer.parseInt(msgFromDrone[1])]) {
+			if (msgFromDrone[0].equals("START"))
+			{
+				Map<String, Object> temp = Maps.newHashMap();
+				String temps = "START-" + Short.toString(waypointCount);
+				temp.put("mission", temps);
+				sendOutputJson(publisherName, temp);
+				getLog().debug(temps);
+			}
+			
+			else if (msgFromDrone[0].equals("MISSION_REQUEST"))
+			{
+				if (!wpSendFlag[Integer.parseInt(msgFromDrone[1])])
+				{
 
-					try {
+					try
+					{
 						br = new BufferedReader(new FileReader(
 								fileWithDirectory));
 
@@ -168,31 +182,45 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
 														// integrity of
 														// file/version
 														// of file
-						//getLog().info("REQUEST NUMBER : " + msgFromDrone[1]);
-						for (int i = 0; i <= Integer.parseInt(msgFromDrone[1]); i++) {
+						// getLog().info("REQUEST NUMBER : " + msgFromDrone[1]);
+						for (int i = 0; i <= Integer.parseInt(msgFromDrone[1]); i++)
+						{
 							currentLine = br.readLine(); // Seek to the current
 															// line
 
 						}
 
 						String payLoad[] = currentLine.split(SEPARATOR);
-						//getLog().info("SENDING REQUEST NUMBER : " + payLoad[0]);
+						// getLog().info("SENDING REQUEST NUMBER : " +
+						// payLoad[0]);
 						Map<String, Object> temp = Maps.newHashMap();
 						temp.put("mission", Arrays.toString(payLoad));
 						sendOutputJson(publisherName, temp);
 						br.close();
-					} catch (IOException e) {
+					}
+					catch (IOException e)
+					{
 						getLog().error(e);
 					}
 					wpSendFlag[Integer.parseInt(msgFromDrone[1])] = true;
 				}
 				
+				if (Integer.parseInt(msgFromDrone[1]) == (waypointCount-1))
+				{
+					for (int i = 0; i < wpSendFlag.length; i++)
+					{
+						wpSendFlag[i] = false;
+					}
+				}
 			}
-			else if (msgFromDrone[0].equals("MISSION_ACCEPTED")) {
+			
+			else if (msgFromDrone[0].equals("MISSION_ACCEPTED"))
+			{
 				getLog().info("Mission successfully uploaded on the drone");
 			}
 
-			else {
+			else
+			{
 				getLog().error("Mission upload failure");
 				getLog().error("REASON : " + msgFromDrone[0]);
 			}

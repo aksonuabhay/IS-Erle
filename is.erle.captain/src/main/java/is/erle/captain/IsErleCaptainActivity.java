@@ -52,7 +52,8 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 		READ_LOG_ENTRY,
 		GET_LOG_ENTRY,
 		READ_LOG_DATA,
-		GET_LOG_DATA
+		GET_LOG_DATA,
+		UPDATE_TARGET // Update target system and target component
 	};
 	
     @Override
@@ -116,11 +117,13 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
     @Override
     public void onActivityActivate() {
         getLog().info("Activity is.erle.captain activate");
+        sendCommand(CommandOptions.WRITE_MISSION);
     }
 
     @Override
     public void onActivityDeactivate() {
         getLog().info("Activity is.erle.captain deactivate");
+        sendCommand(CommandOptions.ARM);
     }
 
     @Override
@@ -195,7 +198,7 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 		}
 		else if (channelName.equals(subscribers[1]))
 		{
-			String [] heartbeatmsg = message.toString().split(",");
+			String [] heartbeatmsg = message.get("heartbeat").toString().split(",");
 			Byte systemId = Byte.parseByte(heartbeatmsg[0]);
 			heartbeatLastUpdate.put(systemId, new Date());
 		}

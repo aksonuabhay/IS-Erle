@@ -58,6 +58,10 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	private short readWaypointCount = -1, missionCurrentSeq;
 	private boolean isMissionCleared;
 	
+	private boolean missionRequestFlag;
+	private short sendMissionCount=-1;
+	private byte tempTSystem,tempTComponent,sendMissionAck = (byte) -1;
+	
 	private boolean isCommandSent;
 	
 	private Map<String,Byte > paramType;
@@ -119,7 +123,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
     @Override
     public void onActivityActivate() {
         getLog().info("Activity is.erle.mavlink activate");
-        getDataStream(MAV_DATA_STREAM.MAV_DATA_STREAM_ALL, 5);
+        getDataStream(MAV_DATA_STREAM.MAV_DATA_STREAM_ALL, 1);
        // getDataStream(MAV_DATA_STREAM.MAV_DATA_STREAM_RAW_SENSORS, 1);
        // getDataStream(MAV_DATA_STREAM.MAV_DATA_STREAM_RAW_CONTROLLER, 1);
        // getDataStream(MAV_DATA_STREAM.MAV_DATA_STREAM_RC_CHANNELS, 1);
@@ -134,19 +138,21 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			e.printStackTrace();
 		}*/
         //readMissionListStart();
-        /*readParameterListStart();
-        try {
-			Thread.sleep(20000);
+        //readParameterListStart();
+        /*try {
+			Thread.sleep(2000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}*/
+        //sendMissionListStart();
+        /*
         for (String [] temp:readWaypointList)
         {
         	for (int i=0; i<temp.length ; i++)
         	{
         		getLog().info(temp[i]);
         	}
-        }
+        }*/
     }
 
     @Override
@@ -205,7 +211,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 					// temp.put("mavMessage", mavMessage);
 					// sendOutputJson(publishers[2], temp);
 					getLog().info(mavMessage.toString());
-					 hadnleMavMessage(mavMessage);
+					 handleMavMessage(mavMessage);
 					mavPacket = null;
 					mavParser = new Parser();
 					// getLog().info("mavPacket2 ");
@@ -224,9 +230,10 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			String tempString[] = message.get("mission").toString().split("-");
 			if (tempString[0].equals("START")) {
 				if (heartbeatReceiveFlag) {
-					short missionCount = Short.parseShort(tempString[1]
+					sendMissionCount = Short.parseShort(tempString[1]
 							.replace(" ", ""));
-					msg_mission_count missionStart = new msg_mission_count();
+					
+					/*msg_mission_count missionStart = new msg_mission_count();
 					missionStart.count = missionCount;
 					missionStart.target_system = targetSystem;
 					missionStart.target_component = targetComponent;
@@ -235,7 +242,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 					tempMapMission.put("comm", Arrays.toString(tempByte));
 					sendOutputJson(publishers[0], tempMapMission);
 					getLog().info("SENDING COUNT : "+Arrays.toString(tempByte));
-					getLog().info("TARGET SYSTEM : " + targetSystem +" TARGET COMPONENT : " + targetComponent);
+					getLog().info("TARGET SYSTEM : " + targetSystem +" TARGET COMPONENT : " + targetComponent);*/
 				} 
 				else {
 					getLog().error("Did not receive a heartbeat packet till now");
@@ -261,8 +268,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				String missionWP[] =message.get("mission").toString()
 						.replaceAll("\\[", "").replaceAll("\\]", "")
 						.replaceAll(" ", "").split(",");
-				
-				msg_mission_item missionItem = new msg_mission_item();
+				sendMissionItem(missionWP, tempTSystem, tempTComponent);
+				/*msg_mission_item missionItem = new msg_mission_item();
 				missionItem.seq = Short.parseShort(missionWP[0]);
 				missionItem.current = Byte.parseByte(missionWP[1]);
 				missionItem.frame = Byte.parseByte(missionWP[2]);
@@ -281,7 +288,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				Map<String, Object> tempMapMission = Maps.newHashMap();
 				tempMapMission.put("comm", Arrays.toString(tempByte));
 				sendOutputJson(publishers[0], tempMapMission);
-				getLog().info("SENDING MISSION ITEM: "+Arrays.toString(tempByte));
+				getLog().info("SENDING MISSION ITEM: "+Arrays.toString(tempByte));*/
     		}
     		
     	}
@@ -419,7 +426,48 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 
 		// WRITE MISSION
 		case 3:
+			boolean resultWriteMission = false;
+			Map<String, Object> tempWriteMissionStart = Maps.newHashMap();
+			if (message.length == 1)
+			{
+				resultWriteMission = sendMissionListStart();
+			}
+			else if (message.length == 3)
+			{
+				try
+				{
+					byte system = Byte.parseByte(message[1]);
+					byte component = Byte.parseByte(message[2]);
+					resultWriteMission = sendMissionListStart(system,
+							component);
+				}
+				catch (NumberFormatException e)
+				{
+					getLog().error("Number format exception in write Mission List Start handler");
+					getLog().error(e);
+					tempWriteMissionStart.put("command", "BADCMD");
+					sendOutputJson(publishers[3], tempWriteMissionStart);
+					return;
+				}
+			}
+			else
+			{
+				tempWriteMissionStart.put("command", "BADCMD");
+				sendOutputJson(publishers[3], tempWriteMissionStart);
+				return;
+			}
 
+			if (resultWriteMission)
+			{
+				tempWriteMissionStart.put("command", "SUCCESS");
+				sendOutputJson(publishers[3], tempWriteMissionStart);
+			}
+			else
+			{
+				tempWriteMissionStart.put("command", "FAIL");
+				sendOutputJson(publishers[3], tempWriteMissionStart);
+				return;
+			}
 			break;
 
 		// SET CURRENT ACTIVE WP
@@ -1384,7 +1432,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
     /*
      * Handles all incoming messages from drone
      */
-	private void hadnleMavMessage(MAVLinkMessage mavMessage2) 
+	private void handleMavMessage(MAVLinkMessage mavMessage2) 
 	{
 		//To Do
 		switch (mavMessage2.msgid) {
@@ -2352,8 +2400,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				
 				Map<String, Object> tempMapMissionRequest = Maps.newHashMap();
 				tempMapMissionRequest.put("mission", tempMissionRequest);
-				sendOutputJson(publishers[1], tempMapMissionRequest);
+				sendOutputJson(publishers[2], tempMapMissionRequest);
 				getLog().debug(tempMissionRequest);
+				readMissionFile(mavMissionRequest.seq);
 			}
 			break;
 
@@ -2440,6 +2489,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			{
 				Map<String, Object> tempMapMissionAck = Maps.newHashMap();
 				mavMissionAck = (msg_mission_ack) mavMessage2;
+				sendMissionAck = mavMissionAck.type;
 				if (isMissionCleared) 
 				{
 					isMissionCleared = false;
@@ -4319,7 +4369,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				Map<String, Object> tempMavStatusText = Maps.newHashMap();
 				tempMavStatusText.put("data", tempStatusText);
 				sendOutputJson(publishers[2], tempMavStatusText);
-				getLog().debug(tempStatusText);
+				getLog().info(tempStatusText);
 			}
 			break;
 
@@ -4344,7 +4394,182 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		
 	}
 
+	private boolean sendMissionListStart()
+	{
+		return sendMissionListStart(targetSystem, targetComponent);
+	}
+	
+	private boolean sendMissionListStart(byte tSystem, byte tComponent)
+	{
+		String tempMissionRequest = "START";
+		Map<String, Object> tempMapMissionRequest = Maps.newHashMap();
+		tempMapMissionRequest.put("mission", tempMissionRequest);
+		sendOutputJson(publishers[1], tempMapMissionRequest);
+		getLog().debug(tempMissionRequest);
 
+		tempTSystem = tSystem;
+		tempTComponent = tComponent;
+
+		Date start = new Date();
+		int retry = 3;
+		boolean result = false;
+		while (true)
+		{
+			if (!((start.getTime() + 700) > System.currentTimeMillis())
+					&& sendMissionCount != -1)
+			{
+				if (retry > 0)
+				{
+					result = sendMissionListCount(sendMissionCount, tSystem,
+							tComponent);
+					getLog().info(
+							"SENDING MISSION COUNT, ATTEMPTS LEFT : " + retry);
+					start = new Date();
+					retry--;
+					continue;
+				}
+				else
+				{
+					getLog().error("Timeout on send mission list");
+					return false;
+				}
+			}
+			if (result)
+			{
+				// getLog().info("Successfully get a mission request message");
+				break;
+			}
+		}
+
+		start = new Date();
+		while ((System.currentTimeMillis() - start.getTime()) < 1000
+				&& sendMissionAck == -1)
+			;
+		tempTSystem = 0;
+		tempTComponent = 0;
+		if (sendMissionAck == 0)
+		{
+			sendMissionAck = -1;
+			getLog().info("Sent Mission File successfully");
+			return true;
+		}
+		else if (sendMissionAck == -1)
+		{
+			getLog().warn("Timeout on Mission Acknowledgement read");
+			return false;
+		}
+		else
+		{
+			getLog().error("Error : Could not write mission file");
+			sendMissionAck = -1;
+			return false;
+		}
+	}
+	
+	private boolean sendMissionListCount(short count)
+	{
+		return sendMissionListCount(count,targetSystem,targetComponent);
+	}
+	
+	private boolean sendMissionListCount(short count, byte tSystem, byte tComponent)
+	{
+		missionRequestFlag = false;
+		sendMissionCount = count;
+		msg_mission_count missionStart = new msg_mission_count();
+		missionStart.count = count;
+		missionStart.target_system = tSystem;
+		missionStart.target_component = tComponent;
+		byte tempByte[] = missionStart.pack().encodePacket();
+		Map<String, Object> tempMapMission = Maps.newHashMap();
+		tempMapMission.put("comm", Arrays.toString(tempByte));
+		sendOutputJson(publishers[0], tempMapMission);
+		getLog().info("SENDING COUNT : "+ missionStart.count);
+		getLog().info("TARGET SYSTEM : " + targetSystem +" TARGET COMPONENT : " + targetComponent);
+		
+		Date start = new Date();
+		int retry = 3;
+		while (true)
+		{
+			if (!((start.getTime() + 700) > System.currentTimeMillis()))
+			{
+				if (retry > 0)
+				{
+					sendOutputJson(publishers[0], tempMapMission);
+					getLog().info("SENDING MISSION LIST AGAIN ");
+					start = new Date();
+					retry--;
+					continue;
+				}
+				else
+				{
+					getLog().error("Timeout on send mission list");
+					return false;
+				}
+			}
+			if (missionRequestFlag)
+			{
+				getLog().info("Successfully get a mission request message");
+				missionRequestFlag = false;
+				return true;
+			}
+		}
+		/*
+		 * It will receive a mission request message after this
+		 */
+	}
+	
+	private void readMissionFile(short seq)
+	{
+		String request = "MISSION_REQUEST-"
+				+ Short.toString(seq);
+		
+		Map<String, Object> tempRequest = Maps.newHashMap();
+		tempRequest.put("mission", request);
+		sendOutputJson(publishers[1], tempRequest);
+		if (seq == 0)
+		{
+			missionRequestFlag = true;
+		}
+	}
+	
+	private void sendMissionItem(String [] missionWP, byte tSystem, byte tComponent)
+	{
+
+		/*
+		 * Format
+		 * QGC WPL <VERSION> 
+		 * <INDEX> <CURRENT WP> <COORD FRAME><COMMAND> <PARAM1> <PARAM2> <PARAM3> <PARAM4><PARAM5/X/LONGITUDE> <PARAM6/Y/LATITUDE> <PARAM7/Z/ALTITUDE><AUTOCONTINUE> 
+		 * 
+		 * Example
+		 * QGC WPL 110 
+		 * 0 1 0 16 0.149999999999999994 0 0 0 8.54800000000000004 47.3759999999999977 550 1 
+		 * 1 0 0 16 0.149999999999999994 0 0 0 8.54800000000000004 47.3759999999999977 550 1 
+		 * 2 0 0 16 0.149999999999999994 0 0 0 8.54800000000000004 47.3759999999999977 550 1
+		 */
+		
+		msg_mission_item missionItem = new msg_mission_item();
+		missionItem.seq = Short.parseShort(missionWP[0]);
+		missionItem.current = Byte.parseByte(missionWP[1]);
+		missionItem.frame = Byte.parseByte(missionWP[2]);
+		missionItem.command = Short.parseShort(missionWP[3]);
+		missionItem.param1 = Float.parseFloat(missionWP[4]);
+		missionItem.param2 = Float.parseFloat(missionWP[5]);
+		missionItem.param3 = Float.parseFloat(missionWP[6]);
+		missionItem.param4 = Float.parseFloat(missionWP[7]);
+		missionItem.x = Float.parseFloat(missionWP[8]);
+		missionItem.y = Float.parseFloat(missionWP[9]);
+		missionItem.z = Float.parseFloat(missionWP[10]);
+		missionItem.autocontinue =Byte.parseByte(missionWP[11]);
+		missionItem.target_system = tSystem;
+		missionItem.target_component = tComponent;
+		byte tempByte[] = missionItem.pack().encodePacket();
+		Map<String, Object> tempMapMission = Maps.newHashMap();
+		tempMapMission.put("comm", Arrays.toString(tempByte));
+		sendOutputJson(publishers[0], tempMapMission);
+		getLog().info("SENDING MISSION ITEM: " + missionItem.seq);
+		getLog().info(missionItem.toString()); 
+	}
+	
 	private boolean readMissionListStart()
 	{
 		return readMissionListStart(targetSystem, targetComponent);
