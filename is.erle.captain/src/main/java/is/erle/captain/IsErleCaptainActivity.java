@@ -23,6 +23,8 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 	private static String subscribers[];
 	
 	private static Map<Byte,Date> heartbeatLastUpdate;
+	
+	private static int cmdReturn=-1;
 	/*
 	 * Do not change the order of the command options. Everything depends on the
 	 * ordering of this enum. So if you need to add command , add it at last and
@@ -123,7 +125,7 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
     @Override
     public void onActivityDeactivate() {
         getLog().info("Activity is.erle.captain deactivate");
-        sendCommand(CommandOptions.ARM);
+        //sendCommand(CommandOptions.ARM);
     }
 
     @Override
@@ -141,7 +143,7 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
         getLog().info("Activity is.erle.captain cleanup");
     }
     
-	private void sendCommand(CommandOptions opt, byte targetSystem,
+	private int sendCommand(CommandOptions opt, byte targetSystem,
 			byte targetComponent)
 	{
 		String command = opt.ordinal() + "-" + Byte.toString(targetSystem)
@@ -149,17 +151,21 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 		Map<String, Object> commandMap = Maps.newHashMap();
 		commandMap.put("command", command);
 		sendOutputJson(publishers[0], commandMap);
+		
+		return cmdReturnCheck(3000);
 	}
 
-	private void sendCommand(CommandOptions opt)
+	private int sendCommand(CommandOptions opt)
 	{
 		String command = Integer.toString(opt.ordinal());
 		Map<String, Object> commandMap = Maps.newHashMap();
 		commandMap.put("command", command);
 		sendOutputJson(publishers[0], commandMap);
+		
+		return cmdReturnCheck(3000);
 	}
 
-	private void sendCommand(CommandOptions opt, String[] param)
+	private int sendCommand(CommandOptions opt, String[] param)
 	{
 		String command = Integer.toString(opt.ordinal());
 		for (int i = 0; i < param.length; i++)
@@ -169,32 +175,94 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 		Map<String, Object> commandMap = Maps.newHashMap();
 		commandMap.put("command", command);
 		sendOutputJson(publishers[0], commandMap);
+		
+		return cmdReturnCheck(3000);
 	}
 	
-	private void sendCommand(CommandOptions opt, String param)
+	private int sendCommand(CommandOptions opt, String param)
 	{
 		String command = Integer.toString(opt.ordinal())+"-" +param;
 		Map<String, Object> commandMap = Maps.newHashMap();
 		commandMap.put("command", command);
 		sendOutputJson(publishers[0], commandMap);
+		
+		return cmdReturnCheck(3000);
 	}
 	
 	/*
 	 * Not recommended for use
 	 */
-	private void sendCommand(String cmd)
+	private int sendCommand(String cmd)
 	{
 		Map<String, Object> commandMap = Maps.newHashMap();
 		commandMap.put("command", cmd);
 		sendOutputJson(publishers[0], commandMap);
+		
+		return cmdReturnCheck(3000);
 	}
     
+	private int cmdReturnCheck(int timeout)
+	{
+		Date start=new Date();
+		while ( (cmdReturn==-1) && (System.currentTimeMillis()-start.getTime())<timeout);
+		
+		int temp=cmdReturn;
+		synchronized (this)
+		{
+			cmdReturn =-1;
+		}
+		return temp;
+	}
+	
     @Override
     public void onNewInputJson(String channelName, Map <String , Object> message)
     {
 		if (channelName.equals(subscribers[0]))
 		{
-
+			String [] splitMessage = message.get("command").toString().split("-");
+			if (splitMessage[0].equals("SUCCESS"))
+			{
+				getLog().info("Mavlink activity returned SUCCESS for the given command");
+				synchronized (this)
+				{
+					cmdReturn = 0;
+				}
+			}
+			else if (splitMessage[0].equals("BADCMD"))
+			{
+				getLog().warn("Mavlink activity does not recognize the given command");
+				synchronized (this)
+				{
+					cmdReturn = -2;
+				}
+			}
+			else if (splitMessage[0].equals("NULL"))
+			{
+				getLog().warn("Mavlink activity returned NULL for the get command");
+				synchronized (this)
+				{
+					cmdReturn = -3;
+				}
+			}
+			else if (splitMessage[0].equals("FAIL"))
+			{
+				getLog().warn("Mavlink activity returned FAIL status for the given command");
+				try
+				{
+					synchronized (this)
+					{
+						cmdReturn = Integer.parseInt(splitMessage[1].trim());
+					}
+				}
+				catch (NumberFormatException e)
+				{
+					getLog().error("Arbitrary fail type from mavlink activity");
+				}
+			}
+			else
+			{
+				getLog().warn("Mavlink Activity sent unkown response");
+			}
 		}
 		else if (channelName.equals(subscribers[1]))
 		{
