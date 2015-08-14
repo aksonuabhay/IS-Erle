@@ -104,6 +104,11 @@ public class IsErleCommsActivity extends BaseRoutableRosActivity {
 	 */
 	private Date start;
 	 
+    /**
+     * Executes on activity setup.
+     * @see		interactivespaces.activity.impl.BaseActivity#onActivitySetup()
+     * @since	1.0.0
+     */
     @Override
 	public void onActivitySetup()
 	{
@@ -175,18 +180,31 @@ public class IsErleCommsActivity extends BaseRoutableRosActivity {
         addManagedResource(udpClient);
 	}
 
-
-
+    /**
+     * Executes on activity startup.
+     * @see		interactivespaces.activity.impl.BaseActivity#onActivityStartup()
+     * @since	1.0.0
+     */
 	@Override
     public void onActivityStartup() {
         getLog().info("Activity is.erle.comms startup");
     }
 
+    /**
+     * Executes on activity post startup.
+     * @see		interactivespaces.activity.impl.BaseActivity#onActivityPostStartup()
+     * @since	1.0.0
+     */
     @Override
     public void onActivityPostStartup() {
         getLog().info("Activity is.erle.comms post startup");
     }
 
+    /**
+     * Executes on activity activate.
+     * @see		interactivespaces.activity.impl.BaseActivity#onActivityActivate()
+     * @since	1.0.0
+     */
     @Override
     public void onActivityActivate() {
         getLog().info("Activity is.erle.comms activate");
@@ -198,6 +216,11 @@ public class IsErleCommsActivity extends BaseRoutableRosActivity {
         
     }
 
+    /**
+     * Executes on activity deactivate.
+     * @see		interactivespaces.activity.impl.BaseActivity#onActivityDeactivate()
+     * @since	1.0.0
+     */
     @Override
     public void onActivityDeactivate() {
         getLog().info("Activity is.erle.comms deactivate");
@@ -206,21 +229,46 @@ public class IsErleCommsActivity extends BaseRoutableRosActivity {
 //        sendOutputJson("output", temp);
     }
 
+    /**
+     * Executes on activity pre shutdown.
+     * @see		interactivespaces.activity.impl.BaseActivity#onActivityPreShutdown()
+     * @since	1.0.0
+     */
     @Override
     public void onActivityPreShutdown() {
         getLog().info("Activity is.erle.comms pre shutdown");
     }
 
+    /**
+     * Executes on activity shutdown.
+     * @see		interactivespaces.activity.impl.BaseActivity#onActivityShutdown()
+     * @since	1.0.0
+     */
     @Override
     public void onActivityShutdown() {
         getLog().info("Activity is.erle.comms shutdown");
     }
 
+    /**
+     * Executes on activity cleanup.
+     * @see		interactivespaces.activity.impl.BaseActivity#onActivityCleanup()
+     * @since	1.0.0
+     */
     @Override
     public void onActivityCleanup() {
         getLog().info("Activity is.erle.comms cleanup");
     }
     
+	/**
+	 * Callback for new message on the subscribed topics.
+	 * Processes incoming messages.
+	 * 
+	 * @param channelName 	Channel name of incoming message
+	 * @param message 		Message stored in a key-value pair in a map
+	 * @see 				interactivespaces.activity.impl.ros.BaseRoutableRosActivity
+	 * @see					java.util.Map
+	 * @since				1.0.0
+	 */
 	@Override
 	public void onNewInputJson(String channelName, Map<String, Object> message)
 	{
@@ -269,6 +317,14 @@ public class IsErleCommsActivity extends BaseRoutableRosActivity {
 		}
 	}
 
+	/**
+	 * Handle the UDP response that has come in.
+	 * 
+	 * @param response	Response from the drone.
+	 * @param address	Remote address of the drone.
+	 * @see				java.net.InetSocketAddress
+	 * @since			1.0.0
+	 */
     protected void handleUdpDroneClientResponse(byte[] response,
 			InetSocketAddress address) {
         Map<String,Object> temp=Maps.newHashMap();
@@ -277,6 +333,14 @@ public class IsErleCommsActivity extends BaseRoutableRosActivity {
 		
 	}
     
+    /**
+     * Handle the UDP request that has come in.
+     * 
+     * @param response 	Response from the drone.
+     * @param address	Address of the server.
+     * @see				interactivespaces.service.comm.network.server.UdpServerNetworkCommunicationEndpoint
+	 * @since			1.0.0
+     */
     protected void handleUdpDroneServerResponse(byte[] response,
     		UdpServerNetworkCommunicationEndpoint address) {
         Map<String,Object> temp=Maps.newHashMap();
