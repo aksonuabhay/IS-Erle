@@ -876,6 +876,23 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 					return;
 				}
 			}
+			else if (message.length == 3)
+			{
+				try
+				{
+					byte system = Byte.parseByte(message[1]);
+					byte component = Byte.parseByte(message[2]);
+					resultARM = doARM(true, system, component);
+				}
+				catch (NumberFormatException e)
+				{
+					getLog().error("Number format exception in do ARM handler");
+					getLog().error(e);
+					tempARM.put("command", "BADCMD");
+					sendOutputJson(publishers[3], tempARM);
+					return;
+				}
+			}
 			else if (message.length == 4)
 			{
 				try
