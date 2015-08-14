@@ -278,6 +278,15 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
 		}
 	}
 
+	/**
+	 * Process the file to check for errors and find out the number of waypoint
+	 * messages ie mission count.
+	 * 
+	 * @see		#checkRowLength(String)
+	 * @see 	#checkRowContent(String)
+	 * @see		#checkCoordinateFrame(String)
+	 * @since	1.0.0
+	 */
 	private void processFile()
 	{
 		int lineCount = 1;
@@ -341,6 +350,18 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
 		}
 	}
     
+	/**
+	 * Checks for row length consistency. It counts the number of elements in
+	 * the row and if it is equal to 12 then it returns true. It also counts the
+	 * separators and if it is equal to 11, it returns true.
+	 * 
+	 * @param row
+	 *            Current row of the mission file
+	 * @return <code>true</code> if the number of elements in the row is equal to
+	 *         12 and separator count is equal to 11; <code>false</code>
+	 *         otherwise.
+	 * @since	1.0.0
+	 */
 	private boolean checkRowLength(String row)
 	{
 		int separatorCount = 0;
@@ -376,6 +397,17 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
 		return true;
 	}
     
+	/**
+	 * Check the row for data consistency. It returns true if all the values are
+	 * convertible to double.
+	 * 
+	 * @param row
+	 *            Current row of the mission file
+	 * @return <code>true</code> if all the values of the row are convertible to
+	 *         double; <code>false</code> otherwise.
+	 * @see #isDouble(String)
+	 * @since 1.0.0
+	 */
 	private boolean checkRowContent(String row)
 	{
 		row = row.trim();
@@ -408,6 +440,15 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
 		return true;
 	}
 
+	/**
+	 * Check if a string is convertible to double type.
+	 * 
+	 * @param value
+	 *            String value to be checked.
+	 * @return <code>true</code> if the value is convertible to double;
+	 *         <code>false</code> otherwise.
+	 * @since 1.0.0
+	 */
 	private boolean isDouble(String value)
 	{
 		try
@@ -421,6 +462,15 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
 		}
 	}
 	
+	/**
+	 * Check if a string is convertible to integer type.
+	 * 
+	 * @param value
+	 *            String value to be checked.
+	 * @return <code>true</code> if the value is convertible to integer;
+	 *         <code>false</code> otherwise.
+	 * @since 1.0.0
+	 */
 	private boolean isInteger(String value)
 	{
 		try
@@ -434,6 +484,18 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
 		}
 	}
 	
+	/**
+	 * Check the row for coordinate frame consistency. It returns true if there
+	 * is a valid coordinate system. It also compares the data against the
+	 * coordinate frame and returns true if correct.
+	 * 
+	 * @param row
+	 *            Current row of the mission file
+	 * @return <code>true</code> if the coordinate frame is consistent;
+	 *         <code>false</code> otherwise.
+	 * @see #isLatLonAltInt(String[])
+	 * @since 1.0.0
+	 */
 	private boolean checkCoordinateFrame(String row)
 	{
 		/*
@@ -580,6 +642,18 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
 		return true;
 	}
 
+	/**
+	 * Check the row for a valid Latitude, Longitude and Altitude. It returns
+	 * true if there is a valid Latitude, Longitude and Altitude data in the row
+	 * array.
+	 * 
+	 * @param rowArray
+	 *            Current row of the mission file
+	 * @return <code>true</code> if there is a valid Latitude, Longitude and
+	 *         Altitude data; <code>false</code> otherwise.
+	 * @see #isInteger(String)
+	 * @since 1.0.0
+	 */
 	private boolean isLatLonAltInt(String [] rowArray)
 	{
 		boolean flag = true;
