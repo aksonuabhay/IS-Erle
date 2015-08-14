@@ -11,7 +11,25 @@ import interactivespaces.activity.impl.ros.BaseRoutableRosActivity;
 import interactivespaces.util.concurrency.ManagedCommand;
 
 /**
- * A simple Interactive Spaces Java-based activity.
+ * IsErleCaptainActivity is class which handles all tasks a real Captain of a
+ * Drone would handle. This class extends BaseRoutableRosActivity class to use
+ * its publihser/subscriber modules.
+ * <p>
+ * This activity receives data from mavlink activity. It monitors the remote
+ * Drone using this data. It has sendCommand method which allows to command
+ * mavlink activity. It can command any drone using this simple sendCommand
+ * function. All it has to do is to send a command from a list of Commands.
+ * <p>
+ * It will act as the captain of the mission. It will arm/disarm the motors, it
+ * will make sure that all of the text file has been transmitted before letting
+ * the drone fly. It will see drone's neighbourhood, battery status, current and
+ * planned course and all other things which a drone pilot has to do to maintain
+ * the safety of the drone and its surroundings. It monitors heartbeat of the
+ * drones and maintains data about the connected drones.
+ * 
+ * @author Abhay Kumar
+ * @version %I%, %G%
+ * @since 1.0.0
  */
 public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 
