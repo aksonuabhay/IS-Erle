@@ -30,27 +30,77 @@ import interactivespaces.activity.impl.ros.BaseRoutableRosActivity;
 
 public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
 {
+	/**
+	 * The name of the config property for obtaining the publisher List.
+	 */
 	private static final String CONFIGURATION_PUBLISHER_NAME = "space.activity.routes.outputs";
+	
+	/**
+	 * The name of the config property for obtaining the subscriber List.
+	 */
 	private static final String CONFIGURATION_SUBSCRIBER_NAME = "space.activity.routes.inputs";
+	
+	/**
+	 * The topic names for publishing data
+	 * PUBLISHER MAPPING
+	 * 
+	 * publishers[0] -> outputWP 
+	 * Topic Name : waypoint/output
+	 * Usage : Send output to the mavlink activity after reading from file/request.
+	 */
+	private static String publishers[];
+
+	/**
+	 * The topic names for subscribing data 
+	 * SUBSCRIBER MAPPING
+	 * 
+	 * subscribers[0] -> inputWP 
+	 * Topic Name : waypoint/input
+	 * Usage : Receive data from mavlink activity and process request.
+	 */
+	private static String subscribers[];
+	
+	/**
+	 * File name constant.
+	 */
 	private static final String FILE_NAME = "mission.txt";
+	
+	/**
+	 * Contains the directory of the file associated with FILE_NAME
+	 */
 	private static String fileWithDirectory;
+	
+	/**
+	 * Separator used in the mission text file.
+	 */
 	private static final String SEPARATOR ="\t";
 	
+	/**
+	 * Buffered Reader instance for reading from file.
+	 */
 	private BufferedReader br;
 	
+	/**
+	 * String containing the present line.
+	 */
 	private String currentLine;
+	
+	/**
+	 * Total number of waypoint data in the mission file.
+	 */
 	private short waypointCount;
 	
-	private String publisherName;
-	private String subscriberName;
+	/**
+	 * Flag array to store which waypoint data has been sent.
+	 */
 	private boolean wpSendFlag[];
 	
     @Override
     public void onActivitySetup() {
         getLog().info("Activity is.erle.waypoint.generator setup");
         
-        publisherName = getConfiguration().getRequiredPropertyString(CONFIGURATION_PUBLISHER_NAME);
-        subscriberName = getConfiguration().getRequiredPropertyString(CONFIGURATION_SUBSCRIBER_NAME);
+        publishers = getConfiguration().getRequiredPropertyString(CONFIGURATION_PUBLISHER_NAME).split(":");
+        subscribers = getConfiguration().getRequiredPropertyString(CONFIGURATION_SUBSCRIBER_NAME).split(":");
         fileWithDirectory = getActivityFilesystem().getInstallDirectory().getAbsolutePath()+"/"+FILE_NAME;
         
     }
@@ -98,7 +148,7 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
     @Override
 	public void onNewInputJson(String channelName, Map<String, Object> message)
 	{
-		if (channelName.equals(subscriberName))
+		if (channelName.equals(subscribers[0]))
 		{
 
 			// To Do
@@ -110,7 +160,7 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
 				Map<String, Object> temp = Maps.newHashMap();
 				String temps = "START-" + Short.toString(waypointCount);
 				temp.put("mission", temps);
-				sendOutputJson(publisherName, temp);
+				sendOutputJson(publishers[0], temp);
 				getLog().debug(temps);
 			}
 			
@@ -145,7 +195,7 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
 						// payLoad[0]);
 						Map<String, Object> temp = Maps.newHashMap();
 						temp.put("mission", Arrays.toString(payLoad));
-						sendOutputJson(publisherName, temp);
+						sendOutputJson(publishers[0], temp);
 						br.close();
 					}
 					catch (IOException e)

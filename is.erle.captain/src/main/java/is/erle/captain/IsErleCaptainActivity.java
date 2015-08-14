@@ -15,20 +15,77 @@ import interactivespaces.util.concurrency.ManagedCommand;
  */
 public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 
-	private ManagedCommand monitorCaptainThread,heartbeatThread;
+	/**
+	 * A thread to process the heartbeat messages. It processes heartbeat
+	 * messages and removes any disconnected drones. Basically it manages a Map
+	 * of connected drones.
+	 */
+	private ManagedCommand heartbeatThread;
 	
+	/**
+	 * The name of the config property for obtaining the publisher List.
+	 */
 	private static final String CONFIGURATION_PUBLISHER_NAME = "space.activity.routes.outputs";
+	
+	/**
+	 * The name of the config property for obtaining the subscriber List.
+	 */
 	private static final String CONFIGURATION_SUBSCRIBER_NAME = "space.activity.routes.inputs";
+	
+	/**
+	 * The topic names for publishing data
+	 * PUBLISHER MAPPING
+	 * 
+	 * publishers[0] -> output 
+	 * Topic Name : captain/output
+	 * Usage : Send command to the mavlink activity to execute some functions.
+	 */
 	private static String publishers[];
+
+	/**
+	 * The topic names for subscribing data 
+	 * SUBSCRIBER MAPPING
+	 * 
+	 * subscribers[0] -> input 
+	 * Topic Name : captain/input
+	 * Usage : Receive data from mavlink activity and process response.
+	 * 
+	 * subscribers[1] -> inputWP 
+	 * Topic Name : mavlink/heartbeat
+	 * Usage : Receive data from mavlink activity about heartbeat message and process it.
+	 */
 	private static String subscribers[];
 	
+	/**
+	 * A HashMap containing the last heartbeat message of a particular drone id.
+	 * It gets removed if that drone doesn't send data for more than 20s.
+	 */
 	private static Map<Byte,Date> heartbeatLastUpdate;
 	
+	/**
+	 * A Global variale to store the response received after a command from the
+	 * mavlink activity.
+	 * VALUE TABLE
+	 * cmdReturn=0 -> SUCCESS
+	 * cmdReturn=-1 -> TIMEOUT
+	 * cmdReturn=-2 -> BADCMD
+	 * cmdReturn=-3 -> NULL
+	 * cmdReturn= +ve value -> FAIL CODE
+	 */
 	private static int cmdReturn=-1;
+	
 	/*
 	 * Do not change the order of the command options. Everything depends on the
 	 * ordering of this enum. So if you need to add command , add it at last and
 	 * then update mavlink activity to process this commadn
+	 */
+	
+	/**
+	 * This enum contains a list of possible commands to be sent to the mavlink
+	 * activity. Use this command list to send commands to mavlink activity.
+	 * 
+	 * @author Abhay Kumar
+	 * 
 	 */
 	enum CommandOptions
 	{
