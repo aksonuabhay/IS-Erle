@@ -147,43 +147,209 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	 */
 	private static String subscribers[];
 	
+    /**
+    * A message to pack and unpack all messages to/from payload
+    * Common interface for all MAVLink Messages
+    * Packet Anatomy
+    * This is the anatomy of one packet. It is inspired by the CAN and SAE AS-4 standards.
+    * Byte Index  Content              Value       Explanation
+    * 0            Packet start sign  v1.0: 0xFE   Indicates the start of a new packet.  (v0.9: 0x55)
+    * 1            Payload length      0 - 255     Indicates length of the following payload.
+    * 2            Packet sequence     0 - 255     Each component counts up his send sequence. Allows to detect packet loss
+    * 3            System ID           1 - 255     ID of the SENDING system. Allows to differentiate different MAVs on the same network.
+    * 4            Component ID        0 - 255     ID of the SENDING component. Allows to differentiate different components of the same system, e.g. the IMU and the autopilot.
+    * 5            Message ID          0 - 255     ID of the message - the id defines what the payload means and how it should be correctly decoded.
+    * 6 to (n+6)   Payload             0 - 255     Data of the message, depends on the message id.
+    * (n+7)to(n+8) Checksum (low byte, high byte)  ITU X.25/SAE AS-4 hash, excluding packet start sign, so bytes 1..(n+6) Note: The checksum also includes MAVLINK_CRC_EXTRA (Number computed from message fields. Protects the packet from decoding a different version of the same packet but with different variables).
+    * The checksum is the same as used in ITU X.25 and SAE AS-4 standards (CRC-16-CCITT), documented in SAE AS5669A. Please see the MAVLink source code for a documented C-implementation of it. LINK TO CHECKSUM
+    * The minimum packet length is 8 bytes for acknowledgement packets without payload
+    * The maximum packet length is 263 bytes for full payload
+    */
 	private MAVLinkPacket mavPacket;
+	
+	/**
+	 * This is an instance of Parser class which has a convenience function
+	 * called mavlink_parse_char which handles the complete MAVLink parsing.
+	 * This function will parse one byte at a time and return the complete
+	 * packet once it could be successfully decoded. Checksum and other failures
+	 * will be silently ignored.
+	 */
 	private Parser mavParser;
+	
+	/**
+	 * This is an instance of MAVLinkMessage which wraps up all the message
+	 * classes sent by the drone.
+	 */
 	private MAVLinkMessage mavMessage;
 	
+	/**
+	 * This is the default id of the target system. It essentially is the first
+	 * id which the mavlink activity sees
+	 */
 	private static byte targetSystem ; // TO DO : Get this from the current drone
+	
+	/**
+	 * This is the default id of the target component. It essentially is the
+	 * heartbeat component id which is 0. This can be used to send data globally
+	 * to a target system
+	 */
 	private static byte targetComponent; // TO DO : Get this from the current drone
+	
+	/**
+	 * A flag to show if any heartbeat message has been received. This signifies
+	 * that atleast one drone is connected and data can be sent to it.
+	 */
 	private static boolean heartbeatReceiveFlag;
 	
+	/**
+	 * The response from comms activity stored in this global variable
+	 */
 	private int responseGlobal[];
 	
+	/**
+	 * A latest heartbeat message.
+	 */
 	private msg_heartbeat heartbeat;
 	
+	/**  
+	 * A List of String arrays containing waypoint data read from the drone
+	 * DATA MAPPING FOR STRING ARRAY
+	 * Index 0 -> INDEX
+	 * Index 1 -> CURRENT WP
+	 * Index 2 -> COORD FRAME
+	 * Index 3 -> COMMAND
+	 * Index 4 -> PARAM1
+	 * Index 5 -> PARAM2
+	 * Index 6 -> PARAM3
+	 * Index 7 -> PARAM4
+	 * Index 8 -> PARAM5/X/LONGITUDE
+	 * Index 9 -> PARAM6/Y/LATITUDE
+	 * Index 10 -> PARAM7/Z/ALTITUDE
+	 * Index 11 -> AUTOCONTINUE
+	 */
 	private List<String []> readWaypointList;
-	private short readWaypointCount = -1, missionCurrentSeq;
+	
+	/**
+	 * A waypoint count message to store a count message received after the
+	 * waypoint request list. Used to indicate termination of a waypoint request
+	 * list message and also receive these many mission item messages.
+	 */
+	private short readWaypointCount = -1;
+	
+	/**
+	 * The current sequence number of mission item being requested/sent. Used
+	 * for termination/retry of sending all the mission items.
+	 */
+	private short missionCurrentSeq;
+	
+	/**
+	 * A flag to tell if the mission clear was successful.
+	 */
 	private boolean isMissionCleared;
 	
+	/**
+	 * A flag to tell the successful receipt of send mission count message. Set
+	 * to true after the first receipt of a mission request message
+	 */
 	private boolean missionRequestFlag;
-	private short sendMissionCount=-1;
-	private byte tempTSystem,tempTComponent,sendMissionAck = (byte) -1;
 	
+	/**
+	 * Stores the number of mission items to be sent. It is received from the
+	 * waypoint generator activity.
+	 */
+	private short sendMissionCount=-1;
+	
+	/**
+	 * A temporary variable to store the current target system.
+	 */
+	private byte tempTSystem;
+	
+	/**
+	 * A temporary variable to store the current target component.
+	 */
+	private byte tempTComponent;
+	
+	/**
+	 * Mission Acknowledgment stored here. Used for retries/terminating the
+	 * sendMissionListStart message.
+	 */
+	private byte sendMissionAck = (byte) -1;
+	
+	/**
+	 * Stores the command receive acknowledgment. Used for terminating/retrying do Command messages.
+	 */
 	private boolean isCommandSent;
 	
+	/**
+	 * A HashMap to store the type of parameter. The parameter type is paired
+	 * with a string id.
+	 */
 	private Map<String,Byte > paramType;
-	private Map<String , Double> paramList;
-	private List<Short> paramReceivedIndexes;
-	private short paramIndex;
-	private short paramTotal;
-	private boolean receiveParamList, receiveParam;
 	
+	/**
+	 * A HashMap to store the value of the parameter with a certain string id. 
+	 */
+	private Map<String , Double> paramList;
+	
+	/**
+	 * Stores a list of parameter indexes received.
+	 */
+	private List<Short> paramReceivedIndexes;
+	
+	/**
+	 * Stores the current parameter index being received.
+	 */
+	private short paramIndex;
+	
+	/**
+	 * Stores the total number of parameters on the drone.
+	 */
+	private short paramTotal;
+	
+	/**
+	 * A flag to check whether readParameterList completed or not.
+	 */
+	private boolean receiveParamList;
+	
+	/**
+	 * A flag to check whether readParameter completed or not.
+	 */
+	private boolean receiveParam;
+	
+	/**
+	 * A min max pair of Point3D type to store the safety allowed area. The
+	 * minimum value denotes the bottom south west corner and the maximum value
+	 * is the point diagonally opposite to it. Thus, the safety allowed area is
+	 * the volume inside the box.
+	 */
 	private MinMaxPair<Point3D> allowedArea=null;
+	
+	/**
+	 * Frame of reference of the safety allowed area min max pair.
+	 */
 	private byte allowedAreaFrame;
 	
+	/**
+	 * Stores Global GPS Origin. Useful for terminating/retrying
+	 * setGlobalGpsOrigin.
+	 */
 	private Point3D globalGpsOrigin;
 	
+	/**
+	 * Stores the Parameter.xml file. This file contains the allowed commands
+	 * and values of all the commands.
+	 */
 	private File inputFile;
+	
+	/**
+	 * Stores an object of XMLParamParser class which helps in parsing and
+	 * requesting limits of certain commands/messages.
+	 */
 	private XMLParamParser dataXML;
 	
+	/**
+	 * Stores the log Entry found on the remote drone.
+	 */
 	private List<msg_log_entry> logEntry = new ArrayList<msg_log_entry>();
 	
 	
@@ -283,40 +449,45 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
     @Override
     public void onNewInputJson(String channelName, Map <String , Object> message)
     {
-        getLog().debug("Got message on input channel " + channelName);
-        getLog().debug(message);
-		if (channelName.equals(subscribers[0])) {
+		getLog().debug("Got message on input channel " + channelName);
+		getLog().debug(message);
+		if (channelName.equals(subscribers[0]))
+		{
 			// Data from drone handled here
-			if (message.containsKey("comm")) {
+			if (message.containsKey("comm"))
+			{
 
 				String items[] = message.get("comm").toString()
 						.replaceAll("\\[", "").replaceAll("\\]", "")
 						.replaceAll(" ", "").split(",");
 				int lenItems = items.length;
-				for (int i = 0; i < lenItems; i++) {
-					try 
+				for (int i = 0; i < lenItems; i++)
+				{
+					try
 					{
 						responseGlobal[i] = Integer.parseInt(items[i]) & 0xFF;
-					} 
-					catch (NumberFormatException e) 
+					}
+					catch (NumberFormatException e)
 					{
 						getLog().error(e);
 					}
 
 				}
 
-				for (int i = 0; i < lenItems; i++) {
+				for (int i = 0; i < lenItems; i++)
+				{
 					mavPacket = mavParser.mavlink_parse_char(responseGlobal[i]);
 				}
 
-				if (!(mavPacket == null)) {
+				if (!(mavPacket == null))
+				{
 					mavMessage = mavPacket.unpack();
-					//getLog().info(mavPacket.seq);
+					// getLog().info(mavPacket.seq);
 					// Map<String, Object> temp = Maps.newHashMap();
 					// temp.put("mavMessage", mavMessage);
 					// sendOutputJson(publishers[2], temp);
 					getLog().info(mavMessage.toString());
-					 handleMavMessage(mavMessage);
+					handleMavMessage(mavMessage);
 					mavPacket = null;
 					mavParser = new Parser();
 					// getLog().info("mavPacket2 ");
