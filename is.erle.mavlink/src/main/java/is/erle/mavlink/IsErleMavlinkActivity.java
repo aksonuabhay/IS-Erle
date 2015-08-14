@@ -1462,7 +1462,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ " , " + "GROUND TRUTH Y : "
 						+ mavImageTriggered.ground_y + " , "
 						+ "GROUND TRUTH Z : " + mavImageTriggered.ground_z;
-				tempMavImageTriggered.put("data", tempImageTriggered);
+				tempMavImageTriggered.put("data",
+						"MAVLINK_MSG_ID_IMAGE_TRIGGERED - "
+								+ tempImageTriggered);
 				sendOutputJson(publishers[2], tempMavImageTriggered);
 				getLog().debug(tempImageTriggered);
 			}
@@ -1508,7 +1510,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ "IMAGE DEPTH : " + mavImageAvailable.depth + " , "
 						+ "CAMERA NUMBER : " + mavImageAvailable.cam_no + " , "
 						+ "IMAGE CHANNELS : " + mavImageAvailable.channels;
-				tempMavImageAvailable.put("data", tempImageAvailable);
+				tempMavImageAvailable.put("data",
+						"MAVLINK_MSG_ID_IMAGE_AVAILABLE - "
+								+ tempImageAvailable);
 				sendOutputJson(publishers[2], tempMavImageAvailable);
 				getLog().debug(tempImageAvailable);
 			}
@@ -1534,7 +1538,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				Map<String, Object> tempMavPositionControlSetpoint = Maps
 						.newHashMap();
 				tempMavPositionControlSetpoint.put("data",
-						tempPositionControlSetpoint);
+						"MAVLINK_MSG_ID_POSITION_CONTROL_SETPOINT - "
+								+ tempPositionControlSetpoint);
 				sendOutputJson(publishers[2], tempMavPositionControlSetpoint);
 				getLog().debug(tempPositionControlSetpoint);
 			}
@@ -1551,7 +1556,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ "PITCH : " + mavMarker.pitch + "rad , " + "YAW : "
 						+ mavMarker.yaw + "rad , " + "ID : " + mavMarker.id;
 				Map<String, Object> tempMavMarker = Maps.newHashMap();
-				tempMavMarker.put("data", tempMarker);
+				tempMavMarker.put("data", "MAVLINK_MSG_ID_MARKER - "
+						+ tempMarker);
 				sendOutputJson(publishers[2], tempMavMarker);
 				getLog().debug(tempMarker);
 			}
@@ -1570,7 +1576,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ "BATTERY VOLTAGE : " + mavRawAux.vbat + " , "
 						+ "TEMPERATURE : " + mavRawAux.temp;
 				Map<String, Object> tempMavRawAux = Maps.newHashMap();
-				tempMavRawAux.put("data", tempRawAux);
+				tempMavRawAux.put("data", "MAVLINK_MSG_ID_RAW_AUX - "
+						+ tempRawAux);
 				sendOutputJson(publishers[2], tempMavRawAux);
 				getLog().debug(tempRawAux);
 			}
@@ -1587,7 +1594,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ mavWatchdogHeartbeat.process_count;
 				Map<String, Object> tempMavWatchdogHeartbeat = Maps
 						.newHashMap();
-				tempMavWatchdogHeartbeat.put("data", tempWatchdogHeartbeat);
+				tempMavWatchdogHeartbeat.put("data",
+						"MAVLINK_MSG_ID_WATCHDOG_HEARTBEAT - "
+								+ tempWatchdogHeartbeat);
 				sendOutputJson(publishers[2], tempMavWatchdogHeartbeat);
 				getLog().debug(tempWatchdogHeartbeat);
 			}
@@ -1621,7 +1630,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ "PROCESS ARGUMENTS : " + processArguments;
 				Map<String, Object> tempMavWatchdogProcessInfo = Maps
 						.newHashMap();
-				tempMavWatchdogProcessInfo.put("data", tempWatchdogProcessInfo);
+				tempMavWatchdogProcessInfo.put("data",
+						"MAVLINK_MSG_ID_WATCHDOG_PROCESS_INFO - "
+								+ tempWatchdogProcessInfo);
 				sendOutputJson(publishers[2], tempMavWatchdogProcessInfo);
 				getLog().debug(tempWatchdogProcessInfo);
 			}
@@ -1652,7 +1663,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				Map<String, Object> tempMavWatchdogProcessStatus = Maps
 						.newHashMap();
 				tempMavWatchdogProcessStatus.put("data",
-						tempWatchdogProcessStatus);
+						"MAVLINK_MSG_ID_WATCHDOG_PROCESS_STATUS - "
+								+ tempWatchdogProcessStatus);
 				sendOutputJson(publishers[2], tempMavWatchdogProcessStatus);
 				getLog().debug(tempWatchdogProcessStatus);
 			}
@@ -1684,7 +1696,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ fileName + " , " + "DETECTED : "
 						+ mavPatternDetected.detected;
 				Map<String, Object> tempMavPatternDetected = Maps.newHashMap();
-				tempMavPatternDetected.put("data", tempPatternDetected);
+				tempMavPatternDetected.put("data",
+						"MAVLINK_MSG_ID_PATTERN_DETECTED - "
+								+ tempPatternDetected);
 				sendOutputJson(publishers[2], tempMavPatternDetected);
 				getLog().debug(tempPatternDetected);
 			}
@@ -1730,7 +1744,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ PoiCoordinateSystem[mavPointOfInterest.coordinate_system]
 						+ " , " + "POI NAME : " + poiName;
 				Map<String, Object> tempMavPointOfInterest = Maps.newHashMap();
-				tempMavPointOfInterest.put("data", tempPointOfInterest);
+				tempMavPointOfInterest.put("data",
+						"MAVLINK_MSG_ID_POINT_OF_INTEREST - "
+								+ tempPointOfInterest);
 				sendOutputJson(publishers[2], tempMavPointOfInterest);
 				getLog().debug(tempPointOfInterest);
 			}
@@ -1785,7 +1801,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ PoiCoordinateSystem[mavPointOfInterestConnection.coordinate_system]
 						+ " , " + "POI NAME : " + poiName;
 				Map<String, Object> tempMavPointOfInterestConnection = Maps.newHashMap();
-				tempMavPointOfInterestConnection.put("data", tempPointOfInterestConnection);
+				tempMavPointOfInterestConnection.put("data",
+						"MAVLINK_MSG_ID_POINT_OF_INTEREST_CONNECTION - "
+								+ tempPointOfInterestConnection);
 				sendOutputJson(publishers[2], tempMavPointOfInterestConnection);
 				getLog().debug(tempPointOfInterestConnection);
 			}
@@ -1817,7 +1835,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ mavBriefFeature.orientation_assignment + " , "
 						+ "DESCRIPTOR : " + featureDescriptor;
 				Map<String, Object> tempMavBriefFeature = Maps.newHashMap();
-				tempMavBriefFeature.put("data", tempBriefFeature);
+				tempMavBriefFeature.put("data",
+						"MAVLINK_MSG_ID_BRIEF_FEATURE - " + tempBriefFeature);
 				sendOutputJson(publishers[2], tempMavBriefFeature);
 				getLog().debug(tempBriefFeature);
 			}
@@ -1857,7 +1876,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ "NUMBER OF IMAGES TO PROCESS : "
 						+ mavDetectionStats.images_todo + " , " + "FPS : "
 						+ mavDetectionStats.fps;
-				tempMavDetectionStats.put("data", tempDetectionStats);
+				tempMavDetectionStats.put("data",
+						"MAVLINK_MSG_ID_DETECTION_STATS - "
+								+ tempDetectionStats);
 				sendOutputJson(publishers[2], tempMavDetectionStats);
 				getLog().debug(tempDetectionStats);
 			}
@@ -1891,7 +1912,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ "% , " + "DISK HEALTH : "
 						+ tempDiskHealth[mavOnboardHealth.disk_health] + " , "
 						+ "DISK USED : " + mavOnboardHealth.disk_usage + "% ";
-				tempMavOnboardHealth.put("data", tempOnboardHealth);
+				tempMavOnboardHealth.put("data",
+						"MAVLINK_MSG_ID_ONBOARD_HEALTH - " + tempOnboardHealth);
 				sendOutputJson(publishers[2], tempMavOnboardHealth);
 				getLog().debug(tempOnboardHealth);
 			}
@@ -1922,7 +1944,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 								mavHeartbeat.system_status)+ ","
 						+ "MAVLINK VERSION : "
 						+ Byte.toString(mavHeartbeat.mavlink_version);
-				tempMavHeartbeat.put("data", tempHeartbeat);
+				tempMavHeartbeat.put("data", "MAVLINK_MSG_ID_HEARTBEAT - "
+						+ tempHeartbeat);
 				sendOutputJson(publishers[2], tempMavHeartbeat);
 				getLog().debug(tempHeartbeat);
 				heartbeat = mavHeartbeat;
@@ -2017,7 +2040,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ "PARAMETER TYPE : "
 						+ getVariableName("MAV_PARAM_TYPE",
 								mavParamValue.param_count);
-				tempMavParamValue.put("data", tempParamValue);
+				tempMavParamValue.put("data", "MAVLINK_MSG_ID_PARAM_VALUE - "
+						+ tempParamValue);
 				sendOutputJson(publishers[2], tempMavParamValue);
 				getLog().debug(tempParamValue);
 				saveParam(mavParamValue);
@@ -2048,14 +2072,18 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						/ 100.0 + "degrees , " + "FIX TYPE : "
 						+ mavGps.fix_type + "D , " + "SATELLITES VISIBLE : "
 						+ mavGps.satellites_visible;
-				tempMavGps.put("data", tempGps);
+				tempMavGps.put("data", "MAVLINK_MSG_ID_GPS_RAW_INT - "
+						+ tempGps);
 				sendOutputJson(publishers[2], tempMavGps);
 				getLog().debug(tempGps);
 			}
 			break;
 
 		case msg_gps_status.MAVLINK_MSG_ID_GPS_STATUS:
-			getLog().debug(((msg_gps_status) mavMessage2).toString());
+			Map<String,	Object> tempMavGpsStatus = Maps.newHashMap();
+			tempMavGpsStatus.put("status", mavMessage2.toString());
+			sendOutputJson(publishers[2], tempMavGpsStatus);
+			getLog().debug(mavMessage2.toString());
 			break;
 
 		case msg_scaled_imu.MAVLINK_MSG_ID_SCALED_IMU:
@@ -2079,7 +2107,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ "MAGNETIC FIELD Z : " + mavScaledImu.zmag / 1000.0
 						+ "Tesla";
 				Map<String, Object> tempMavScaledImu = Maps.newHashMap();
-				tempMavScaledImu.put("data", tempScaledImu);
+				tempMavScaledImu.put("data", "MAVLINK_MSG_ID_SCALED_IMU - "
+						+ tempScaledImu);
 				sendOutputJson(publishers[2], tempMavScaledImu);
 				getLog().debug(tempScaledImu);
 			}
@@ -2101,7 +2130,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ "MAGNETIC FIELD Y : " + mavRawImu.ymag + "raw , "
 						+ "MAGNETIC FIELD Z : " + mavRawImu.zmag + "raw";
 				Map<String, Object> tempMavRawImu = Maps.newHashMap();
-				tempMavRawImu.put("data", tempRawImu);
+				tempMavRawImu.put("data", "MAVLINK_MSG_ID_RAW_IMU  - "
+						+ tempRawImu);
 				sendOutputJson(publishers[2], tempMavRawImu);
 				getLog().debug(tempRawImu);
 			}
@@ -2122,7 +2152,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ "TEMPERATURE : " + mavRawPressure.temperature
 						+ "raw ";
 				Map<String, Object> tempMavRawPressure = Maps.newHashMap();
-				tempMavRawPressure.put("data", tempRawPressure);
+				tempMavRawPressure.put("data", "MAVLINK_MSG_ID_RAW_PRESSURE - "
+						+ tempRawPressure);
 				sendOutputJson(publishers[2], tempMavRawPressure);
 				getLog().debug(tempRawPressure);
 			}
@@ -2141,7 +2172,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ "TEMPERATURE : " + mavScaledPressure.temperature
 						/ 100.0 + "degree Cesius ";
 				Map<String, Object> tempMavScaledPressure = Maps.newHashMap();
-				tempMavScaledPressure.put("data", tempScaledPressure);
+				tempMavScaledPressure.put("data",
+						"MAVLINK_MSG_ID_SCALED_PRESSURE - "
+								+ tempScaledPressure);
 				sendOutputJson(publishers[2], tempMavScaledPressure);
 				getLog().debug(tempScaledPressure);
 			}
@@ -2159,8 +2192,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ mavAttitude.rollspeed + "rad/s , " + "PITCH SPEED : "
 						+ mavAttitude.pitchspeed + "rad/s , " + "YAW SPEED : "
 						+ mavAttitude.yawspeed + "rad/s";
-				Map<String , Object> tempMavAttitude = Maps.newHashMap();
-				tempMavAttitude.put("data", tempAttitude);
+				Map<String, Object> tempMavAttitude = Maps.newHashMap();
+				tempMavAttitude.put("data", "MAVLINK_MSG_ID_ATTITUDE - "
+						+ tempAttitude);
 				sendOutputJson(publishers[2], tempMavAttitude);
 				getLog().debug(tempAttitude);
 			}
@@ -2185,8 +2219,11 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ "PITCH SPEED : " + mavAttitudeQuaternion.pitchspeed
 						+ "rad/s , " + "YAW SPEED : "
 						+ mavAttitudeQuaternion.yawspeed + "rad/s";
-				Map<String , Object> tempMavAttitudeQuaternion = Maps.newHashMap();
-				tempMavAttitudeQuaternion.put("data", tempAttitudeQuaternion);
+				Map<String, Object> tempMavAttitudeQuaternion = Maps
+						.newHashMap();
+				tempMavAttitudeQuaternion.put("data",
+						"MAVLINK_MSG_ID_ATTITUDE_QUATERNION - "
+								+ tempAttitudeQuaternion);
 				sendOutputJson(publishers[2], tempMavAttitudeQuaternion);
 				getLog().debug(tempAttitudeQuaternion);
 			}
@@ -2205,7 +2242,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ mavLocalPosition.vy + "m/s , " + "VELOCITY Z : "
 						+ mavLocalPosition.vz + "m/s ";
 				Map<String, Object> tempMavLocalPosition = Maps.newHashMap();
-				tempMavLocalPosition.put("data", tempLocalPosition);
+				tempMavLocalPosition.put("data",
+						"MAVLINK_MSG_ID_LOCAL_POSITION_NED- "
+								+ tempLocalPosition);
 				sendOutputJson(publishers[2], tempMavLocalPosition);
 				getLog().debug(tempLocalPosition);
 			}
@@ -2231,7 +2270,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ "m/s , " + "HEADING : " + mavGlobalPosition.hdg
 						/ 100.0 + "degrees";
 				Map<String, Object> tempMavGlobalPosition = Maps.newHashMap();
-				tempMavGlobalPosition.put("data", tempGlobalPosition);
+				tempMavGlobalPosition.put("data",
+						"MAVLINK_MSG_ID_GLOBAL_POSITION_INT - "
+								+ tempGlobalPosition);
 				sendOutputJson(publishers[2], tempMavGlobalPosition);
 				getLog().debug(tempGlobalPosition);
 			}
@@ -2270,7 +2311,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				 */
 
 				Map<String, Object> tempMavRcChannelScaled = Maps.newHashMap();
-				tempMavRcChannelScaled.put("data", tempRcChannelScaled);
+				tempMavRcChannelScaled.put("data",
+						"MAVLINK_MSG_ID_RC_CHANNELS_SCALED - "
+								+ tempRcChannelScaled);
 				sendOutputJson(publishers[2], tempMavRcChannelScaled);
 				getLog().debug(tempRcChannelScaled);
 			}
@@ -2304,7 +2347,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				 */
 
 				Map<String, Object> tempMavRcChannelRaw = Maps.newHashMap();
-				tempMavRcChannelRaw.put("data", tempRcChannelRaw);
+				tempMavRcChannelRaw.put("data",
+						"MAVLINK_MSG_ID_RC_CHANNELS_RAW - " + tempRcChannelRaw);
 				sendOutputJson(publishers[2], tempMavRcChannelRaw);
 				getLog().debug(tempRcChannelRaw);
 			}
@@ -2326,7 +2370,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ " , " + "SERVO 8 : " + mavServoOutputRaw.servo8_raw
 						+ " , " + "PORT : " + mavServoOutputRaw.port;
 				Map<String, Object> tempMavServoOutputRaw = Maps.newHashMap();
-				tempMavServoOutputRaw.put("data", tempServoOutputRaw);
+				tempMavServoOutputRaw.put("data",
+						"MAVLINK_MSG_ID_SERVO_OUTPUT_RAW - "
+								+ tempServoOutputRaw);
 				sendOutputJson(publishers[2], tempMavServoOutputRaw);
 				getLog().debug(tempServoOutputRaw);
 			}
@@ -2378,7 +2424,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ "TARGET COMPONENT : "
 						+ mavMissionItem.target_component;
 				Map<String, Object> tempMapMissionItem = Maps.newHashMap();
-				tempMapMissionItem.put("mission", tempMissionItem);
+				tempMapMissionItem.put("mission",
+						"MAVLINK_MSG_ID_MISSION_ITEM - " + tempMissionItem);
 				sendOutputJson(publishers[2], tempMapMissionItem);
 				getLog().debug(tempMissionItem);
 				
@@ -2399,7 +2446,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ Short.toString(mavMissionRequest.seq);
 				
 				Map<String, Object> tempMapMissionRequest = Maps.newHashMap();
-				tempMapMissionRequest.put("mission", tempMissionRequest);
+				tempMapMissionRequest.put("mission",
+						"MAVLINK_MSG_ID_MISSION_REQUEST - "
+								+ tempMissionRequest);
 				sendOutputJson(publishers[2], tempMapMissionRequest);
 				getLog().debug(tempMissionRequest);
 				readMissionFile(mavMissionRequest.seq);
@@ -2424,7 +2473,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				String tempStringCurrent = "CURRENT SEQUENCE : "
 						+ Short.toString(mavMissionCurrent.seq);
 				Map<String, Object> tempMapMissionCurrent = Maps.newHashMap();
-				tempMapMissionCurrent.put("mission", tempStringCurrent);
+				tempMapMissionCurrent
+						.put("mission", "MAVLINK_MSG_ID_MISSION_CURRENT - "
+								+ tempStringCurrent);
 				sendOutputJson(publishers[2], tempMapMissionCurrent);
 				getLog().debug(mavMissionCurrent);
 				missionCurrentSeq = mavMissionCurrent.seq;
@@ -2448,7 +2499,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ " , " + "TARGET COMPONENT :"
 						+ mavMissionCount.target_component;
 				Map<String, Object> tempMapMissionCount = Maps.newHashMap();
-				tempMapMissionCount.put("mission", tempStringCount);
+				tempMapMissionCount.put("mission",
+						"MAVLINK_MSG_ID_MISSION_COUNT - " + tempStringCount);
 				sendOutputJson(publishers[2], tempMapMissionCount);
 				getLog().debug(tempMapMissionCount);
 				
@@ -2464,7 +2516,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_mission_item_reached.MAVLINK_MSG_ID_MISSION_ITEM_REACHED:
-			/**
+			/*
 			 * A certain mission item has been reached. The system will either
 			 * hold this position (or circle on the orbit) or (if the
 			 * autocontinue on the WP was set) continue to the next MISSION.
@@ -2477,7 +2529,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ Short.toString(mavMissionItemReached.seq);
 				Map<String, Object> tempMapMissionItemReached = Maps
 						.newHashMap();
-				tempMapMissionItemReached.put("mission", tempStringItemReached);
+				tempMapMissionItemReached.put("mission",
+						"MAVLINK_MSG_ID_MISSION_ITEM_REACHED - "
+								+ tempStringItemReached);
 				sendOutputJson(publishers[2], tempMapMissionItemReached);
 				getLog().debug(tempMapMissionItemReached);
 			}
@@ -2489,7 +2543,11 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			{
 				Map<String, Object> tempMapMissionAck = Maps.newHashMap();
 				mavMissionAck = (msg_mission_ack) mavMessage2;
-				sendMissionAck = mavMissionAck.type;
+				tempMapMissionAck.put("mission",mavMissionAck.toString());
+				sendOutputJson(publishers[2], tempMapMissionAck);
+				getLog().debug(mavMissionAck.toString());
+				
+				tempMapMissionAck.clear();
 				if (isMissionCleared) 
 				{
 					isMissionCleared = false;
@@ -2498,6 +2556,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				} 
 				else 
 				{
+					sendMissionAck = mavMissionAck.type;
 					switch (mavMissionAck.type) 
 					{
 					case MAV_MISSION_RESULT.MAV_MISSION_ACCEPTED:
@@ -2660,7 +2719,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ mavGpsGlobalOrigin.longitude / 10000000.0
 						+ "degrees , " + "ALTITUDE : "
 						+ mavGpsGlobalOrigin.altitude / 1000.0 + "metres";
-				tempMavGpsGlobalOrigin.put("gps" , tempGpsGlobalOrigin);
+				tempMavGpsGlobalOrigin.put("data",
+						"MAVLINK_MSG_ID_GPS_GLOBAL_ORIGIN - "
+								+ tempGpsGlobalOrigin);
 				sendOutputJson(publishers[2], tempMavGpsGlobalOrigin);
 				getLog().debug(tempGpsGlobalOrigin);
 				saveGlobalGpsOrigin(mavGpsGlobalOrigin);
@@ -2731,8 +2792,11 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				}
 				if (tempSafetyAllowedArea != null) 
 				{
-					Map<String, Object> tempMavSafetyAllowedArea = Maps.newHashMap();
-					tempMavSafetyAllowedArea.put("gps" , tempSafetyAllowedArea);
+					Map<String, Object> tempMavSafetyAllowedArea = Maps
+							.newHashMap();
+					tempMavSafetyAllowedArea.put("data",
+							"MAVLINK_MSG_ID_SAFETY_ALLOWED_AREA - "
+									+ tempSafetyAllowedArea);
 					sendOutputJson(publishers[2], tempMavSafetyAllowedArea);
 					getLog().debug(tempSafetyAllowedArea);
 					saveAllowedArea(mavSafetyAllowedArea);
@@ -2742,9 +2806,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 
 		case msg_attitude_quaternion_cov.MAVLINK_MSG_ID_ATTITUDE_QUATERNION_COV:
 			msg_attitude_quaternion_cov  mavAttitudeQuaternionCov;
-			if (mavMessage2 instanceof msg_attitude_quaternion_cov) 
+			if (mavMessage2 instanceof msg_attitude_quaternion_cov)
 			{
-				mavAttitudeQuaternionCov = (msg_attitude_quaternion_cov) mavMessage2 ;
+				mavAttitudeQuaternionCov = (msg_attitude_quaternion_cov) mavMessage2;
 				String tempAttitudeQuaternionCov = "["
 						+ mavAttitudeQuaternionCov.time_boot_ms + "] , "
 						+ "QUATERNION COMPONENT 1 : "
@@ -2761,15 +2825,18 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ "YAW SPEED : " + mavAttitudeQuaternionCov.yawspeed
 						+ "rad/s , " + "COVARIANCE MATRIX : "
 						+ Arrays.toString(mavAttitudeQuaternionCov.covariance);
-				Map<String , Object> tempMavAttitudeQuaternionCov = Maps.newHashMap();
-				tempMavAttitudeQuaternionCov.put("data", tempAttitudeQuaternionCov);
+				Map<String, Object> tempMavAttitudeQuaternionCov = Maps
+						.newHashMap();
+				tempMavAttitudeQuaternionCov.put("data",
+						"MAVLINK_MSG_ID_ATTITUDE_QUATERNION_COV - "
+								+ tempAttitudeQuaternionCov);
 				sendOutputJson(publishers[2], tempMavAttitudeQuaternionCov);
 				getLog().debug(tempAttitudeQuaternionCov);
 			}
 			break;
 
 		case msg_nav_controller_output.MAVLINK_MSG_ID_NAV_CONTROLLER_OUTPUT:
-			/**
+			/*
 			 * Outputs of the APM navigation controller. The primary use of this
 			 * message is to check the response and signs of the controller
 			 * before actual flight and to assist with tuning controller
@@ -2797,7 +2864,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ mavNavControllerOutput.wp_dist + "m";
 				Map<String, Object> tempMavNavControllerOutput = Maps
 						.newHashMap();
-				tempMavNavControllerOutput.put("data", tempNavControllerOutput);
+				tempMavNavControllerOutput.put("data",
+						"MAVLINK_MSG_ID_NAV_CONTROLLER_OUTPUT - "
+								+ tempNavControllerOutput);
 				sendOutputJson(publishers[2], tempMavNavControllerOutput);
 				getLog().debug(tempNavControllerOutput);
 			}
@@ -2832,7 +2901,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				Map<String, Object> tempMavGlobalPositionIntCov = Maps
 						.newHashMap();
 				tempMavGlobalPositionIntCov.put("data",
-						tempGlobalPositionIntCov);
+						"MAVLINK_MSG_ID_GLOBAL_POSITION_INT_COV - "
+								+ tempGlobalPositionIntCov);
 				sendOutputJson(publishers[2], tempMavGlobalPositionIntCov);
 				getLog().debug(tempGlobalPositionIntCov);
 			}
@@ -2865,7 +2935,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				 * etc.)
 				 */
 				Map<String, Object> tempMavLocalPositionCov = Maps.newHashMap();
-				tempMavLocalPositionCov.put("data", tempLocalPositionCov);
+				tempMavLocalPositionCov.put("data",
+						"MAVLINK_MSG_ID_LOCAL_POSITION_NED_COV - "
+								+ tempLocalPositionCov);
 				sendOutputJson(publishers[2], tempMavLocalPositionCov);
 				getLog().debug(tempLocalPositionCov);
 			}
@@ -2909,7 +2981,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				 */
 
 				Map<String, Object> tempMavRcChannels = Maps.newHashMap();
-				tempMavRcChannels.put("data", tempRcChannels);
+				tempMavRcChannels.put("data", "MAVLINK_MSG_ID_RC_CHANNELS - "
+						+ tempRcChannels);
 				sendOutputJson(publishers[2], tempMavRcChannels);
 				getLog().debug(tempRcChannels);
 			}
@@ -2931,7 +3004,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ mavDataStream.stream_id + " , " + "STREAM STATUS : "
 						+ mavDataStream.on_off;
 				Map<String, Object> tempMavDataStream = Maps.newHashMap();
-				tempMavDataStream.put("data", tempDataStream);
+				tempMavDataStream.put("data", "MAVLINK_MSG_ID_DATA_STREAM - "
+						+ tempDataStream);
 				sendOutputJson(publishers[2], tempMavDataStream);
 				getLog().debug(tempDataStream);
 			}
@@ -2970,7 +3044,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ "HEADING : " + mavVfrHud.heading + "degrees , "
 						+ "THROTTLE : " + mavVfrHud.throttle + "%";
 				Map<String, Object> tempMavVfrHud = Maps.newHashMap();
-				tempMavVfrHud.put("data", tempVfrHud);
+				tempMavVfrHud.put("data", "MAVLINK_MSG_ID_VFR_HUD - "
+						+ tempVfrHud);
 				sendOutputJson(publishers[2], tempMavVfrHud);
 				getLog().debug(tempVfrHud);
 			}
@@ -2989,8 +3064,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_command_ack.MAVLINK_MSG_ID_COMMAND_ACK:
-			/**
-			 * Report status of a command. Includes feedback wether the command
+			/*
+			 * Report status of a command. Includes feedback whether the command
 			 * was executed.
 			 */
 			msg_command_ack  mavCommandAck;
@@ -3031,7 +3106,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 					break;
 				}
 				Map<String, Object> tempMavCommandAck = Maps.newHashMap();
-				tempMavCommandAck.put("data", tempCommandAck);
+				tempMavCommandAck.put("data", "MAVLINK_MSG_ID_COMMAND_ACK - "
+						+ tempCommandAck);
 				sendOutputJson(publishers[2], tempMavCommandAck);
 				getLog().debug(tempCommandAck);
 			}
@@ -3074,8 +3150,10 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				 * pitch rate, bit 3: body yaw rate. bit 4-bit 7: reserved, bit
 				 * 8: attitude
 				 */
-				Map<String , Object> tempMavAttitudeTarget = Maps.newHashMap();
-				tempMavAttitudeTarget.put("data", tempAttitudeTarget);
+				Map<String, Object> tempMavAttitudeTarget = Maps.newHashMap();
+				tempMavAttitudeTarget.put("data",
+						"MAVLINK_MSG_ID_ATTITUDE_TARGET - "
+								+ tempAttitudeTarget);
 				sendOutputJson(publishers[2], tempMavAttitudeTarget);
 				getLog().debug(tempAttitudeTarget);
 			}
@@ -3120,7 +3198,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				Map<String, Object> tempMavPositionTargetLocalNed = Maps
 						.newHashMap();
 				tempMavPositionTargetLocalNed.put("data",
-						tempPositionTargetLocalNed);
+						"MAVLINK_MSG_ID_POSITION_TARGET_LOCAL_NED - "
+								+ tempPositionTargetLocalNed);
 				sendOutputJson(publishers[2], tempMavPositionTargetLocalNed);
 				getLog().debug(tempPositionTargetLocalNed);
 			}
@@ -3168,7 +3247,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				Map<String, Object> tempMavPositionTargetGlobalInt = Maps
 						.newHashMap();
 				tempMavPositionTargetGlobalInt.put("data",
-						tempPositionTargetGlobalInt);
+						"MAVLINK_MSG_ID_POSITION_TARGET_GLOBAL_INT - "
+								+ tempPositionTargetGlobalInt);
 				sendOutputJson(publishers[2], tempMavPositionTargetGlobalInt);
 				getLog().debug(tempPositionTargetGlobalInt);
 			}
@@ -3194,7 +3274,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				Map<String, Object> tempMavOffsetPositionLocalGlobal = Maps
 						.newHashMap();
 				tempMavOffsetPositionLocalGlobal.put("data",
-						tempOffsetPositionLocalGlobal);
+						"MAVLINK_MSG_ID_LOCAL_POSITION_NED_SYSTEM_GLOBAL_OFFSET - "
+								+ tempOffsetPositionLocalGlobal);
 				sendOutputJson(publishers[2], tempMavOffsetPositionLocalGlobal);
 				getLog().debug(tempOffsetPositionLocalGlobal);
 			}
@@ -3225,7 +3306,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ "ACCELARATION Z : " + mavHilState.zacc / 100000.0
 						+ "metres/sec2";
 				Map<String, Object> tempMavHilState = Maps.newHashMap();
-				tempMavHilState.put("data", tempHilState);
+				tempMavHilState.put("data", "MAVLINK_MSG_ID_HIL_STATE - "
+						+ tempHilState);
 				sendOutputJson(publishers[2], tempMavHilState);
 				getLog().debug(tempHilState);
 			}
@@ -3267,7 +3349,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				 */
 
 				Map<String, Object> tempMavHilRcInputRaw = Maps.newHashMap();
-				tempMavHilRcInputRaw.put("data", tempHilRcInputRaw);
+				tempMavHilRcInputRaw.put("data",
+						"MAVLINK_MSG_ID_HIL_RC_INPUTS_RAW - "
+								+ tempHilRcInputRaw);
 				sendOutputJson(publishers[2], tempMavHilRcInputRaw);
 				getLog().debug(tempHilRcInputRaw);
 			}
@@ -3290,7 +3374,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ mavOpticalFlow.sensor_id + " , " + "QUALITY : "
 						+ mavOpticalFlow.quality;
 				Map<String, Object> tempMavOpticalFlow = Maps.newHashMap();
-				tempMavOpticalFlow.put("data", tempOpticalFlow);
+				tempMavOpticalFlow.put("data", "MAVLINK_MSG_ID_OPTICAL_FLOW - "
+						+ tempOpticalFlow);
 				sendOutputJson(publishers[2], tempMavOpticalFlow);
 				getLog().debug(tempOpticalFlow);
 			}
@@ -3315,7 +3400,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				Map<String, Object> tempMavGlobalVisionPositionEstimate = Maps
 						.newHashMap();
 				tempMavGlobalVisionPositionEstimate.put("data",
-						tempGlobalVisionPositionEstimate);
+						"MAVLINK_MSG_ID_GLOBAL_VISION_POSITION_ESTIMATE - "
+								+ tempGlobalVisionPositionEstimate);
 				sendOutputJson(publishers[2],
 						tempMavGlobalVisionPositionEstimate);
 				getLog().debug(tempGlobalVisionPositionEstimate);
@@ -3339,7 +3425,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				Map<String, Object> tempMavVisionPositionEstimate = Maps
 						.newHashMap();
 				tempMavVisionPositionEstimate.put("data",
-						tempVisionPositionEstimate);
+						"MAVLINK_MSG_ID_VISION_POSITION_ESTIMATE - "
+								+ tempVisionPositionEstimate);
 				sendOutputJson(publishers[2], tempMavVisionPositionEstimate);
 				getLog().debug(tempVisionPositionEstimate);
 			}
@@ -3357,7 +3444,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ mavVisionSpeedEstimate.z + "m/s , ";
 				Map<String, Object> tempMavVisionSpeedEstimate = Maps
 						.newHashMap();
-				tempMavVisionSpeedEstimate.put("data", tempVisionSpeedEstimate);
+				tempMavVisionSpeedEstimate.put("data",
+						"MAVLINK_MSG_ID_VISION_SPEED_ESTIMATE - "
+								+ tempVisionSpeedEstimate);
 				sendOutputJson(publishers[2], tempMavVisionSpeedEstimate);
 				getLog().debug(tempVisionSpeedEstimate);
 			}
@@ -3380,7 +3469,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				Map<String, Object> tempMavViconPositionEstimate = Maps
 						.newHashMap();
 				tempMavViconPositionEstimate.put("data",
-						tempViconPositionEstimate);
+						"MAVLINK_MSG_ID_VICON_POSITION_ESTIMATE - "
+								+ tempViconPositionEstimate);
 				sendOutputJson(publishers[2], tempMavViconPositionEstimate);
 				getLog().debug(tempViconPositionEstimate);
 			}
@@ -3436,7 +3526,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ "UPDATED FIELDS : "
 						+ Integer.toBinaryString(0xFFFF & mavHighresImu.fields_updated);
 				Map<String, Object> tempMavHighresImu = Maps.newHashMap();
-				tempMavHighresImu.put("data", tempHighresImu);
+				tempMavHighresImu.put("data", "MAVLINK_MSG_ID_HIGHRES_IMU - "
+						+ tempHighresImu);
 				sendOutputJson(publishers[2], tempMavHighresImu);
 				getLog().debug(tempHighresImu);
 			}
@@ -3468,7 +3559,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ mavOpticalFlowRad.sensor_id + " , " + "QUALITY : "
 						+ mavOpticalFlowRad.quality;
 				Map<String, Object> tempMavOpticalFlowRad = Maps.newHashMap();
-				tempMavOpticalFlowRad.put("data", tempOpticalFlowRad);
+				tempMavOpticalFlowRad.put("data",
+						"MAVLINK_MSG_ID_OPTICAL_FLOW_RAD - "
+								+ tempOpticalFlowRad);
 				sendOutputJson(publishers[2], tempMavOpticalFlowRad);
 				getLog().debug(tempOpticalFlowRad);
 			}
@@ -3524,7 +3617,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ "UPDATED FIELDS : "
 						+ Integer.toBinaryString(0xFFFF & mavHilSensor.fields_updated);
 				Map<String, Object> tempMavHilSensor = Maps.newHashMap();
-				tempMavHilSensor.put("data", tempHilSensor);
+				tempMavHilSensor.put("data", "MAVLINK_MSG_ID_HIL_SENSOR - "
+						+ tempHilSensor);
 				sendOutputJson(publishers[2], tempMavHilSensor);
 				getLog().debug(tempHilSensor);
 			}
@@ -3563,7 +3657,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ "rad/s , " + "OMEGA Z : " + mavSimState.zgyro
 						+ "rad/s ";
 				Map<String, Object> tempMavSimState = Maps.newHashMap();
-				tempMavSimState.put("data", tempSimState);
+				tempMavSimState.put("data", "MAVLINK_MSG_ID_SIM_STATE - "
+						+ tempSimState);
 				sendOutputJson(publishers[2], tempMavSimState);
 				getLog().debug(tempSimState);
 			}
@@ -3584,7 +3679,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ "% , " + "NOISE : " + mavRadioStatus.noise + " , "
 						+ "REMOTE NOISE : " + mavRadioStatus.remnoise;
 				Map<String, Object> tempMavRadioStatus = Maps.newHashMap();
-				tempMavRadioStatus.put("data", tempRadioStatus);
+				tempMavRadioStatus.put("data", "MAVLINK_MSG_ID_RADIO_STATUS - "
+						+ tempRadioStatus);
 				sendOutputJson(publishers[2], tempMavRadioStatus);
 				getLog().debug(tempRadioStatus);
 			}
@@ -3630,7 +3726,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ mavHilGps.vn + "m/s , " + "VELOCITY EAST : "
 						+ mavHilGps.ve + "m/s , " + "VELOCITY DOWN : "
 						+ mavHilGps.vd + "m/s ";
-				tempMavHilGps.put("data", tempHilGps);
+				tempMavHilGps.put("data", "MAVLINK_MSG_ID_HIL_GPS - "
+						+ tempHilGps);
 				sendOutputJson(publishers[2], tempMavHilGps);
 				getLog().debug(tempHilGps);
 			}
@@ -3664,7 +3761,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ mavHilOpticalFlowRad.quality;
 				Map<String, Object> tempMavHilOpticalFlowRad = Maps
 						.newHashMap();
-				tempMavHilOpticalFlowRad.put("data", tempHilOpticalFlowRad);
+				tempMavHilOpticalFlowRad.put("data",
+						"MAVLINK_MSG_ID_HIL_OPTICAL_FLOW - "
+								+ tempHilOpticalFlowRad);
 				sendOutputJson(publishers[2], tempMavHilOpticalFlowRad);
 				getLog().debug(tempHilOpticalFlowRad);
 			}
@@ -3710,7 +3809,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ mavHilStateQuaternion.zacc / 100000.0 + "metres/sec2";
 				Map<String, Object> tempMavHilStateQuaternion = Maps
 						.newHashMap();
-				tempMavHilStateQuaternion.put("data", tempHilStateQuaternion);
+				tempMavHilStateQuaternion.put("data",
+						"MAVLINK_MSG_ID_HIL_STATE_QUATERNION - "
+								+ tempHilStateQuaternion);
 				sendOutputJson(publishers[2], tempMavHilStateQuaternion);
 				getLog().debug(tempHilStateQuaternion);
 			}
@@ -3736,8 +3837,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ mavScaledImu2.ymag / 1000.0 + "Tesla , "
 						+ "MAGNETIC FIELD Z : " + mavScaledImu2.zmag / 1000.0
 						+ "Tesla";
-				Map<String , Object> tempMavScaledImu2 = Maps.newHashMap();
-				tempMavScaledImu2.put("data", tempScaledImu2);
+				Map<String, Object> tempMavScaledImu2 = Maps.newHashMap();
+				tempMavScaledImu2.put("data", "MAVLINK_MSG_ID_SCALED_IMU2 - "
+						+ tempScaledImu2);
 				sendOutputJson(publishers[2], tempMavScaledImu2);
 				getLog().debug(tempScaledImu2);
 			}
@@ -3760,7 +3862,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ mavLogEntry.num_logs + " , " + "LAST LOG NUMBER : "
 						+ mavLogEntry.last_log_num;
 				Map<String, Object> tempMavLogEntry = Maps.newHashMap();
-				tempMavLogEntry.put("data", tempLogEntry);
+				tempMavLogEntry.put("data", "MAVLINK_MSG_ID_LOG_ENTRY - "
+						+ tempLogEntry);
 				sendOutputJson(publishers[2], tempMavLogEntry);
 				getLog().debug(tempLogEntry);
 				saveLogEntry(mavLogEntry);
@@ -3783,7 +3886,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ "TOTAL NUMBER OF BYTES : " + mavLogData.count + " , "
 						+ "DATA : " + mavLogData.data;
 				Map<String, Object> tempMavLogData = Maps.newHashMap();
-				tempMavLogData.put("data", tempLogData);
+				tempMavLogData.put("data", "MAVLINK_MSG_ID_LOG_DATA - "
+						+ tempLogData);
 				sendOutputJson(publishers[2], tempMavLogData);
 				getLog().debug(tempLogData);
 			}
@@ -3828,7 +3932,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ mavGps2.satellites_visible + "DGPS INFO AGE : "
 						+ mavGps2.dgps_age + "DGPS SATELLITE NUMBER : "
 						+ mavGps2.dgps_numch;
-				tempMavGps2.put("data", tempGps2);
+				tempMavGps2
+						.put("data", "MAVLINK_MSG_ID_GPS2_RAW - " + tempGps2);
 				sendOutputJson(publishers[2], tempMavGps2);
 				getLog().debug(tempGps2);
 			}
@@ -3903,7 +4008,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				if (tempGpsRtk != null) 
 				{
 					Map<String, Object> tempMavGpsRtk = Maps.newHashMap();
-					tempMavGpsRtk.put("data", tempGpsRtk);
+					tempMavGpsRtk.put("data", "MAVLINK_MSG_ID_GPS_RTK - "
+							+ tempGpsRtk);
 					sendOutputJson(publishers[2], tempMavGpsRtk);
 					getLog().debug(tempGpsRtk);	
 				}
@@ -3966,7 +4072,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				if (tempGps2Rtk != null) 
 				{
 					Map<String, Object> tempMavGps2Rtk = Maps.newHashMap();
-					tempMavGps2Rtk.put("data", tempGps2Rtk);
+					tempMavGps2Rtk.put("data", "MAVLINK_MSG_ID_GPS2_RTK - "
+							+ tempGps2Rtk);
 					sendOutputJson(publishers[2], tempMavGps2Rtk);
 					getLog().debug(tempGps2Rtk);	
 				}
@@ -3993,8 +4100,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ mavScaledImu3.ymag / 1000.0 + "Tesla , "
 						+ "MAGNETIC FIELD Z : " + mavScaledImu3.zmag / 1000.0
 						+ "Tesla";
-				Map<String , Object> tempMavScaledImu3 = Maps.newHashMap();
-				tempMavScaledImu3.put("data", tempScaledImu3);
+				Map<String, Object> tempMavScaledImu3 = Maps.newHashMap();
+				tempMavScaledImu3.put("data", "MAVLINK_MSG_ID_SCALED_IMU3 - "
+						+ tempScaledImu3);
 				sendOutputJson(publishers[2], tempMavScaledImu3);
 				getLog().debug(tempScaledImu3);
 			}
@@ -4027,7 +4135,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				Map<String, Object> tempMavDataTransmissionHandshake = Maps
 						.newHashMap();
 				tempMavDataTransmissionHandshake.put("data",
-						tempDataTransmissionHandshake);
+						"MAVLINK_MSG_ID_DATA_TRANSMISSION_HANDSHAKE - "
+								+ tempDataTransmissionHandshake);
 				sendOutputJson(publishers[2], tempMavDataTransmissionHandshake);
 				getLog().debug(tempDataTransmissionHandshake);
 			}
@@ -4042,7 +4151,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ mavEncapsulatedData.seqnr + " , " + "Data : "
 						+ mavEncapsulatedData.data;
 				Map<String, Object> tempMavEncapsulatedData = Maps.newHashMap();
-				tempMavEncapsulatedData.put("data", tempEncapsulatedData);
+				tempMavEncapsulatedData.put("data",
+						"MAVLINK_MSG_ID_ENCAPSULATED_DATA - "
+								+ tempEncapsulatedData);
 				sendOutputJson(publishers[2], tempMavEncapsulatedData);
 				getLog().debug(tempEncapsulatedData);
 			}
@@ -4074,8 +4185,10 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ getVariableName("MAV_SENSOR_ORIENTATION",
 								mavDistanceSensor.orientation)
 						+ "COVARIANCE : " + mavDistanceSensor.covariance + "cm";
-				Map<String , Object> tempMavDistanceSensor = Maps.newHashMap();
-				tempMavDistanceSensor.put("data", tempDistanceSensor);
+				Map<String, Object> tempMavDistanceSensor = Maps.newHashMap();
+				tempMavDistanceSensor.put("data",
+						"MAVLINK_MSG_ID_DISTANCE_SENSOR - "
+								+ tempDistanceSensor);
 				sendOutputJson(publishers[2], tempMavDistanceSensor);
 				getLog().debug(tempDistanceSensor);
 			}
@@ -4097,7 +4210,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ "GRID SPACING : " + mavTerrainRequest.grid_spacing
 						+ "m ";
 				Map<String, Object> tempMavTerrainRequest = Maps.newHashMap();
-				tempMavTerrainRequest.put("data", tempTerrainRequest);
+				tempMavTerrainRequest.put("data",
+						"MAVLINK_MSG_ID_TERRAIN_REQUEST - "
+								+ tempTerrainRequest);
 				sendOutputJson(publishers[2], tempMavTerrainRequest);
 				getLog().debug(tempTerrainRequest);
 			}
@@ -4135,7 +4250,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ "NUMBER OF BLOCKS LOADED : "
 						+ mavTerrainReport.loaded;
 				Map<String, Object> tempMavTerrainReport = Maps.newHashMap();
-				tempMavTerrainReport.put("data", tempTerrainReport);
+				tempMavTerrainReport.put("data",
+						"MAVLINK_MSG_ID_TERRAIN_REPORT - " + tempTerrainReport);
 				sendOutputJson(publishers[2], tempMavTerrainReport);
 				getLog().debug(tempTerrainReport);
 			}
@@ -4154,7 +4270,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ "TEMPERATURE : " + mavScaledPressure2.temperature
 						/ 100.0 + "degree Cesius ";
 				Map<String, Object> tempMavScaledPressure2 = Maps.newHashMap();
-				tempMavScaledPressure2.put("data", tempScaledPressure2);
+				tempMavScaledPressure2.put("data",
+						"MAVLINK_MSG_ID_SCALED_PRESSURE2 - "
+								+ tempScaledPressure2);
 				sendOutputJson(publishers[2], tempMavScaledPressure2);
 				getLog().debug(tempScaledPressure2);
 			}
@@ -4176,7 +4294,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ "Y : " + mavAttPosMocap.y + "metres , " + "Z : "
 						+ mavAttPosMocap.z + "metres";
 				Map<String, Object> tempMavAttPosMocap = Maps.newHashMap();
-				tempMavAttPosMocap.put("data", tempAttPosMocap);
+				tempMavAttPosMocap.put("data",
+						"MAVLINK_MSG_ID_ATT_POS_MOCAP - " + tempAttPosMocap);
 				sendOutputJson(publishers[2], tempMavAttPosMocap);
 				getLog().debug(tempAttPosMocap);
 			}
@@ -4226,7 +4345,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				Map<String, Object> tempMavActuatorControlTarget = Maps
 						.newHashMap();
 				tempMavActuatorControlTarget.put("data",
-						tempActuatorControlTarget);
+						"MAVLINK_MSG_ID_ACTUATOR_CONTROL_TARGET - "
+								+ tempActuatorControlTarget);
 				sendOutputJson(publishers[2], tempMavActuatorControlTarget);
 				getLog().debug(tempActuatorControlTarget);
 			}
@@ -4253,7 +4373,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ mavBatteryStatus.type + "REMAINING BATTERY : "
 						+ mavBatteryStatus.battery_remaining + "%";
 				Map<String, Object> tempMavBatteryStatus = Maps.newHashMap();
-				tempMavBatteryStatus.put("data" , tempBatteryStatus);
+				tempMavBatteryStatus.put("data",
+						"MAVLINK_MSG_ID_BATTERY_STATUS - " + tempBatteryStatus);
 				sendOutputJson(publishers[2], tempMavBatteryStatus);
 				getLog().debug(tempBatteryStatus);
 			}
@@ -4279,7 +4400,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ "FRAME : "
 						+ getVariableName("MAV_FRAME", mavLandingTarget.frame);
 				Map<String, Object> tempMavLandingTarget = Maps.newHashMap();
-				tempMavLandingTarget.put("data", tempLandingTarget);
+				tempMavLandingTarget.put("data",
+						"MAVLINK_MSG_ID_LANDING_TARGET - " + tempLandingTarget);
 				sendOutputJson(publishers[2], tempMavLandingTarget);
 				getLog().debug(tempLandingTarget);
 			}
@@ -4313,7 +4435,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				 * int16_t, 1=16 x uint16_t, 2=16 x Q15, 3=16 x 1Q14
 				 */
 				Map<String, Object> tempMavMemoryVect = Maps.newHashMap();
-				tempMavMemoryVect.put("data", tempMemoryVect);
+				tempMavMemoryVect.put("data", "MAVLINK_MSG_ID_MEMORY_VECT - "
+						+ tempMemoryVect);
 				sendOutputJson(publishers[2], tempMavMemoryVect);
 				getLog().debug(tempMemoryVect);
 			}
@@ -4330,7 +4453,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ mavDebugVect.z + "metres , " + "NAME : "
 						+ Arrays.toString(mavDebugVect.name);
 				Map<String, Object> tempMavDebugVect = Maps.newHashMap();
-				tempMavDebugVect.put("data", tempDebugVect);
+				tempMavDebugVect.put("data", "MAVLINK_MSG_ID_DEBUG_VECT - "
+						+ tempDebugVect);
 				sendOutputJson(publishers[2], tempMavDebugVect);
 				getLog().debug(tempDebugVect);
 			}
@@ -4351,7 +4475,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		case msg_statustext.MAVLINK_MSG_ID_STATUSTEXT:
-			/**
+			/*
 			 * Status text message. These messages are printed in yellow in the
 			 * COMM console of QGroundControl. WARNING: They consume quite some
 			 * bandwidth, so use only for important status and error messages.
@@ -4367,7 +4491,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 								mavStatusText.severity) + " , " + "TEXT : "
 						+ new String (mavStatusText.text);
 				Map<String, Object> tempMavStatusText = Maps.newHashMap();
-				tempMavStatusText.put("data", tempStatusText);
+				tempMavStatusText.put("data", "MAVLINK_MSG_ID_STATUSTEXT - "
+						+ tempStatusText);
 				sendOutputJson(publishers[2], tempMavStatusText);
 				getLog().info(tempStatusText);
 			}
@@ -4382,7 +4507,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ "VALUE : " + mavDebug.value + " , " + "INDEX : "
 						+ mavDebug.ind;
 				Map<String, Object> tempMavDebug = Maps.newHashMap();
-				tempMavDebug.put("data", tempDebug);
+				tempMavDebug.put("data", "MAVLINK_MSG_ID_DEBUG - " + tempDebug);
 				sendOutputJson(publishers[2], tempMavDebug);
 				getLog().debug(tempDebug);
 			}
