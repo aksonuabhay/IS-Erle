@@ -36,10 +36,115 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	 * Note - In communication between this activity and any other comms activity, the
 	 * message type being used is byte []
 	 */
+	
+	/**
+	 * The name of the config property for obtaining the publisher List.
+	 */
 	private static final String CONFIGURATION_PUBLISHER_NAME = "space.activity.routes.outputs";
+	
+	/**
+	 * The name of the config property for obtaining the subscriber List.
+	 */
 	private static final String CONFIGURATION_SUBSCRIBER_NAME = "space.activity.routes.inputs";
 	
+	/**
+	 * The topic names for publishing data
+	 * PUBLISHER MAPPING
+	 * 
+	 * publishers[0] -> outputCOM_M 
+	 * Topic Name : comms/input
+	 * Usage : Send output to the comms activity
+	 * 
+	 * publishers[1] -> outputWP_M
+	 * Topic Name : waypoint/input
+	 * Usage : Send output to the waypoint generator activity
+	 * 
+	 * publishers[2] -> outputGeneral_M
+	 * Topic Name : mavlink/output
+	 * Usage : A General output topic having all the logs of mavlink activity
+	 * 
+	 * publishers[3] -> captain
+	 * Topic Name : captain/input
+	 * Usage : Send output to the captain activity
+	 * 
+	 * publishers[4] -> heartbeat
+	 * Topic Name : mavlink/heartbeat
+	 * Usage : An output topic having all the heartbeat messages
+	 * 
+	 * publishers[5] -> hud
+	 * Topic Name : mavlink/hud
+	 * Usage : An output topic having all the HUD (Head Up Display) messages
+	 * 
+	 * publishers[6] -> attitude
+	 * Topic Name : mavlink/attitude
+	 * Usage : An output topic having all the attitude messages
+	 * 
+	 * publishers[7] -> status
+	 * Topic Name : mavlink/system/status
+	 * Usage : An output topic having all the system status messages
+	 * 
+	 * publishers[8] -> time
+	 * Topic Name : mavlink/system/time
+	 * Usage : An output topic having all the system time messages
+	 * 
+	 * publishers[9] -> gps
+	 * Topic Name : mavlink/sensors/gps
+	 * Usage : An output topic having all the GPS sensor  messages
+	 * 
+	 * publishers[10] -> imu
+	 * Topic Name : mavlink/sensors/imu
+	 * Usage : An output topic having all the IMU sensor  messages
+	 * 
+	 * publishers[11] -> scaled_pressure
+	 * Topic Name : mavlink/sensors/pressure
+	 * Usage : An output topic having all the scaled Pressure sensor  messages
+	 * 
+	 * publishers[12] -> global_position
+	 * Topic Name : mavlink/position/global
+	 * Usage : An output topic having all the Global Position  messages
+	 * 
+	 * publishers[13] -> local_position
+	 * Topic Name : mavlink/position/local
+	 * Usage : An output topic having all the Local Position  messages
+	 * 
+	 * publishers[14] -> servo_output
+	 * Topic Name : mavlink/servoOutput
+	 * Usage : An output topic having all the servo/BLDC motor output  messages
+	 * 
+	 * publishers[15] -> rc_input
+	 * Topic Name : mavlink/rcInput
+	 * Usage : An output topic having all the RC transmitter input messages
+	 * 
+	 * publishers[16] -> current_mission_seq
+	 * Topic Name : mavlink/current_mission_seq
+	 * Usage : An output topic having all the Current Mission Sequence number messages
+	 * 
+	 * publishers[17] -> nav_controller_output
+	 * Topic Name : mavlink/controller/nav
+	 * Usage : An output topic having all the Current Mission Sequence number messages
+	 * 
+	 *  publishers[18] -> terrain_report
+	 * Topic Name : mavlink/terrainReport
+	 * Usage : An output topic having all the Terrain Report messages
+	 */
 	private static String publishers[];
+
+	/**
+	 * The topic names for subscribing data 
+	 * SUBSCRIBER MAPPING
+	 * 
+	 * subscribers[0] -> inputCOM_M 
+	 * Topic Name : comms/output
+	 * Usage : Receive data from comms activity ie from drone
+	 * 
+	 * subscribers[1] -> inputWP_M 
+	 * Topic Name : waypoint/output
+	 * Usage : Receive data from waypoint generator activity about the waypoints
+	 * 
+	 * subscribers[2] -> captain
+	 * Topic Name : captain/output
+	 * Usage : Receive command from the captain activity
+	 */
 	private static String subscribers[];
 	
 	private MAVLinkPacket mavPacket;
@@ -1966,16 +2071,24 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 
 		case msg_sys_status.MAVLINK_MSG_ID_SYS_STATUS:
 			Map<String,	Object> tempMavSysStatus = Maps.newHashMap();
-			tempMavSysStatus.put("status", mavMessage2.toString());
+			tempMavSysStatus.put("data", mavMessage2.toString());
 			sendOutputJson(publishers[2], tempMavSysStatus);
 			getLog().debug(mavMessage2.toString());
+			
+			tempMavSysStatus.clear();
+			tempMavSysStatus.put("status", mavMessage2.toString());
+			sendOutputJson(publishers[7], tempMavSysStatus);
 			break;
 
 		case msg_system_time.MAVLINK_MSG_ID_SYSTEM_TIME:
 			Map<String,	Object> tempMavSysTime = Maps.newHashMap();
-			tempMavSysTime.put("status", mavMessage2.toString());
+			tempMavSysTime.put("data", mavMessage2.toString());
 			sendOutputJson(publishers[2], tempMavSysTime);
 			getLog().debug(mavMessage2.toString());
+			
+			tempMavSysTime.clear();
+			tempMavSysTime.put("time", mavMessage2.toString());
+			sendOutputJson(publishers[8], tempMavSysTime);
 			break;
 
 		case msg_ping.MAVLINK_MSG_ID_PING:
@@ -2076,6 +2189,10 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ tempGps);
 				sendOutputJson(publishers[2], tempMavGps);
 				getLog().debug(tempGps);
+				
+				tempMavGps.clear();
+				tempMavGps.put("gps",tempGps);
+				sendOutputJson(publishers[9], tempMavGps);
 			}
 			break;
 
@@ -2134,6 +2251,10 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ tempRawImu);
 				sendOutputJson(publishers[2], tempMavRawImu);
 				getLog().debug(tempRawImu);
+				
+				tempMavRawImu.clear();
+				tempMavRawImu.put("imu",tempRawImu);
+				sendOutputJson(publishers[10], tempMavRawImu);
 			}
 			break;
 
@@ -2177,6 +2298,10 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 								+ tempScaledPressure);
 				sendOutputJson(publishers[2], tempMavScaledPressure);
 				getLog().debug(tempScaledPressure);
+				
+				tempMavScaledPressure.clear();
+				tempMavScaledPressure.put("pressure", tempScaledPressure);
+				sendOutputJson(publishers[11], tempMavScaledPressure);
 			}
 			break;
 
@@ -2197,6 +2322,10 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ tempAttitude);
 				sendOutputJson(publishers[2], tempMavAttitude);
 				getLog().debug(tempAttitude);
+				
+				tempMavAttitude.clear();
+				tempMavAttitude.put("attitude", tempAttitude);
+				sendOutputJson(publishers[6], tempMavAttitude);
 			}
 			break;
 
@@ -2247,6 +2376,10 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 								+ tempLocalPosition);
 				sendOutputJson(publishers[2], tempMavLocalPosition);
 				getLog().debug(tempLocalPosition);
+				
+				tempMavLocalPosition.clear();
+				tempMavLocalPosition.put("local_position",tempLocalPosition);
+				sendOutputJson(publishers[13], tempMavLocalPosition);
 			}
 			break;
 
@@ -2275,6 +2408,10 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 								+ tempGlobalPosition);
 				sendOutputJson(publishers[2], tempMavGlobalPosition);
 				getLog().debug(tempGlobalPosition);
+				
+				tempMavGlobalPosition.clear();
+				tempMavGlobalPosition.put("global_position", tempGlobalPosition);
+				sendOutputJson(publishers[12], tempMavGlobalPosition);
 			}
 			break;
 
@@ -2351,6 +2488,10 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						"MAVLINK_MSG_ID_RC_CHANNELS_RAW - " + tempRcChannelRaw);
 				sendOutputJson(publishers[2], tempMavRcChannelRaw);
 				getLog().debug(tempRcChannelRaw);
+				
+				tempMavRcChannelRaw.clear();
+				tempMavRcChannelRaw.put("rc_raw", tempRcChannelRaw);
+				sendOutputJson(publishers[15], tempMavRcChannelRaw);
 			}
 			break;
 
@@ -2375,6 +2516,10 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 								+ tempServoOutputRaw);
 				sendOutputJson(publishers[2], tempMavServoOutputRaw);
 				getLog().debug(tempServoOutputRaw);
+				
+				tempMavServoOutputRaw.clear();
+				tempMavServoOutputRaw.put("servo", tempServoOutputRaw);
+				sendOutputJson(publishers[14], tempMavServoOutputRaw);
 			}
 			break;
 
@@ -2479,6 +2624,10 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				sendOutputJson(publishers[2], tempMapMissionCurrent);
 				getLog().debug(mavMissionCurrent);
 				missionCurrentSeq = mavMissionCurrent.seq;
+				
+				tempMapMissionCurrent.clear();
+				tempMapMissionCurrent.put("mission_seq", tempStringCurrent);
+				sendOutputJson(publishers[16], tempMapMissionCurrent);
 			}
 			break;
 
@@ -2869,6 +3018,10 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 								+ tempNavControllerOutput);
 				sendOutputJson(publishers[2], tempMavNavControllerOutput);
 				getLog().debug(tempNavControllerOutput);
+				
+				tempMavNavControllerOutput.clear();
+				tempMavNavControllerOutput.put("nav_output", tempNavControllerOutput);
+				sendOutputJson(publishers[17], tempMavNavControllerOutput);
 			}
 			break;
 
@@ -3048,6 +3201,10 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ tempVfrHud);
 				sendOutputJson(publishers[2], tempMavVfrHud);
 				getLog().debug(tempVfrHud);
+				
+				tempMavVfrHud.clear();
+				tempMavVfrHud.put("hud", tempVfrHud);
+				sendOutputJson(publishers[5], tempMavVfrHud);
 			}
 			break;
 
@@ -4254,6 +4411,10 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						"MAVLINK_MSG_ID_TERRAIN_REPORT - " + tempTerrainReport);
 				sendOutputJson(publishers[2], tempMavTerrainReport);
 				getLog().debug(tempTerrainReport);
+				
+				tempMavTerrainReport.clear();
+				tempMavTerrainReport.put("terrain_report", tempTerrainReport);
+				sendOutputJson(publishers[18], tempMavTerrainReport);
 			}
 			break;
 
@@ -4275,6 +4436,10 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 								+ tempScaledPressure2);
 				sendOutputJson(publishers[2], tempMavScaledPressure2);
 				getLog().debug(tempScaledPressure2);
+				
+				tempMavScaledPressure2.clear();
+				tempMavScaledPressure2.put("pressure2", tempScaledPressure2);
+				sendOutputJson(publishers[11], tempMavScaledPressure2);
 			}
 			break;
 
