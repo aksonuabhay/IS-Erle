@@ -19,7 +19,7 @@
       <property name="space.activity.ros.node.name" value="mavlink" />
       
       
-      <property name="space.activity.routes.outputs" value="outputCOM_M:outputWP_M:outputGeneral_M:captain:heartbeat" />
+      <property name="space.activity.routes.outputs" value="outputCOM_M:outputWP_M:outputGeneral_M:captain:heartbeat:hud:attitude:status:gps:imu:scaled_pressure:global_position:local_position:servo_output:rc_input:current_mission_seq:attitude_controller_output:position_controller_output:nav_controller_output:terrain_report" />
       <property name="space.activity.route.output.outputCOM_M" value="comms/input" />
       
       <property name="space.activity.routes.inputs" value="inputCOM_M:inputWP_M:captain"/>
@@ -37,6 +37,23 @@
       <property name="space.activity.route.input.captain" value="captain/output" />
       
       <property name="space.activity.route.output.heartbeat" value="mavlink/heartbeat" />
+      
+      <property name="space.activity.route.output.hud" value="mavlink/hud" />
+      <property name="space.activity.route.output.attitude" value="mavlink/attitude" />
+      <property name="space.activity.route.output.status" value="mavlink/status" />
+      <property name="space.activity.route.output.gps" value="mavlink/sensors/gps" />
+      <property name="space.activity.route.output.imu" value="mavlink/sensors/imu" />
+      <property name="space.activity.route.output.scaled_pressure" value="mavlink/sensors/pressure" />
+      <property name="space.activity.route.output.global_position" value="mavlink/position/global" />
+      <property name="space.activity.route.output.local_position" value="mavlink/position/local" />
+      <property name="space.activity.route.output.servo_output" value="mavlink/servoOutput" />
+      <property name="space.activity.route.output.rc_input" value="mavlink/rcInput" />
+      <property name="space.activity.route.output.current_mission_seq" value="mavlink/current_mission_seq" />
+      <property name="space.activity.route.output.attitude_controller_output" value="mavlink/controller/attitude" />
+      <property name="space.activity.route.output.position_controller_output" value="mavlink/controller/position" />
+      <property name="space.activity.route.output.nav_controller_output" value="mavlink/controller/nav" />
+      <property name="space.activity.route.output.terrain_report" value="mavlink/terrain_report" />
+      
       <property name="space.activity.log.level" required="false">
         <value>info</value>
       </property>
