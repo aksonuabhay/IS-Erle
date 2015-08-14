@@ -23,28 +23,93 @@ import interactivespaces.service.comm.network.server.UdpServerRequest;
  */
 public class IsErleCommsActivity extends BaseRoutableRosActivity {
 
+	/**
+	 * The name of the config property for obtaining the UDP server host.
+	 */
 	private static final String CONFIGURATION_SERVER_PORT = "space.comm.udp.server.port";
 	
-//	private static final String CONFIGURATION_CHANNEL_NAME = "space.activity.route.output.output";
+	/**
+	 * The name of the config property for obtaining the publisher List.
+	 */
+	private static final String CONFIGURATION_PUBLISHER_NAME = "space.activity.routes.outputs";
 	
+	/**
+	 * The name of the config property for obtaining the subscriber List.
+	 */
+	private static final String CONFIGURATION_SUBSCRIBER_NAME = "space.activity.routes.inputs";
+	
+	/**
+	 * The topic names for publishing data
+	 * PUBLISHER MAPPING
+	 * 
+	 * publishers[0] -> output 
+	 * Topic Name : comms/output
+	 * Usage : Send output to the mavlink activity after receiving it from the drone.
+	 */
+	private static String publishers[];
+
+	/**
+	 * The topic names for subscribing data 
+	 * SUBSCRIBER MAPPING
+	 * 
+	 * subscribers[0] -> input 
+	 * Topic Name : comms/input
+	 * Usage : Receive data from mavlink activity and send it to the drone.
+	 */
+	private static String subscribers[];
+	
+	/**
+	 * A counter to count the the number of calls sendOutputJson calls.
+	 */
 	private static long jsonOutputCounter = 0;
+	
+	/**
+	 * A counter to count the the number of calls onNewInputJson calls.
+	 */
 	private static long jsonInputCounter = 0 ;
 	
+	/**
+	 * Stores the address of the drone to send data to.
+	 */
 	private InetSocketAddress udpDroneAddress;
-	private static boolean droneAddressFlag,sendFlag;
-	private UdpServerNetworkCommunicationEndpoint udpDroneServer ;
-	//private Udp
-	private Queue<byte []> responseGlobal;
-	//private byte [] responseGlobal;
 	
+	/**
+	 * A flag to check whether any drone has sent data or not.
+	 */
+	private static boolean droneAddressFlag;
+	
+	/**
+	 * A flag to check when to send data to the drone.
+	 */
+	private static boolean sendFlag;
+	
+	/**
+	 * An instance of UdpServer to receive and send messages to the drone.
+	 */
+	private UdpServerNetworkCommunicationEndpoint udpDroneServer ;
+	
+	/**
+	 * Stores the data received from the mavlink activity as a FIFO queue and
+	 * sent to the drone as response after the udp request.
+	 */
+	private Queue<byte []> responseGlobal;
+	
+	/**
+	 * An Udp Clinet instance.
+	 */
 	private UdpClientNetworkCommunicationEndpoint udpClient;
 	
+	/**
+	 * A date instance to check and implement timeout for server response and switch to udpClient.
+	 */
 	private Date start;
 	 
     @Override
 	public void onActivitySetup()
 	{
 		getLog().info("Activity is.erle.comms setup");
+        publishers = getConfiguration().getRequiredPropertyString(CONFIGURATION_PUBLISHER_NAME).split(":");
+        subscribers = getConfiguration().getRequiredPropertyString(CONFIGURATION_SUBSCRIBER_NAME).split(":");
 		droneAddressFlag = false;
 		sendFlag = false;
 		responseGlobal = new ArrayBlockingQueue<byte[]>(20);
@@ -159,53 +224,56 @@ public class IsErleCommsActivity extends BaseRoutableRosActivity {
 	@Override
 	public void onNewInputJson(String channelName, Map<String, Object> message)
 	{
-		getLog().info("Sending to drone");
-		byte[] response;
-		String items[] = message.get("comm").toString().replaceAll("\\[", "")
-				.replaceAll("\\]", "").replaceAll(" ", "").split(",");
-		int lenItems = items.length;
-		response = new byte[lenItems];
-		for (int i = 0; i < lenItems; i++)
+		if (channelName.equals(subscribers[0]))
 		{
-			try
+			getLog().debug("Sending to drone");
+			getLog().debug(message.get("comm").toString());
+			byte[] response;
+			String items[] = message.get("comm").toString()
+					.replaceAll("\\[", "").replaceAll("\\]", "")
+					.replaceAll(" ", "").split(",");
+			int lenItems = items.length;
+			response = new byte[lenItems];
+			for (int i = 0; i < lenItems; i++)
 			{
-				response[i] = Byte.parseByte(items[i]);
-			}
-			catch (NumberFormatException e)
-			{
-				getLog().error(e);
-			}
+				try
+				{
+					response[i] = Byte.parseByte(items[i]);
+				}
+				catch (NumberFormatException e)
+				{
+					getLog().error(e);
+				}
 
-		}
-		if (droneAddressFlag)
-		{
-/*			if ((System.currentTimeMillis()-start.getTime()) <1000)
-			{
-				udpClient.write(udpDroneAddress, response);
 			}
-			else
-			{*/
+			if (droneAddressFlag)
+			{
+				/*
+				 * if ((System.currentTimeMillis()-start.getTime()) <1000) {
+				 * udpClient.write(udpDroneAddress, response); } else {
+				 */
 				synchronized (this)
 				{
 					responseGlobal.add(response);
 					sendFlag = true;
 
 				}
-//			}
+				// }
 
+			}
+			else
+			{
+				getLog().info("No Drones connected now");
+			}
+			jsonInputCounter++; // Take care of this variable
 		}
-		else
-		{
-			getLog().info("No Drones connected now");
-		}
-		jsonInputCounter++; // Take care of this variable
 	}
 
     protected void handleUdpDroneClientResponse(byte[] response,
 			InetSocketAddress address) {
         Map<String,Object> temp=Maps.newHashMap();
         temp.put("comm", Arrays.toString(response));
-        sendOutputJson("output", temp);
+        sendOutputJson(publishers[0], temp);
 		
 	}
     
@@ -213,7 +281,7 @@ public class IsErleCommsActivity extends BaseRoutableRosActivity {
     		UdpServerNetworkCommunicationEndpoint address) {
         Map<String,Object> temp=Maps.newHashMap();
         temp.put("comm", Arrays.toString(response));
-        sendOutputJson("output", temp);
+        sendOutputJson(publishers[0], temp);
 		
 	}
 }

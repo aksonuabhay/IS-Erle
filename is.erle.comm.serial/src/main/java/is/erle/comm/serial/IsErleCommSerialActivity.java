@@ -17,16 +17,63 @@ import interactivespaces.util.concurrency.ManagedCommand;
  */
 public class IsErleCommSerialActivity extends BaseRoutableRosActivity {
 
-	private static long jsonOutputCounter = 0;
-	private static long jsonInputCounter = 0;
+	/**
+	 * The name of the config property for obtaining the publisher List.
+	 */
+	private static final String CONFIGURATION_PUBLISHER_NAME = "space.activity.routes.outputs";
+	
+	/**
+	 * The name of the config property for obtaining the subscriber List.
+	 */
+	private static final String CONFIGURATION_SUBSCRIBER_NAME = "space.activity.routes.inputs";
+	
+	/**
+	 * The topic names for publishing data
+	 * PUBLISHER MAPPING
+	 * 
+	 * publishers[0] -> output 
+	 * Topic Name : comms/output
+	 * Usage : Send output to the mavlink activity after receiving it from the drone.
+	 */
+	private static String publishers[];
 
-	private SerialCommunicationEndpoint serial;
-	private byte[] serialData;
+	/**
+	 * The topic names for subscribing data 
+	 * SUBSCRIBER MAPPING
+	 * 
+	 * subscribers[0] -> input 
+	 * Topic Name : comms/input
+	 * Usage : Receive data from mavlink activity and send it to the drone.
+	 */
+	private static String subscribers[];
+	
+	/**
+	 * A counter to count the the number of calls sendOutputJson calls.
+	 */
+	private static long jsonOutputCounter = 0;
+	
+	/**
+	 * A counter to count the the number of calls onNewInputJson calls.
+	 */
+	private static long jsonInputCounter = 0 ;
+
+	/**
+	 * A serial object to handle all the serial communication with the drone.
+	 */
+	private static SerialCommunicationEndpoint serial;
+	
+	/**
+	 * A global object to store the received serial data
+	 */
+	private static byte[] serialData;
 
 	@Override
 	public void onActivitySetup() {
 		getLog().info("Activity is.erle.comm.serial setup");
 
+        publishers = getConfiguration().getRequiredPropertyString(CONFIGURATION_PUBLISHER_NAME).split(":");
+        subscribers = getConfiguration().getRequiredPropertyString(CONFIGURATION_SUBSCRIBER_NAME).split(":");
+        
 		SerialCommunicationEndpointService serialService = getSpaceEnvironment()
 				.getServiceRegistry().getRequiredService(
 						SerialCommunicationEndpointService.SERVICE_NAME);
@@ -48,7 +95,7 @@ public class IsErleCommSerialActivity extends BaseRoutableRosActivity {
 									int tempInt = serial.read(serialData);
 									serialData = ArrayUtils.subarray(serialData, 0, tempInt);
 									Map<String, Object> temp = Maps.newHashMap();
-									temp.put("comm", Arrays.toString(serialData));
+									temp.put(publishers[0], Arrays.toString(serialData));
 									sendOutputJson("output", temp);
 								}
 								
@@ -105,27 +152,31 @@ public class IsErleCommSerialActivity extends BaseRoutableRosActivity {
 	}
 
 	@Override
-	public void onNewInputJson(String channelName, Map<String, Object> message) {
-		byte [] responseGlobal ;
-		String items[] = message.get("comm").toString()
-				.replaceAll("\\[", "").replaceAll("\\]", "")
-				.replaceAll(" ", "").split(",");
-		int lenItems = items.length;
-		responseGlobal = new byte[lenItems];
-    	for (int i = 0; i < lenItems; i++) {
-    		try 
-    		{
-        		responseGlobal[i] = Byte.parseByte(items[i]);
-			}
-    		catch (NumberFormatException e) 
-    		{
-				getLog().error(e);
-			}
+	public void onNewInputJson(String channelName, Map<String, Object> message)
+	{
+		if (subscribers[0].equals(channelName))
+		{
+			byte[] responseGlobal;
+			String items[] = message.get("comm").toString()
+					.replaceAll("\\[", "").replaceAll("\\]", "")
+					.replaceAll(" ", "").split(",");
+			int lenItems = items.length;
+			responseGlobal = new byte[lenItems];
+			for (int i = 0; i < lenItems; i++)
+			{
+				try
+				{
+					responseGlobal[i] = Byte.parseByte(items[i]);
+				}
+				catch (NumberFormatException e)
+				{
+					getLog().error(e);
+				}
 
+			}
+			getLog().debug(Arrays.toString(responseGlobal));
+			serial.write(responseGlobal);
+			jsonInputCounter++; // Take care of this variable
 		}
-    	getLog().debug(Arrays.toString(responseGlobal));
-		serial.write(responseGlobal);
-		jsonInputCounter++; // Take care of this variable
 	}
-
 }
