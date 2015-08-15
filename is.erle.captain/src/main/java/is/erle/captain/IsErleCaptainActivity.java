@@ -176,7 +176,7 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 		 * armed. If 3 arguments are there, the drone with target system and
 		 * target component will be armed/disarmed.
 		 * 
-		 * @see is.erle.mavlink.IsErleMavlinkActivity#doARM(byte, byte)
+		 * @see is.erle.mavlink.IsErleMavlinkActivity#doARM(boolean, byte, byte)
 		 */
 		ARM,
 		
@@ -720,5 +720,46 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 			Byte systemId = Byte.parseByte(heartbeatmsg[0]);
 			heartbeatLastUpdate.put(systemId, new Date());
 		}
+		else if (channelName.equals(subscribers[2]))
+		{
+			if (message.get("fly").toString().equals("FLY"))
+			{
+				startFlying();
+			}
+		}
     }
+
+	/**
+	 * Send sequence of commands to mavlink activity to make the drone fly
+	 * autonomously according to the mission file.
+	 */
+	private void startFlying()
+	{
+		int ack=sendCommand(CommandOptions.WRITE_MISSION);
+		if (ack == 0)
+		{
+			ack = sendCommand(CommandOptions.SET_MODE,"Auto");
+			if (ack == 0)
+			{
+				ack = sendCommand(CommandOptions.ARM);
+				if (ack == 0)
+				{
+					getLog().info("All sequence successfully sent to the drone");
+					getLog().warn("STAY AWAY FROM THE DRONE, IT SHOULD START FLYING ANY MOMENT");
+				}
+				else
+				{
+					getLog().error("Arming Failed");
+				}
+			}
+			else
+			{
+				getLog().error("Set Mode Failed");
+			}
+		}
+		else
+		{
+			getLog().error("Mision Write Failed");
+		}
+	}
 }

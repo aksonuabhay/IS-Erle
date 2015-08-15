@@ -2,7 +2,10 @@
 <project type="activity" builder="java">
   <name>Is Erle Waypoint Processor</name>
   <description>
-    It reads the waypoint mission text file, generates payload data for mavlink and publishes it. Mavlink in turn subscribes it processes it and then puts it on the comm activity's channel. Mavlink receives acknowledments from the drone in return which it will publish it to this activity. This activity will respond with relevant waypoint query data.
+    It reads the waypoint mission text file, generates payload data for mavlink and publishes it. 
+    Mavlink in turn subscribes it processes it and then puts it on the comm activity's channel. 
+    Mavlink receives acknowledments from the drone in return which it will publish it to this activity. 
+    This activity will respond with relevant waypoint query data.
   </description>
 
   <identifyingName>is.erle.waypoint.processor</identifyingName>
@@ -13,6 +16,14 @@
     <class>is.erle.waypoint.processor.IsErleWaypointProcessorActivity</class>
 
     <configuration>
+    
+      <property name="space.activity.ros.node.name" value="waypoint/processor" />
+      <property name="space.activity.routes.outputs" value="output" />
+      <property name="space.activity.route.output.output" value="waypoint/processor/output" />
+      
+      <property name="space.activity.routes.inputs" value="input"/>
+      <property name="space.activity.route.input.input" value="waypoint/processor/input"/>
+    
       <property name="space.activity.log.level" required="false">
         <value>info</value>
       </property>

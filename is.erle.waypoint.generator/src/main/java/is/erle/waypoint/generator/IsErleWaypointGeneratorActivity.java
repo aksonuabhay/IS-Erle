@@ -106,8 +106,8 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
         
         publishers = getConfiguration().getRequiredPropertyString(CONFIGURATION_PUBLISHER_NAME).split(":");
         subscribers = getConfiguration().getRequiredPropertyString(CONFIGURATION_SUBSCRIBER_NAME).split(":");
-        fileWithDirectory = getActivityFilesystem().getInstallDirectory().getAbsolutePath()+"/"+FILE_NAME;
-        
+        fileWithDirectory = getActivityFilesystem().getTempDataDirectory().getAbsolutePath()+"/"+FILE_NAME;
+        getLog().info("Mission File Source : " + fileWithDirectory);
     }
 
     /**
