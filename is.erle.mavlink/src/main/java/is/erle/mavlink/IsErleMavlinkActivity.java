@@ -28,7 +28,24 @@ import org.xml.sax.SAXException;
 
 
 /**
- * A simple Interactive Spaces Java-based activity.
+ * This class performs all the tasks of processing message from the drone and
+ * translating it so that it is understood by other systems. It also receives
+ * commands from other activities, translates them into drone understandable
+ * bytes and then send it to the communication activity to be sent to the drone.
+ * <p>
+ * This activity subscribes to 3 channels, one from waypoint processor activity,
+ * one from captain activity and one from comms activity. It will take the
+ * waypoint payload data and make it Mavlink(Drone) understandable. It will then
+ * publish this data on comms. It will also be subscribing comms, it will parse
+ * all the data into releavant fields and then publish it on relevant topics.
+ * The incoming data will have imu, compass, gps, battery, barometer etc data,
+ * it will all get separated and published on individual topics. It will receive
+ * commands from the captain activity and then process it and send it to the
+ * drone.
+ * 
+ * @author Abhay Kumar
+ * @version %I%, %G%
+ * @since 1.0.0
  */
 public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 

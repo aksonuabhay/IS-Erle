@@ -27,7 +27,22 @@ import interactivespaces.activity.impl.ros.BaseRoutableRosActivity;
  * 1 0 0 16 0.149999999999999994 0 0 0 8.54800000000000004 47.3759999999999977 550 1 
  * 2 0 0 16 0.149999999999999994 0 0 0 8.54800000000000004 47.3759999999999977 550 1
  */
-
+/**
+ * This class does the task of processing the mission file. It checks the file
+ * for possible errors. It reads the file and transmits it to the mavlink
+ * activity when requested.
+ * <p>
+ * It reads the waypoint mission text file, generates payload data for mavlink
+ * and publishes it. Mavlink in turn subscribes it processes it and then puts it
+ * on the comm activity's channel. Mavlink receives acknowledments from the
+ * drone in return which it will publish it to this activity. This activity will
+ * respond with relevant waypoint query data.
+ * 
+ * @author Abhay Kumar
+ * @version %I%, %G%
+ * @since 1.0.0
+ * 
+ */
 public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
 {
 	/**

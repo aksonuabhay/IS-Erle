@@ -2,8 +2,10 @@
 <project type="activity" builder="java">
   <name>Is Erle Waypoint Generator</name>
   <description>
-    This activity will make a text file from FAED Mesh data. This activity will act as a bridge between waypoint reader and FAED Mesh. 
-    The text file will make sure that it follows standards follwed by other GCS (like Mission Planner and APM Planner).
+    It reads the waypoint mission text file, generates payload data for mavlink and publishes it. 
+    Mavlink in turn subscribes it processes it and then puts it on the comm activity's channel. 
+    Mavlink receives acknowledments from the drone in return which it will publish it to this activity. 
+    This activity will respond with relevant waypoint query data.
   </description>
 
   <identifyingName>is.erle.waypoint.generator</identifyingName>

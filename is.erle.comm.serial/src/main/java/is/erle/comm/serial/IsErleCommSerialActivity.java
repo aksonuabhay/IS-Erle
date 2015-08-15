@@ -13,7 +13,13 @@ import interactivespaces.service.comm.serial.SerialCommunicationEndpointService;
 import interactivespaces.util.concurrency.ManagedCommand;
 
 /**
- * A simple Interactive Spaces Java-based activity.
+ * This activity takes care of the communication with the drone via a serial
+ * port. This receives/transmits messages from/to mavlink activity and then is
+ * sent to the drone in the form of bytes.
+ * 
+ * @author Abhay Kumar
+ * @version %I%, %G%
+ * @since 1.0.0
  */
 public class IsErleCommSerialActivity extends BaseRoutableRosActivity {
 

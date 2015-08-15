@@ -19,7 +19,18 @@ import interactivespaces.service.comm.network.server.UdpServerNetworkCommunicati
 import interactivespaces.service.comm.network.server.UdpServerRequest;
 
 /**
- * A simple Interactive Spaces Java-based activity.
+ * This is the communication layer of the project. It will receive data to send
+ * from mavlink activity and send it to the drone. Also it will receive data
+ * from the drone and it will publish it. Mavlink will process this data and put
+ * it on several relevant topics to be used by other activities.
+ * <p>
+ * This activity takes care of the communication with the drone via a UDP
+ * port. This receives/transmits messages from/to mavlink activity and then is
+ * sent to the drone in the form of bytes.
+ * 
+ * @author Abhay Kumar
+ * @version %I%, %G%
+ * @since 1.0.0
  */
 public class IsErleCommsActivity extends BaseRoutableRosActivity {
 

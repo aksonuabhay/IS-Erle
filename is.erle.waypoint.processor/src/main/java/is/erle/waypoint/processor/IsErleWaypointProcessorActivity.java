@@ -11,7 +11,16 @@ import interactivespaces.activity.impl.ros.BaseRoutableRosActivity;
 import interactivespaces.util.concurrency.ManagedCommand;
 
 /**
- * A simple Interactive Spaces Java-based activity.
+ * 
+ * This activity will take a text file from FAED Mesh data. This activity will
+ * act as a bridge between waypoint reader and FAED Mesh. The text file will
+ * keep checking the temporary data directory of the controller for a mission
+ * file. Once the file is found/updated, it sends start signal to the captain
+ * activity. The file changed check is done at an interval of 1 second.
+ * 
+ * @author Abhay Kumar
+ * @version %I%, %G%
+ * @since 1.0.0
  */
 public class IsErleWaypointProcessorActivity extends BaseRoutableRosActivity {
 

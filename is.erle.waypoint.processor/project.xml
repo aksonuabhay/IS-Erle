@@ -2,10 +2,9 @@
 <project type="activity" builder="java">
   <name>Is Erle Waypoint Processor</name>
   <description>
-    It reads the waypoint mission text file, generates payload data for mavlink and publishes it. 
-    Mavlink in turn subscribes it processes it and then puts it on the comm activity's channel. 
-    Mavlink receives acknowledments from the drone in return which it will publish it to this activity. 
-    This activity will respond with relevant waypoint query data.
+    This activity will take a text file from FAED Mesh data. This activity will act as a bridge between waypoint reader and FAED Mesh. 
+    The text file will keep checking the temporary data directory of the controller for a mission file. Once the file is found/updated,
+    it sends start signal to the captain activity.
   </description>
 
   <identifyingName>is.erle.waypoint.processor</identifyingName>
