@@ -10,7 +10,9 @@ import com.google.common.collect.Maps;
 import interactivespaces.activity.impl.ros.BaseRoutableRosActivity;
 import interactivespaces.service.comm.serial.SerialCommunicationEndpoint;
 import interactivespaces.service.comm.serial.SerialCommunicationEndpointService;
+import interactivespaces.util.concurrency.CancellableLoop;
 import interactivespaces.util.concurrency.ManagedCommand;
+import interactivespaces.util.resource.ManagedResourceWithTask;
 
 /**
  * This activity takes care of the communication with the drone via a serial
@@ -84,7 +86,7 @@ public class IsErleCommSerialActivity extends BaseRoutableRosActivity {
 
         publishers = getConfiguration().getRequiredPropertyString(CONFIGURATION_PUBLISHER_NAME).split(":");
         subscribers = getConfiguration().getRequiredPropertyString(CONFIGURATION_SUBSCRIBER_NAME).split(":");
-        
+        //getLog().info(publishers[0]+ "  " + subscribers[0]);
 		SerialCommunicationEndpointService serialService = getSpaceEnvironment()
 				.getServiceRegistry().getRequiredService(
 						SerialCommunicationEndpointService.SERVICE_NAME);
@@ -95,9 +97,9 @@ public class IsErleCommSerialActivity extends BaseRoutableRosActivity {
 		serial.setInputBufferSize(10000);
 		serial.setOutputBufferSize(1000);
 		serialData = new byte[600];
-		serial.startup();
+		//serial.startup();
 
-		ManagedCommand threadSender = getManagedCommands().submit(new Runnable() {
+		/*ManagedCommand threadSender = getManagedCommands().submit(new Runnable() {
 						public void run() {
 							while (!Thread.interrupted())
 						{
@@ -106,13 +108,30 @@ public class IsErleCommSerialActivity extends BaseRoutableRosActivity {
 									int tempInt = serial.read(serialData);
 									serialData = ArrayUtils.subarray(serialData, 0, tempInt);
 									Map<String, Object> temp = Maps.newHashMap();
-									temp.put(publishers[0], Arrays.toString(serialData));
-									sendOutputJson("output", temp);
+									temp.put("comm", Arrays.toString(serialData));
+									sendOutputJson(publishers[0], temp);
 								}
 								
 							}
 						}
-					});
+					});*/
+		
+		ManagedResourceWithTask serialTask = new ManagedResourceWithTask(serial, new CancellableLoop()
+		{
+			
+			@Override
+			protected void loop() throws InterruptedException
+			{
+				handleSerialInput();
+				
+			}
+			
+			protected void handleException(Exception e)
+			{
+				getLog().error(e);
+			}
+		}, getSpaceEnvironment());
+		addManagedResource(serialTask);
 	}
 
     /**
@@ -235,4 +254,14 @@ public class IsErleCommSerialActivity extends BaseRoutableRosActivity {
 			jsonInputCounter++; // Take care of this variable
 		}
 	}
+	
+	private void handleSerialInput()
+	{
+		int tempInt = serial.read(serialData);
+		serialData = ArrayUtils.subarray(serialData, 0, tempInt);
+		Map<String, Object> temp = Maps.newHashMap();
+		temp.put("comm", Arrays.toString(serialData));
+		sendOutputJson(publishers[0], temp);
+	}
+	
 }
