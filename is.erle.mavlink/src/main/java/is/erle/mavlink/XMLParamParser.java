@@ -128,7 +128,7 @@ public class XMLParamParser
 	public HashMap<String, Short> getParamOptions(String nodeKey,
 			String vehicleType)
 	{
-		HashMap<String, Short> valueMap = null;
+		HashMap<String, Short> valueMap = new HashMap<String, Short>();
 		if (!(xmlDocument == null))
 		{
 			String rawData = getParamDataXml(nodeKey, VALUES, vehicleType);
@@ -156,7 +156,7 @@ public class XMLParamParser
 	public HashMap<String, Short> getParamBitMask(String nodeKey,
 			String vehicleType)
 	{
-		HashMap<String, Short> valueMap = null;
+		HashMap<String, Short> valueMap = new HashMap<String, Short>();
 		if (!(xmlDocument == null))
 		{
 			String rawData = getParamDataXml(nodeKey, BITMASK, vehicleType);

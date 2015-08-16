@@ -433,7 +433,7 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
     @Override
     public void onActivityActivate() {
         getLog().info("Activity is.erle.captain activate");
-        sendCommand(CommandOptions.WRITE_MISSION);
+        //sendCommand(CommandOptions.WRITE_MISSION);
     }
 
     /**

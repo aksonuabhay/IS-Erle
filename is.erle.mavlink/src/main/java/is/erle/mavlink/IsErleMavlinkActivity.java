@@ -460,6 +460,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
         		getLog().info(temp[i]);
         	}
         }*/
+        //setMode("Auto");
     }
 
     /**
@@ -1402,6 +1403,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		case 16:
 			boolean resultSetMode = false;
 			Map<String, Object> tempSetMode = Maps.newHashMap();
+			//getLog().info(message.length);
 			if (message.length == 2)
 			{
 				resultSetMode = setMode(message[1]);
@@ -5927,6 +5929,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	{
 		Map<String, Short> modeMap = dataXML.getParamOptions("FLTMODE1",
 				"ArduCopter2");
+		//getLog().info(modeMap);
 		if (modeMap.containsKey(mode))
 		{
 			msg_set_mode req = new msg_set_mode();
@@ -5939,15 +5942,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			tempModeSet.put("comm", Arrays.toString(tempByte));
 			sendOutputJson(publishers[0], tempModeSet);
 			getLog().debug("REQUESTING SET MODE : " + Arrays.toString(tempByte));
-			try
-			{
-				Thread.sleep(1000);
-			}
-			catch (InterruptedException e)
-			{
-				getLog().error(e);
-			}
-			sendOutputJson(publishers[0], tempModeSet);
+			//sendOutputJson(publishers[0], tempModeSet);
 			return true;
 		}
 		else
