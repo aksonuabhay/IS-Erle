@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
+import org.python.antlr.PythonParser.continue_stmt_return;
+
 import com.google.common.collect.Maps;
 import interactivespaces.activity.impl.ros.BaseRoutableRosActivity;
 import interactivespaces.util.concurrency.ManagedCommand;
@@ -391,6 +393,12 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
      * @see		interactivespaces.activity.impl.BaseActivity#onActivitySetup()
      * @since	1.0.0
      */
+	
+	/**
+	 * RC Transmitter output values to be sent regularly.
+	 */
+	private static short []rc_out = new short[8];
+	
     @Override
     public void onActivitySetup() {
         getLog().info("Activity is.erle.captain setup");
@@ -503,8 +511,29 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 				getLog().info(Arrays.toString(logEntry.toArray()));
 			}
 		}
+		rc_out[0] = (short) (paramList.get("RC1_MIN").shortValue() / 2 + paramList
+				.get("RC1_MAX").shortValue() / 2);
+		rc_out[1] = (short) (paramList.get("RC2_MIN").shortValue() / 2 + paramList
+				.get("RC2_MAX").shortValue() / 2);
+		rc_out[2] = paramList.get("RC3_MIN").shortValue();
+		rc_out[3] = (short) (paramList.get("RC4_MIN").shortValue() / 2 + paramList
+				.get("RC4_MAX").shortValue() / 2);
+		rc_out[4] = (short) 0xFFFF;
+		rc_out[5] = (short) 0xFFFF;
+		rc_out[6] = (short) 0xFFFF;
+		rc_out[7] = (short) 0xFFFF;
         
-
+        
+        ManagedCommand rcOutput = getManagedCommands().scheduleAtFixedRate(new Runnable()
+		{
+			
+			public void run()
+			{
+				Map<String, Object> mapRCOut = Maps.newHashMap();
+				mapRCOut.put("rc", Arrays.toString(rc_out));
+				sendOutputJson(publishers[1], mapRCOut);
+			}
+		}, 1, 20, TimeUnit.SECONDS);
     }
 
     /**
@@ -525,7 +554,18 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
      */
     @Override
     public void onActivityPreShutdown() {
-        getLog().info("Activity is.erle.captain pre shutdown");
+		getLog().info("Activity is.erle.captain pre shutdown");
+		int shut = sendCommand(CommandOptions.SET_MODE, "RTL");
+		if (shut == 0)
+		{
+			getLog().info(
+					"Captain activity shut down, Drone returning to launch");
+		}
+		else
+		{
+			getLog().error(
+					"Could not send a Return to Launch command to the drone, be careful!! ");
+		}
     }
 
     /**
@@ -1002,11 +1042,23 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 					ack = sendCommand(CommandOptions.SET_MODE, "Auto");
 					if (ack == 0)
 					{
+						Date start = new Date();
+						int i = 1;
+						while ((System.currentTimeMillis() - start.getTime()) < 3050)
+						{
+							if ((System.currentTimeMillis() - start.getTime()) >(1000*i))
+							{
+								getLog().warn(
+										"GOING TO FLY IN " + (4 - i) + " sec");
+								i++;
+							}
+						}
+						rc_out[2] = (short) (paramList.get("RC3_MIN").shortValue()+150);
 						getLog().info("Drone set to auto mode");
 						getLog().info(
 								"All sequence successfully sent to the drone");
 						getLog().warn(
-								"STAY AWAY FROM THE DRONE, IT SHOULD START FLYING THE MOMENT THROTTLE IS RAISED");
+								"STAY AWAY FROM THE DRONE, IT SHOULD START FLYING ANYTIME NOW");
 					}
 					else
 					{

@@ -18,9 +18,9 @@
     <configuration>
     	<property name="space.activity.ros.node.name" value="captain" />
     	
-      <property name="space.activity.routes.outputs" value="output" />
+      <property name="space.activity.routes.outputs" value="output:rc_output" />
+      <property name="space.activity.route.output.rc_output" value="captain/rc_output" />
       <property name="space.activity.route.output.output" value="captain/output" />
-      
       <property name="space.activity.routes.inputs" value="input:heartbeat:WP_Processor"/>
       <property name="space.activity.route.input.input" value="captain/input"/>
       

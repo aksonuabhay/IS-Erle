@@ -651,6 +651,18 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			handleCaptainMessage(tempString);
 
 		}
+		else if (channelName.equals(subscribers[3]))
+		{
+			// Data from drone handled here
+			if (message.containsKey("rc"))
+			{
+
+				String items[] = message.get("rc").toString()
+						.replaceAll("\\[", "").replaceAll("\\]", "")
+						.replaceAll(" ", "").split(",");
+				sendRCPacket(items);
+			}
+		}
     }
     
 	private void handleCaptainMessage(String[] message)

@@ -22,9 +22,9 @@
       <property name="space.activity.routes.outputs" value="outputCOM_M:outputWP_M:outputGeneral_M:captain:heartbeat:hud:attitude:status:time:gps:imu:scaled_pressure:global_position:local_position:servo_output:rc_input:current_mission_seq:nav_controller_output:terrain_report" />
       <property name="space.activity.route.output.outputCOM_M" value="comms/input" />
       
-      <property name="space.activity.routes.inputs" value="inputCOM_M:inputWP_M:captain"/>
+      <property name="space.activity.routes.inputs" value="inputCOM_M:inputWP_M:captain:rc_output"/>
       <property name="space.activity.route.input.inputCOM_M" value="comms/output"/>
-      
+      <property name="space.activity.route.input.rc_output" value="captain/rc_output"/>
       
       <property name="space.activity.route.output.outputWP_M" value="waypoint/input" />
       
