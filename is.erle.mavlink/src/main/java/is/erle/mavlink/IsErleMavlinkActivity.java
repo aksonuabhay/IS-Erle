@@ -6354,6 +6354,39 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	{
 		getDataStream(id, i, targetSystem, targetComponent);
 	}
+	
+	private void sendRCPacket(String [] mesg)
+	{
+		sendRCPacket(mesg, targetSystem	, targetComponent);
+	}
+	
+	private void sendRCPacket(String [] mesg, byte tSystem, byte tComponent)
+	{
+		if (mesg.length!=8)
+		{
+			getLog().warn("Input string array does not contain 8 values, aborting send");
+			return;
+		}
+		msg_rc_channels_override req = new msg_rc_channels_override();
+		req.target_system = tSystem;
+		req.target_component = tComponent ;
+		req.chan1_raw = Short.parseShort(mesg[0]);
+		req.chan2_raw = Short.parseShort(mesg[1]);
+		req.chan3_raw = Short.parseShort(mesg[2]);
+		req.chan4_raw = Short.parseShort(mesg[3]);
+		req.chan5_raw = Short.parseShort(mesg[4]);
+		req.chan6_raw = Short.parseShort(mesg[5]);
+		req.chan7_raw = Short.parseShort(mesg[6]);
+		req.chan8_raw = Short.parseShort(mesg[7]);
+		
+		Map<String, Object> tempRCPacketSend;
+		byte tempByte[] = req.pack().encodePacket();
+		tempRCPacketSend = Maps.newHashMap();
+		tempRCPacketSend.put("comm", Arrays.toString(tempByte));
+		sendOutputJson(publishers[0], tempRCPacketSend);
+		getLog().debug("SENDING RC PACKET TO THE DRONE : " + Arrays.toString(tempByte));
+		sendOutputJson(publishers[0], tempRCPacketSend);
+	}
 }
 
 
