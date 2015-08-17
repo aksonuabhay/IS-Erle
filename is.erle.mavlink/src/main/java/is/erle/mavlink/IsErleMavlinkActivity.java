@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import interactivespaces.activity.impl.ros.BaseRoutableRosActivity;
 import interactivespaces.util.concurrency.ManagedCommand;
 import com.MAVLink.*;
@@ -368,7 +370,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	/**
 	 * Stores the log Entry found on the remote drone.
 	 */
-	private List<msg_log_entry> logEntry = new ArrayList<msg_log_entry>();
+	private List<msg_log_entry> logEntry =Collections.synchronizedList( new ArrayList<msg_log_entry>());
 	
     /**
      * Executes on activity setup.
@@ -445,7 +447,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}*/
-        readMissionListStart();
+       // readMissionListStart();
         //readParameterListStart();
         /*try {
 			Thread.sleep(2000);
@@ -462,6 +464,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
         	}
         }*/
         //setMode("Auto");
+        getLogList();
     }
 
     /**
@@ -5546,9 +5549,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	 */
 	private boolean readParameterListStart(byte tSystem, byte tComponent)
 	{
-		paramList = new HashMap<String, Double>(600);
-		paramType = new HashMap<String, Byte>(600);
-		paramReceivedIndexes = new ArrayList<Short>(600);
+		paramList = new ConcurrentHashMap<String, Double>(600);
+		paramType = new ConcurrentHashMap<String, Byte>(600);
+		paramReceivedIndexes = Collections.synchronizedList(new ArrayList<Short>(600));
 		paramIndex = 0;
 		paramTotal = 1;
 		receiveParamList = true;
@@ -6222,16 +6225,18 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			}
 			if (logEntry.size() == (size + 1))
 			{
-				if (logEntry.get(size).id >= startno
-						&& logEntry.get(size).id <= end)
+				//getLog().info((int)(logEntry.get(0).id&0xFFFF) +"  " +  (int)(startno&0xFFFF)+"  "+(int)(end&0xFFFF));
+				if ( ((int)(logEntry.get(size).id&0xFFFF) >= (int)(startno&0xFFFF))
+						&& ((int)(logEntry.get(size).id&0xFFFF) <= (int)(end&0xFFFF)))
 				{
 					getLog().info("Successfully get log entry");
 					return true;
 				}
 				else
 				{
+					getLog().warn("Did not get valid log entry");
 					logEntry.remove(size);
-					return false;
+					//return true;
 				}
 			}
 		}
@@ -6274,18 +6279,32 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	private boolean getLogList(byte tSystem, byte tComponent)
 	{
 		logEntry = new ArrayList<msg_log_entry>();
-		if (getLogEntry((short) 0,(short) 0xffff ,tSystem , tComponent))
+		if (getLogEntry((short) 0, (short) 0xffff, tSystem, tComponent))
 		{
 			int lastLogNumber = logEntry.get(0).last_log_num;
 			int logCount = logEntry.get(0).num_logs;
-			for (int i = (lastLogNumber - logCount +1); i <= lastLogNumber; i++)
+			/*
+			 * logEntry.remove(0); for (int i = (lastLogNumber - logCount +1); i
+			 * <= lastLogNumber; i++) { if (!getLogEntry((short) i,
+			 * (short)i,tSystem , tComponent)) {
+			 * getLog().warn("getLogEntry returned false"); return false; } }
+			 */
+			Date start = new Date();
+			while (true)
 			{
-				if (!getLogEntry((short) i, (short)i,tSystem , tComponent))
+				if (logEntry.size() == logCount)
 				{
+
+					getLog().info("Successfully get log entry");
+					//getLog().info(Arrays.toString(logEntry.toArray()));
+					return true;
+				}
+				if ((System.currentTimeMillis() - start.getTime()) > 3000)
+				{
+					getLog().warn("Timeout on getting all log entry");
 					return false;
 				}
 			}
-			return true;
 		}
 		return false;
 	}

@@ -469,7 +469,7 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
     public void onActivityActivate() {
         getLog().info("Activity is.erle.captain activate");
         //sendCommand(CommandOptions.WRITE_MISSION);
-        int rslt = sendCommand(CommandOptions.READ_PARAMETER_LIST_START);
+        int rslt = sendCommand(CommandOptions.READ_PARAMETER_LIST_START,10000);
         if (rslt ==0)
 		{
 			rslt = sendCommand(CommandOptions.GET_PARAMETER_LIST);
@@ -478,7 +478,11 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 				getLog().info(paramList);
 			}
 		}
-       
+		rslt = sendCommand(CommandOptions.GET_PARAMETER,"RC3_MAX");
+		if (rslt == 0)
+		{
+			getLog().info(param);
+		}
         rslt = sendCommand(CommandOptions.READ_MISSION);
         if (rslt ==0)
 		{
@@ -498,11 +502,7 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 			}
 		}
         
-		rslt = sendCommand(CommandOptions.GET_PARAMETER,"RC3_MAX");
-		if (rslt == 0)
-		{
-			getLog().info(param);
-		}
+
     }
 
     /**
@@ -553,6 +553,38 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 	 * component value supplied here.
 	 * 
 	 * @param opt			   Command from the command option list.
+	 * @param timeout		 Timeout Period of the command.
+	 * @param targetSystem	   Target drone to send command to.
+	 * @param targetComponent  Target component on the drone.
+	 * @return				   Response from the mavlink activity.
+	 * 						   value = 0 	-> 	SUCCESS,
+	 * 						   value =-1 	-> 	TIMEOUT,
+	 * 						   value=-2 	-> 	BADCMD,
+	 * 						   value=-3 	-> 	NULL,
+	 *						   value= +ve  ->   FAIL CODE
+	 * @see					   #cmdReturnCheck(int)
+	 * @see					   CommandOptions
+	 * @since				   1.0.0
+	 */
+	private int sendCommand(CommandOptions opt, byte targetSystem,
+			byte targetComponent, int timeout)
+	{
+		String command = opt.ordinal() + "-" + Byte.toString(targetSystem)
+				+ "-" + Byte.toString(targetComponent);
+		Map<String, Object> commandMap = Maps.newHashMap();
+		commandMap.put("command", command);
+		sendOutputJson(publishers[0], commandMap);
+		
+		return cmdReturnCheck(timeout);
+	}
+	
+	/**
+	 * Sends a command to the mavlink activity to perform some action. 
+	 * Used to execute a function with the arguments target system and target component in the
+	 * mavlink activity. The command will be sent to the target system and default target 
+	 * component value supplied here.
+	 * 
+	 * @param opt			   Command from the command option list.
 	 * @param targetSystem	   Target drone to send command to.
 	 * @param targetComponent  Target component on the drone.
 	 * @return				   Response from the mavlink activity.
@@ -568,13 +600,7 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 	private int sendCommand(CommandOptions opt, byte targetSystem,
 			byte targetComponent)
 	{
-		String command = opt.ordinal() + "-" + Byte.toString(targetSystem)
-				+ "-" + Byte.toString(targetComponent);
-		Map<String, Object> commandMap = Maps.newHashMap();
-		commandMap.put("command", command);
-		sendOutputJson(publishers[0], commandMap);
-		
-		return cmdReturnCheck(3000);
+		return sendCommand(opt, targetSystem, targetComponent, 3000);
 	}
 
 	/**
@@ -596,14 +622,70 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 	 */
 	private int sendCommand(CommandOptions opt)
 	{
+		return sendCommand(opt, 3000);
+	}
+	
+	/**
+	 * Sends a command to the mavlink activity to perform some action. 
+	 * This function has no command arguments. Used to execute a function without arguments in the
+	 * mavlink activity. The command will be sent to the default target system and default target 
+	 * component set in the mavlink activity.
+	 * 
+	 * @param opt			 Command from the command option list.
+	 * @param timeout		 Timeout Period of the command.
+	 * @return				 Response from the mavlink activity.
+	 * 						 value = 0 	-> 	SUCCESS,
+	 * 						 value =-1 	-> 	TIMEOUT,
+	 * 						 value=-2 	-> 	BADCMD,
+	 * 						 value=-3 	-> 	NULL,
+	 *						 value= +ve  ->  FAIL CODE
+	 * @see					 #cmdReturnCheck(int)
+	 * @see					 CommandOptions
+	 * @since				 1.0.0
+	 */
+	private int sendCommand(CommandOptions opt , int timeout)
+	{
 		String command = Integer.toString(opt.ordinal());
 		Map<String, Object> commandMap = Maps.newHashMap();
 		commandMap.put("command", command);
 		sendOutputJson(publishers[0], commandMap);
 		
-		return cmdReturnCheck(3000);
+		return cmdReturnCheck(timeout);
 	}
 
+	/**
+	 * Sends a command to the mavlink activity to perform some action. The
+	 * command argument comes in a String array format. 
+	 * 
+	 * @param opt			 Command from the command option list.
+	 * @param param			 Contains the command arguments as a string array.
+	 *            			 This follows the parameters of the command as explained
+	 *            			 in the CommandOptions enum.
+	 * @param timeout		 Timeout Period of the command.
+	 * @return				 Response from the mavlink activity.
+	 * 						 value = 0 	-> 	SUCCESS,
+	 * 						 value =-1 	-> 	TIMEOUT,
+	 * 						 value=-2 	-> 	BADCMD,
+	 * 						 value=-3 	-> 	NULL,
+	 *						 value= +ve  ->  FAIL CODE
+	 * @see					 #cmdReturnCheck(int)
+	 * @see					 CommandOptions
+	 * @since				 1.0.0
+	 */
+	private int sendCommand(CommandOptions opt, String[] param, int timeout)
+	{
+		String command = Integer.toString(opt.ordinal());
+		for (int i = 0; i < param.length; i++)
+		{
+			command += "-" + param;
+		}
+		Map<String, Object> commandMap = Maps.newHashMap();
+		commandMap.put("command", command);
+		sendOutputJson(publishers[0], commandMap);
+		
+		return cmdReturnCheck(timeout);
+	}
+	
 	/**
 	 * Sends a command to the mavlink activity to perform some action. The
 	 * command argument comes in a String array format. 
@@ -624,16 +706,36 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 	 */
 	private int sendCommand(CommandOptions opt, String[] param)
 	{
-		String command = Integer.toString(opt.ordinal());
-		for (int i = 0; i < param.length; i++)
-		{
-			command += "-" + param;
-		}
+		return sendCommand(opt, param, 3000);
+	}
+	
+	/**
+	 * Sends a command to the mavlink activity to perform some action. The
+	 * command argument comes in a String separated by '-' separator. 
+	 * 
+	 * @param opt			 Command from the command option list.
+	 * @param param			 Contains the command arguments as a string separated by '-' separator.
+	 *            			 This follows the parameters of the command as explained
+	 *            			 in the CommandOptions enum.
+	 * @param timeout		 Timeout Period of the command.
+	 * @return				 Response from the mavlink activity.
+	 * 						 value = 0 	-> 	SUCCESS,
+	 * 						 value =-1 	-> 	TIMEOUT,
+	 * 						 value=-2 	-> 	BADCMD,
+	 * 						 value=-3 	-> 	NULL,
+	 *						 value= +ve  ->  FAIL CODE
+	 * @see					 #cmdReturnCheck(int)
+	 * @see					 CommandOptions
+	 * @since				 1.0.0
+	 */
+	private int sendCommand(CommandOptions opt, String param, int timeout)
+	{
+		String command = Integer.toString(opt.ordinal())+"-" +param;
 		Map<String, Object> commandMap = Maps.newHashMap();
 		commandMap.put("command", command);
 		sendOutputJson(publishers[0], commandMap);
 		
-		return cmdReturnCheck(3000);
+		return cmdReturnCheck(timeout);
 	}
 	
 	/**
@@ -656,17 +758,42 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 	 */
 	private int sendCommand(CommandOptions opt, String param)
 	{
-		String command = Integer.toString(opt.ordinal())+"-" +param;
-		Map<String, Object> commandMap = Maps.newHashMap();
-		commandMap.put("command", command);
-		sendOutputJson(publishers[0], commandMap);
-		
-		return cmdReturnCheck(3000);
+		return sendCommand(opt, param, 3000);
 	}
 	
 	/*
 	 * Not recommended for use
 	 */
+	/**
+	 * Sends a command to the mavlink activity to perform some action. The
+	 * command comes in a String whose first element always contains
+	 * CommandOptions ordinal value. After this follows the other arguments
+	 * required for the function.
+	 * 
+	 * @param cmd			 Contains the command as a string separated by '-' separator.
+	 *           			 The first value is always a CommandOption's ordinal value.
+	 *            			 After this follows the parameters of the command as explained
+	 *            			 in the CommandOptions enum. They are separated by '-'.
+	 * @param timeout		 Timeout Period of the command.
+	 * @return				 Response from the mavlink activity.
+	 * 						 value = 0 	-> 	SUCCESS,
+	 * 						 value =-1 	-> 	TIMEOUT,
+	 * 						 value=-2 	-> 	BADCMD,
+	 * 						 value=-3 	-> 	NULL,
+	 *						 value= +ve  ->  FAIL CODE
+	 * @see					 #cmdReturnCheck(int)
+	 * @see					 CommandOptions
+	 * @since				 1.0.0
+	 */
+	private int sendCommand(String cmd, int timeout)
+	{
+		Map<String, Object> commandMap = Maps.newHashMap();
+		commandMap.put("command", cmd);
+		sendOutputJson(publishers[0], commandMap);
+		
+		return cmdReturnCheck(timeout);
+	}
+    
 	/**
 	 * Sends a command to the mavlink activity to perform some action. The
 	 * command comes in a String whose first element always contains
@@ -689,13 +816,9 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 	 */
 	private int sendCommand(String cmd)
 	{
-		Map<String, Object> commandMap = Maps.newHashMap();
-		commandMap.put("command", cmd);
-		sendOutputJson(publishers[0], commandMap);
-		
-		return cmdReturnCheck(3000);
+		return sendCommand(cmd, 3000);
 	}
-    
+	
 	/**
 	 * Waits for the response of a command until a timeout period. After the
 	 * timeout or response from the mavlink activity, it returns the command
@@ -751,7 +874,7 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 					readWaypointList.add(wpList);
 				} 
 			}
-			if (message.containsKey("paran_list"))
+			if (message.containsKey("param_list"))
 			{
 				@SuppressWarnings("unchecked")
 				Map<String,Double> map = (Map<String,Double>) message.get("param_list");
