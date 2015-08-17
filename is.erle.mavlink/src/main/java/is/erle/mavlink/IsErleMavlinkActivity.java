@@ -312,11 +312,6 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	private Map<String , Double> paramList;
 	
 	/**
-	 * Stores a list of parameter indexes received.
-	 */
-	private List<Short> paramReceivedIndexes;
-	
-	/**
 	 * Stores the current parameter index being received.
 	 */
 	private short paramIndex;
@@ -464,7 +459,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
         	}
         }*/
         //setMode("Auto");
-        getLogList();
+        //getLogList();
     }
 
     /**
@@ -765,6 +760,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 							Arrays.deepToString(readWaypointList.toArray()));
 					tempMission.put("command","SUCCESS");
 					sendOutputJson(publishers[3], tempMission);
+					//getLog().info(Arrays.deepToString(readWaypointList.toArray()));
 					/*
 					 * Complimentary function for processing this string String
 					 * [][]back= new String[2][2]; for (int i=0; i<result.length
@@ -1077,6 +1073,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 																	// thoroughly
 					tempParameterList.put("command", "SUCCESS");
 					sendOutputJson(publishers[3], tempParameterList);
+					//getLog().info(paramList.toString());
 					/*
 					 * Cast it to Map<String,Double> to make it useful.
 					 */
@@ -1109,6 +1106,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 								.toString());
 						tempParameter.put("command", "SUCCESS");
 						sendOutputJson(publishers[3], tempParameter);
+						//getLog().info(paramList.get(message[1]));
 					}
 					else
 					{
@@ -1667,6 +1665,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 							Arrays.deepToString(logEntry.toArray()));
 					tempGetLogEntry.put("command", "SUCCESS");
 					sendOutputJson(publishers[3], tempGetLogEntry);
+					//getLog().info(Arrays.deepToString(logEntry.toArray()));
 					/*
 					 * Complimentary function for processing this string String
 					 * [][]back= new String[2][2]; for (int i=0; i<result.length
@@ -5240,7 +5239,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 					return false;
 				}
 			}
-			if (readWaypointList.size() == (i + 1))
+			if (readWaypointList.size()>= (i + 1))
 			{
 				getLog().info("Successfully get waypoint data");
 				return true;
@@ -5431,27 +5430,27 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		}
 	}
 
-	// Not Tested
+	// Tested
 	private boolean doARM(boolean armit)
 	{
 		return doARM(armit, targetSystem, targetComponent);
 	}
 
-	// Not Tested
+	// Tested
 	private boolean doARM(boolean armit, byte tSystem, byte tComponent)
 	{
 		return doCommand((short) MAV_CMD.MAV_CMD_COMPONENT_ARM_DISARM, armit ? 1 : 0,
 				21196, 0, 0, 0, 0, 0, tSystem, tComponent);
 	}
 
-	// Not Tested
+	// Tested
 	private boolean doCommand(short actionid, float p1, float p2, float p3,
 			float p4, float p5, float p6, float p7)
 	{
 		return doCommand(actionid, p1, p2, p3, p4, p5, p6, p7, targetSystem, targetComponent);
 	}
 
-	// Not Tested
+	// Tested
 	private boolean doCommand(short actionid, float p1, float p2, float p3,
 			float p4, float p5, float p6, float p7, byte tSystem,
 			byte tComponent)
@@ -5551,7 +5550,6 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	{
 		paramList = new ConcurrentHashMap<String, Double>(600);
 		paramType = new ConcurrentHashMap<String, Byte>(600);
-		paramReceivedIndexes = Collections.synchronizedList(new ArrayList<Short>(600));
 		paramIndex = 0;
 		paramTotal = 1;
 		receiveParamList = true;
@@ -5565,8 +5563,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	 */
 	private boolean readParamList(byte tSystem, byte tComponent)
 	{
-		if (paramList == null || paramType == null
-				|| paramReceivedIndexes == null)
+		if (paramList == null || paramType == null)
 		{
 			getLog().error(
 					"Use readParameterListStart function instead of this");
@@ -5588,7 +5585,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		{
 			if (paramList.isEmpty())
 			{
-				if (!((start.getTime() + 700) > System.currentTimeMillis()))
+				if (!((start.getTime() + 17000) > System.currentTimeMillis()))
 				{
 					if (retry > 0)
 					{
@@ -5719,15 +5716,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	{
 		if (receiveParamList)
 		{
-			if (paramReceivedIndexes.contains(paramValue.param_index))
-			{
-				getLog().info("Parameter already received");
-			}
-			else
-			{
-				paramReceivedIndexes.add(paramValue.param_index);
-				paramIndex++;
-			}
+			paramIndex++;
 			String paramID = (new String(paramValue.param_id)).split("\0", 2)[0];
 			paramList.put(paramID, (double) paramValue.param_value);
 			paramType.put(paramID, paramValue.param_type);
@@ -6281,7 +6270,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		logEntry = new ArrayList<msg_log_entry>();
 		if (getLogEntry((short) 0, (short) 0xffff, tSystem, tComponent))
 		{
-			int lastLogNumber = logEntry.get(0).last_log_num;
+			//int lastLogNumber = logEntry.get(0).last_log_num;
 			int logCount = logEntry.get(0).num_logs;
 			/*
 			 * logEntry.remove(0); for (int i = (lastLogNumber - logCount +1); i

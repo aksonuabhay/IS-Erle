@@ -469,13 +469,15 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
     public void onActivityActivate() {
         getLog().info("Activity is.erle.captain activate");
         //sendCommand(CommandOptions.WRITE_MISSION);
-        int rslt = sendCommand(CommandOptions.READ_PARAMETER_LIST_START,10000);
+        int rslt = sendCommand(CommandOptions.READ_PARAMETER_LIST_START,20000);
+        //getLog().info("Param list start get" +rslt);
         if (rslt ==0)
 		{
 			rslt = sendCommand(CommandOptions.GET_PARAMETER_LIST);
+			//getLog().info("Param list get" +rslt);
 			if (rslt == 0)
 			{
-				getLog().info(paramList);
+				getLog().info(paramList.toString());
 			}
 		}
 		rslt = sendCommand(CommandOptions.GET_PARAMETER,"RC3_MAX");
@@ -864,7 +866,8 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 			if (message.containsKey("mission"))
 			{
 				readWaypointList = new ArrayList<String[]>();
-				String [] result = message.get("mission").toString().split("],");
+				//getLog().info(message.get("mission").toString());
+				String [] result = message.get("mission").toString().split("\\],");
 				String[] wpList;
 				for (int i = 0; i < result.length; i++)
 				{
@@ -876,8 +879,9 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 			}
 			if (message.containsKey("param_list"))
 			{
-				@SuppressWarnings("unchecked")
+				//@SuppressWarnings("unchecked")
 				Map<String,Double> map = (Map<String,Double>) message.get("param_list");
+				//getLog().info(message.get("param_list").toString());
 				paramList = map;
 			}
 			if (message.containsKey("param"))
@@ -888,12 +892,13 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 			if (message.containsKey("log_entry"))
 			{
 				logEntry = new ArrayList<String>();
-				String [] result = message.get("mission").toString().replaceAll("\\[", "")
+				//getLog().info(message.get("log_entry").toString());
+				String [] result = message.get("log_entry").toString().replaceAll("\\[", "")
 						.replaceAll("\\]", "").replaceAll(" ", "")
 						.split(",");
 				for (int i = 0; i < result.length; i++)
 				{
-					readWaypointList.add(result);
+					logEntry.add(result[i]);
 				}
 			}
 			if (message.containsKey("command"))
