@@ -1,12 +1,14 @@
 package is.erle.captain;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import com.google.common.collect.Maps;
-
 import interactivespaces.activity.impl.ros.BaseRoutableRosActivity;
 import interactivespaces.util.concurrency.ManagedCommand;
 
@@ -352,6 +354,38 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 		UPDATE_TARGET // Update target system and target component
 	};
 	
+	/**  
+	 * A List of String arrays containing waypoint data read from the drone
+	 * DATA MAPPING FOR STRING ARRAY
+	 * Index 0 -> INDEX
+	 * Index 1 -> CURRENT WP
+	 * Index 2 -> COORD FRAME
+	 * Index 3 -> COMMAND
+	 * Index 4 -> PARAM1
+	 * Index 5 -> PARAM2
+	 * Index 6 -> PARAM3
+	 * Index 7 -> PARAM4
+	 * Index 8 -> PARAM5/X/LONGITUDE
+	 * Index 9 -> PARAM6/Y/LATITUDE
+	 * Index 10 -> PARAM7/Z/ALTITUDE
+	 * Index 11 -> AUTOCONTINUE
+	 */
+	private List<String []> readWaypointList;
+	
+	/**
+	 * A HashMap to store the value of the parameter with a certain string id. 
+	 */
+	private Map<String , Double> paramList;
+	
+	/**
+	 * Stores the parameter value last requested.
+	 */
+	private double param;
+	
+	/**
+	 * Stores the log Entry found on the remote drone.
+	 */
+	private List<String> logEntry;
     /**
      * Executes on activity setup.
      * @see		interactivespaces.activity.impl.BaseActivity#onActivitySetup()
@@ -379,6 +413,7 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 					{
 						for (Map.Entry<Byte, Date> entry : heartbeatLastUpdate.entrySet())
 						{
+							getLog().warn("Keep the throttle stick down always. Whenever starting a mission just raise it a bit to start the mission.");
 							if ((System.currentTimeMillis() - entry.getValue()
 									.getTime()) > 2000)
 							{
@@ -434,6 +469,40 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
     public void onActivityActivate() {
         getLog().info("Activity is.erle.captain activate");
         //sendCommand(CommandOptions.WRITE_MISSION);
+        int rslt = sendCommand(CommandOptions.READ_PARAMETER_LIST_START);
+        if (rslt ==0)
+		{
+			rslt = sendCommand(CommandOptions.GET_PARAMETER_LIST);
+			if (rslt == 0)
+			{
+				getLog().info(paramList);
+			}
+		}
+       
+        rslt = sendCommand(CommandOptions.READ_MISSION);
+        if (rslt ==0)
+		{
+			rslt = sendCommand(CommandOptions.GET_MISSION);
+			if (rslt == 0)
+			{
+				getLog().info(Arrays.deepToString(readWaypointList.toArray()));
+			}
+		}
+        rslt = sendCommand(CommandOptions.READ_LOG_ENTRY);
+        if (rslt ==0)
+		{
+			rslt = sendCommand(CommandOptions.GET_LOG_ENTRY);
+			if (rslt == 0)
+			{
+				getLog().info(Arrays.toString(logEntry.toArray()));
+			}
+		}
+        
+		rslt = sendCommand(CommandOptions.GET_PARAMETER,"RC3_MAX");
+		if (rslt == 0)
+		{
+			getLog().info(param);
+		}
     }
 
     /**
@@ -669,49 +738,94 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
     {
 		if (channelName.equals(subscribers[0]))
 		{
-			String [] splitMessage = message.get("command").toString().split("-");
-			if (splitMessage[0].equals("SUCCESS"))
+			if (message.containsKey("mission"))
 			{
-				getLog().info("Mavlink activity returned SUCCESS for the given command");
-				synchronized (this)
+				readWaypointList = new ArrayList<String[]>();
+				String [] result = message.get("mission").toString().split("],");
+				String[] wpList;
+				for (int i = 0; i < result.length; i++)
 				{
-					cmdReturn = 0;
+					wpList = result[i].replaceAll("\\[", "")
+							.replaceAll("\\]", "").replaceAll(" ", "")
+							.split(",");
+					readWaypointList.add(wpList);
+				} 
+			}
+			if (message.containsKey("paran_list"))
+			{
+				@SuppressWarnings("unchecked")
+				Map<String,Double> map = (Map<String,Double>) message.get("param_list");
+				paramList = map;
+			}
+			if (message.containsKey("param"))
+			{
+				String doubleMessage = message.get("param").toString();
+				param = Double.parseDouble(doubleMessage);
+			}
+			if (message.containsKey("log_entry"))
+			{
+				logEntry = new ArrayList<String>();
+				String [] result = message.get("mission").toString().replaceAll("\\[", "")
+						.replaceAll("\\]", "").replaceAll(" ", "")
+						.split(",");
+				for (int i = 0; i < result.length; i++)
+				{
+					readWaypointList.add(result);
 				}
 			}
-			else if (splitMessage[0].equals("BADCMD"))
+			if (message.containsKey("command"))
 			{
-				getLog().warn("Mavlink activity does not recognize the given command");
-				synchronized (this)
+				String[] splitMessage = message.get("command").toString()
+						.split("-");
+				if (splitMessage[0].equals("SUCCESS"))
 				{
-					cmdReturn = -2;
-				}
-			}
-			else if (splitMessage[0].equals("NULL"))
-			{
-				getLog().warn("Mavlink activity returned NULL for the get command");
-				synchronized (this)
-				{
-					cmdReturn = -3;
-				}
-			}
-			else if (splitMessage[0].equals("FAIL"))
-			{
-				getLog().warn("Mavlink activity returned FAIL status for the given command");
-				try
-				{
+					getLog().info(
+							"Mavlink activity returned SUCCESS for the given command");
 					synchronized (this)
 					{
-						cmdReturn = Integer.parseInt(splitMessage[1].trim());
+						cmdReturn = 0;
 					}
 				}
-				catch (NumberFormatException e)
+				else if (splitMessage[0].equals("BADCMD"))
 				{
-					getLog().error("Arbitrary fail type from mavlink activity");
+					getLog().warn(
+							"Mavlink activity does not recognize the given command");
+					synchronized (this)
+					{
+						cmdReturn = -2;
+					}
 				}
-			}
-			else
-			{
-				getLog().warn("Mavlink Activity sent unkown response");
+				else if (splitMessage[0].equals("NULL"))
+				{
+					getLog().warn(
+							"Mavlink activity returned NULL for the get command");
+					synchronized (this)
+					{
+						cmdReturn = -3;
+					}
+				}
+				else if (splitMessage[0].equals("FAIL"))
+				{
+					getLog().warn(
+							"Mavlink activity returned FAIL status for the given command");
+					try
+					{
+						synchronized (this)
+						{
+							cmdReturn = Integer
+									.parseInt(splitMessage[1].trim());
+						}
+					}
+					catch (NumberFormatException e)
+					{
+						getLog().error(
+								"Arbitrary fail type from mavlink activity");
+					}
+				}
+				else
+				{
+					getLog().warn("Mavlink Activity sent unkown response");
+				}
 			}
 		}
 		else if (channelName.equals(subscribers[1]))
@@ -735,22 +849,15 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 	 */
 	private void startFlying()
 	{
-		int ack=sendCommand(CommandOptions.WRITE_MISSION);
+		int ack = sendCommand(CommandOptions.WRITE_MISSION);
 		if (ack == 0)
 		{
-			ack = sendCommand(CommandOptions.SET_MODE,"Auto");
+			ack = sendCommand(CommandOptions.SET_MODE, "Auto");
 			if (ack == 0)
 			{
-				ack = sendCommand(CommandOptions.ARM);
-				if (ack == 0)
-				{
-					getLog().info("All sequence successfully sent to the drone");
-					getLog().warn("STAY AWAY FROM THE DRONE, IT SHOULD START FLYING ANY MOMENT");
-				}
-				else
-				{
-					getLog().error("Arming Failed");
-				}
+				getLog().info("All sequence successfully sent to the drone");
+				getLog().warn(
+						"STAY AWAY FROM THE DRONE, IT SHOULD START FLYING THE MOMENT THROTTLE IS RAISED");
 			}
 			else
 			{

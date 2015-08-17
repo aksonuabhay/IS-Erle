@@ -2,12 +2,13 @@ package is.erle.mavlink;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import interactivespaces.activity.impl.ros.BaseRoutableRosActivity;
-
+import interactivespaces.util.concurrency.ManagedCommand;
 import com.MAVLink.*;
 import com.MAVLink.Messages.MAVLinkMessage;
 import com.MAVLink.common.*;
@@ -444,7 +445,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}*/
-        //readMissionListStart();
+        readMissionListStart();
         //readParameterListStart();
         /*try {
 			Thread.sleep(2000);
@@ -554,7 +555,16 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 					// temp.put("mavMessage", mavMessage);
 					// sendOutputJson(publishers[2], temp);
 					getLog().info(mavMessage.toString());
-					handleMavMessage(mavMessage);
+					ManagedCommand mavMessageHandler = getManagedCommands().submit(new Runnable()
+					{
+						
+						public void run()
+						{
+							handleMavMessage(mavMessage);
+							
+						}
+					});
+
 					mavPacket = null;
 					mavParser = new Parser();
 					// getLog().info("mavPacket2 ");
@@ -636,12 +646,13 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
     		
     	}
     	
-    	else if (channelName.equals(subscribers[2]))
-    	{
-    		//Captain message handling here
-    		String tempString[] = message.get("command").toString().split("-");
-    		handleCaptainMessage(tempString);
-    	}
+		else if (channelName.equals(subscribers[2]))
+		{
+			// Captain message handling here
+			String tempString[] = message.get("command").toString().split("-");
+			handleCaptainMessage(tempString);
+
+		}
     }
     
 	private void handleCaptainMessage(String[] message)
@@ -747,8 +758,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				}
 				else
 				{
-					tempMission.put("command",
+					tempMission.put("mission",
 							Arrays.deepToString(readWaypointList.toArray()));
+					tempMission.put("command","SUCCESS");
 					sendOutputJson(publishers[3], tempMission);
 					/*
 					 * Complimentary function for processing this string String
@@ -1057,9 +1069,10 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				}
 				else
 				{
-					tempParameterList.put("command", paramList); // Needs to be
+					tempParameterList.put("param_list", paramList); // Needs to be
 																	// checked
 																	// thoroughly
+					tempParameterList.put("command", "SUCCESS");
 					sendOutputJson(publishers[3], tempParameterList);
 					/*
 					 * Cast it to Map<String,Double> to make it useful.
@@ -1089,8 +1102,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				{
 					if (paramList.containsKey(message[1]))
 					{
-						tempParameter.put("command", paramList.get(message[1])
+						tempParameter.put("param", paramList.get(message[1])
 								.toString());
+						tempParameter.put("command", "SUCCESS");
 						sendOutputJson(publishers[3], tempParameter);
 					}
 					else
@@ -1646,8 +1660,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				}
 				else
 				{
-					tempGetLogEntry.put("command",
+					tempGetLogEntry.put("log_entry",
 							Arrays.deepToString(logEntry.toArray()));
+					tempGetLogEntry.put("command", "SUCCESS");
 					sendOutputJson(publishers[3], tempGetLogEntry);
 					/*
 					 * Complimentary function for processing this string String
@@ -5175,7 +5190,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		 * Called by mission count message receive case
 		 */
 		readWaypointCount = count;
-		readWaypointList = new ArrayList<String[]>(count);
+		readWaypointList = Collections.synchronizedList(new ArrayList<String []>(count));
 		return sendWPRequest((short) 0, tSystem, tComponent);
 	}
 
@@ -5213,6 +5228,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 					getLog().info("SENDING WAYPOINT REQUEST AGAIN ");
 					start = new Date();
 					retry--;
+					getLog().info(readWaypointList.size() + "  " + i);
 					continue;
 				}
 				else
@@ -5256,11 +5272,22 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		tempWP[9] = Float.toString(mavMissionItem.y);
 		tempWP[10] = Float.toString(mavMissionItem.z);
 		tempWP[11] = Byte.toString(mavMissionItem.autocontinue);
-		readWaypointList.add(tempWP);
+		if (!readWaypointList.isEmpty())
+		{
+			if (!readWaypointList.get(readWaypointList.size()-1)[0].equals(tempWP[0]))
+			{
+				readWaypointList.add(tempWP);
+			}
+		}
+		else
+		{
+			readWaypointList.add(tempWP);
+		}
 		if (readWaypointCount == (mavMissionItem.seq + 1))
 		{
 			sendMissionAck((byte) MAV_MISSION_RESULT.MAV_MISSION_ACCEPTED);
 			readWaypointCount = -1;
+			//getLog().info(Arrays.deepToString(readWaypointList.toArray()));
 			/*
 			 * If it is the last waypoint, send an acknowledgement message
 			 */
@@ -5943,7 +5970,38 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			sendOutputJson(publishers[0], tempModeSet);
 			getLog().debug("REQUESTING SET MODE : " + Arrays.toString(tempByte));
 			//sendOutputJson(publishers[0], tempModeSet);
-			return true;
+			
+			isCommandSent = true;
+
+			Date start = new Date();
+			int retry = 3;
+			while (true)
+			{
+				if (!((start.getTime() + 700) > System.currentTimeMillis()))
+				{
+					if (retry > 0)
+					{
+						sendOutputJson(publishers[0], tempModeSet);
+						getLog().info("REQUESTING SET MODE AGAIN ");
+						start = new Date();
+						retry--;
+						continue;
+					}
+					else
+					{
+						getLog().error("Timeout on set mode command");
+						return false;
+					}
+				}
+				if (!isCommandSent)
+				{
+					getLog().info("Successfully send set mode command");
+					return true;
+				}
+			}
+			/*
+			 * It will Receive command acknowledgment message case after this
+			 */
 		}
 		else
 		{
