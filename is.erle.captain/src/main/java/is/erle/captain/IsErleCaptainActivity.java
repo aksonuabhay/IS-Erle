@@ -936,18 +936,28 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 				{
 					getLog().warn(
 							"Mavlink activity returned FAIL status for the given command");
-					try
+					if (splitMessage.length == 2)
+					{
+						try
+						{
+							synchronized (this)
+							{
+								cmdReturn = Integer.parseInt(splitMessage[1]
+										.trim());
+							}
+						}
+						catch (NumberFormatException e)
+						{
+							getLog().error(
+									"Arbitrary fail type from mavlink activity");
+						}
+					}
+					else if (splitMessage.length ==1)
 					{
 						synchronized (this)
 						{
-							cmdReturn = Integer
-									.parseInt(splitMessage[1].trim());
+							cmdReturn = 1;
 						}
-					}
-					catch (NumberFormatException e)
-					{
-						getLog().error(
-								"Arbitrary fail type from mavlink activity");
 					}
 				}
 				else
@@ -977,24 +987,45 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 	 */
 	private void startFlying()
 	{
-		int ack = sendCommand(CommandOptions.WRITE_MISSION);
+		int ack = sendCommand(CommandOptions.SET_MODE, "Stabilize");
 		if (ack == 0)
 		{
-			ack = sendCommand(CommandOptions.SET_MODE, "Auto");
+			getLog().info("Mode successfully set to stabilize");
+			ack = sendCommand(CommandOptions.WRITE_MISSION);
 			if (ack == 0)
 			{
-				getLog().info("All sequence successfully sent to the drone");
-				getLog().warn(
-						"STAY AWAY FROM THE DRONE, IT SHOULD START FLYING THE MOMENT THROTTLE IS RAISED");
+				getLog().info("Mission write successful");
+				ack = sendCommand(CommandOptions.ARM);
+				if (ack == 0)
+				{
+					getLog().info("Arming of the drone successful");
+					ack = sendCommand(CommandOptions.SET_MODE, "Auto");
+					if (ack == 0)
+					{
+						getLog().info("Drone set to auto mode");
+						getLog().info(
+								"All sequence successfully sent to the drone");
+						getLog().warn(
+								"STAY AWAY FROM THE DRONE, IT SHOULD START FLYING THE MOMENT THROTTLE IS RAISED");
+					}
+					else
+					{
+						getLog().error("Set Mode Failed");
+					}
+				}
+				else
+				{
+					getLog().error("Arming the drone failed");
+				}
 			}
 			else
 			{
-				getLog().error("Set Mode Failed");
+				getLog().error("Mision Write Failed");
 			}
 		}
 		else
 		{
-			getLog().error("Mision Write Failed");
+			getLog().error("Set Stabilize mode failed");
 		}
 	}
 }
