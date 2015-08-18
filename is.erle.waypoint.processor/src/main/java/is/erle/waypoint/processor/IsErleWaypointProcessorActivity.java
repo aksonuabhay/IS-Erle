@@ -113,7 +113,7 @@ public class IsErleWaypointProcessorActivity extends BaseRoutableRosActivity {
 					}
 				}
 			}
-		}, 30, 1, TimeUnit.SECONDS);
+		}, 25, 1, TimeUnit.SECONDS);
     }
 
     /**

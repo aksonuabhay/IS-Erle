@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -2024,7 +2023,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						"MAVLINK_MSG_ID_WATCHDOG_PROCESS_INFO - "
 								+ tempWatchdogProcessInfo);
 				sendOutputJson(publishers[2], tempMavWatchdogProcessInfo);
-				getLog().debug(tempWatchdogProcessInfo);
+				getLog().info(tempWatchdogProcessInfo);
 			}
 			break;
 
@@ -2090,7 +2089,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						"MAVLINK_MSG_ID_PATTERN_DETECTED - "
 								+ tempPatternDetected);
 				sendOutputJson(publishers[2], tempMavPatternDetected);
-				getLog().debug(tempPatternDetected);
+				getLog().info(tempPatternDetected);
 			}
 			break;
 
@@ -2138,7 +2137,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						"MAVLINK_MSG_ID_POINT_OF_INTEREST - "
 								+ tempPointOfInterest);
 				sendOutputJson(publishers[2], tempMavPointOfInterest);
-				getLog().debug(tempPointOfInterest);
+				getLog().info(tempPointOfInterest);
 			}
 			break;
 
@@ -2195,7 +2194,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						"MAVLINK_MSG_ID_POINT_OF_INTEREST_CONNECTION - "
 								+ tempPointOfInterestConnection);
 				sendOutputJson(publishers[2], tempMavPointOfInterestConnection);
-				getLog().debug(tempPointOfInterestConnection);
+				getLog().info(tempPointOfInterestConnection);
 			}
 			break;
 
@@ -2228,7 +2227,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				tempMavBriefFeature.put("data",
 						"MAVLINK_MSG_ID_BRIEF_FEATURE - " + tempBriefFeature);
 				sendOutputJson(publishers[2], tempMavBriefFeature);
-				getLog().debug(tempBriefFeature);
+				getLog().info(tempBriefFeature);
 			}
 			break;
 
@@ -2441,7 +2440,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				tempMavParamValue.put("data", "MAVLINK_MSG_ID_PARAM_VALUE - "
 						+ tempParamValue);
 				sendOutputJson(publishers[2], tempMavParamValue);
-				getLog().debug(tempParamValue);
+				getLog().info(tempParamValue);
 				saveParam(mavParamValue);
 			}
 			break;
@@ -5242,7 +5241,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 					getLog().info("SENDING WAYPOINT REQUEST AGAIN ");
 					start = new Date();
 					retry--;
-					getLog().info(readWaypointList.size() + "  " + i);
+					//getLog().info(readWaypointList.size() + "  " + i);
 					continue;
 				}
 				else
