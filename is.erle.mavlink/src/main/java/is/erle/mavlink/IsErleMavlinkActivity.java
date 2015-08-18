@@ -646,7 +646,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		else if (channelName.equals(subscribers[2]))
 		{
 			// Captain message handling here
-			String tempString[] = message.get("command").toString().split("-");
+			//getLog().info(message.get("command"));
+			String tempString[] = message.get("command").toString().split("=");
+			//getLog().info(Arrays.toString(tempString));
 			handleCaptainMessage(tempString);
 
 		}
@@ -1143,6 +1145,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			Map<String, Object> tempSetParameter = Maps.newHashMap();
 			if (message.length == 3)
 			{
+				//getLog().info(message[2]);
 				float fValue;
 				try
 				{
@@ -2422,6 +2425,12 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			{
 				mavParamValue = (msg_param_value) mavMessage2;
 				Map<String, Object> tempMavParamValue = Maps.newHashMap();
+				String[] paramType =
+				{ "MAV_PARAM_TYPE_UINT8", "MAV_PARAM_TYPE_INT8",
+						"MAV_PARAM_TYPE_UINT16", "MAV_PARAM_TYPE_INT16",
+						"MAV_PARAM_TYPE_UINT32", "MAV_PARAM_TYPE_INT32",
+						"MAV_PARAM_TYPE_UINT64", "MAV_PARAM_TYPE_INT64",
+						"MAV_PARAM_TYPE_REAL64", "MAV_PARAM_TYPE_ENUM_END" };
 				String tempParamValue = "TOTAL NUMBER OF PARAMETERS : "
 						+ mavParamValue.param_count
 						+ " , "
@@ -2432,11 +2441,10 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 						+ mavParamValue.param_value
 						+ " , "
 						+ "PARAMETER ID : "
-						+ Arrays.toString(mavParamValue.param_id)
+						+ new String(mavParamValue.param_id)
 						+ " , "
 						+ "PARAMETER TYPE : "
-						+ getVariableName("MAV_PARAM_TYPE",
-								mavParamValue.param_count);
+						+ paramType[mavParamValue.param_type-1];
 				tempMavParamValue.put("data", "MAVLINK_MSG_ID_PARAM_VALUE - "
 						+ tempParamValue);
 				sendOutputJson(publishers[2], tempMavParamValue);

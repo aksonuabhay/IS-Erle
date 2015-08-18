@@ -4,15 +4,21 @@ import time
 import signal
 import sys
 import subprocess
+import os
 
 session=requests.Session()
 url_prefix = "http://127.0.0.1:8080/interactivespaces/"
 activity_id = {}#{'captain':'0','serial':'0','udp':'0','mavlink':'0','generator':'0','processor':'0'}
 comms_port ='serial'
-
+global master_pid
+global controller_pid
 def signal_handler(signal, frame):
     print "Closing everything"
     exit_sequence(comms_port)
+    if master_pid:
+        os.kill(master_pid.pid,signal)
+    if controller_pid:
+        os.kill(controller_pid.pid,signal)
     sys.exit(0)
 
 def make_request(url):
@@ -108,9 +114,12 @@ data = {}
 try:
     data= make_request(url_prefix+"liveactivity/all.json")
 except requests.exceptions.ConnectionError:
-    subprocess.call(['gnome-terminal', '-x', './../../master/bin/isstartup'])
+    #os.setpgrp()
+    global master_pid
+    global controller_pid
+    master_pid=subprocess.Popen(['gnome-terminal', '-x', './../../master/bin/isstartup'])
     time.sleep(10)
-    subprocess.call(['gnome-terminal', '-x', './../../controller/bin/isstartup'])
+    controller_pid = subprocess.Popen(['gnome-terminal', '-x', './../../controller/bin/isstartup'])
     time.sleep(10)
     data= make_request(url_prefix+"liveactivity/all.json")
 

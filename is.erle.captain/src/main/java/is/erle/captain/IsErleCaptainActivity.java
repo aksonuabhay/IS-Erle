@@ -1,5 +1,10 @@
 package is.erle.captain;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -43,6 +48,8 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 	 * of connected drones.
 	 */
 	private ManagedCommand heartbeatThread;
+	
+	private ManagedCommand rcOutput;
 	
 	/**
 	 * The name of the config property for obtaining the publisher List.
@@ -488,7 +495,7 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 				getLog().info(paramList.toString());
 			}
 		}
-		rslt = sendCommand(CommandOptions.GET_PARAMETER,"RC3_MAX");
+		/*rslt = sendCommand(CommandOptions.GET_PARAMETER,"RC3_MAX");
 		if (rslt == 0)
 		{
 			getLog().info(param);
@@ -510,21 +517,31 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 			{
 				getLog().info(Arrays.toString(logEntry.toArray()));
 			}
+		}*/
+		if (!paramList.isEmpty())
+		{
+			rc_out[0] = (short) (paramList.get("RC1_MIN").shortValue() / 2 + paramList
+					.get("RC1_MAX").shortValue() / 2);
+			rc_out[1] = (short) (paramList.get("RC2_MIN").shortValue() / 2 + paramList
+					.get("RC2_MAX").shortValue() / 2);
+			rc_out[2] = paramList.get("RC3_MIN").shortValue();
+			rc_out[3] = (short) (paramList.get("RC4_MIN").shortValue() / 2 + paramList
+					.get("RC4_MAX").shortValue() / 2);
+
 		}
-		rc_out[0] = (short) (paramList.get("RC1_MIN").shortValue() / 2 + paramList
-				.get("RC1_MAX").shortValue() / 2);
-		rc_out[1] = (short) (paramList.get("RC2_MIN").shortValue() / 2 + paramList
-				.get("RC2_MAX").shortValue() / 2);
-		rc_out[2] = paramList.get("RC3_MIN").shortValue();
-		rc_out[3] = (short) (paramList.get("RC4_MIN").shortValue() / 2 + paramList
-				.get("RC4_MAX").shortValue() / 2);
+		else
+		{
+			rc_out[0] = 1500;
+			rc_out[1] = 1500;
+			rc_out[2] = 1000;
+			rc_out[3] = 1500;
+		}
 		rc_out[4] = (short) 0xFFFF;
 		rc_out[5] = (short) 0xFFFF;
 		rc_out[6] = (short) 0xFFFF;
 		rc_out[7] = (short) 0xFFFF;
         
-        
-        ManagedCommand rcOutput = getManagedCommands().scheduleAtFixedRate(new Runnable()
+        rcOutput = getManagedCommands().scheduleAtFixedRate(new Runnable()
 		{
 			
 			public void run()
@@ -533,7 +550,51 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 				mapRCOut.put("rc", Arrays.toString(rc_out));
 				sendOutputJson(publishers[1], mapRCOut);
 			}
-		}, 1, 20, TimeUnit.SECONDS);
+		}, 0, 20, TimeUnit.SECONDS);
+        
+        String paramFileLocation = getSpaceEnvironment().getFilesystem().getTempDirectory().getAbsolutePath()+"/Param.param";
+        File paramFile = new File(paramFileLocation);
+        if(paramFile.exists())
+        {
+			BufferedReader br =	null;
+			try
+			{
+				br = new BufferedReader(new FileReader(paramFileLocation));
+			}
+			catch (FileNotFoundException e1)
+			{
+				getLog().error("Param file deleted");
+			}
+			String currentLine;
+			try
+			{
+				while ((currentLine = br.readLine()) != null)
+				{
+					String [] splitLine = currentLine.split(" ");
+						if(splitLine.length == 2)
+						{
+							splitLine[1]=splitLine[1];
+							int cmdRslt = sendCommand(CommandOptions.SET_PARAMETER,splitLine);
+							if(cmdRslt == 0)
+							{
+								getLog().info("Set " +splitLine[0] + "with value " + splitLine[1]);
+							}
+							else
+							{
+								getLog().warn("Could not set "+splitLine[0] + "with value " + splitLine[1]);
+							}
+						}
+						else
+						{
+							getLog().error("Param File contains invalid lines");
+						}
+				}
+			}
+			catch (IOException e)
+			{
+				getLog().error("Input Output Exception");
+			}
+        }
     }
 
     /**
@@ -566,6 +627,9 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 			getLog().error(
 					"Could not send a Return to Launch command to the drone, be careful!! ");
 		}
+		heartbeatThread.cancel();
+		rcOutput.cancel();
+
     }
 
     /**
@@ -611,8 +675,8 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 	private int sendCommand(CommandOptions opt, byte targetSystem,
 			byte targetComponent, int timeout)
 	{
-		String command = opt.ordinal() + "-" + Byte.toString(targetSystem)
-				+ "-" + Byte.toString(targetComponent);
+		String command = opt.ordinal() + "=" + Byte.toString(targetSystem)
+				+ "=" + Byte.toString(targetComponent);
 		Map<String, Object> commandMap = Maps.newHashMap();
 		commandMap.put("command", command);
 		sendOutputJson(publishers[0], commandMap);
@@ -719,7 +783,7 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 		String command = Integer.toString(opt.ordinal());
 		for (int i = 0; i < param.length; i++)
 		{
-			command += "-" + param;
+			command += "=" + param[i];
 		}
 		Map<String, Object> commandMap = Maps.newHashMap();
 		commandMap.put("command", command);
@@ -753,10 +817,10 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 	
 	/**
 	 * Sends a command to the mavlink activity to perform some action. The
-	 * command argument comes in a String separated by '-' separator. 
+	 * command argument comes in a String separated by '=' separator. 
 	 * 
 	 * @param opt			 Command from the command option list.
-	 * @param param			 Contains the command arguments as a string separated by '-' separator.
+	 * @param param			 Contains the command arguments as a string separated by '=' separator.
 	 *            			 This follows the parameters of the command as explained
 	 *            			 in the CommandOptions enum.
 	 * @param timeout		 Timeout Period of the command.
@@ -772,7 +836,7 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 	 */
 	private int sendCommand(CommandOptions opt, String param, int timeout)
 	{
-		String command = Integer.toString(opt.ordinal())+"-" +param;
+		String command = Integer.toString(opt.ordinal())+"=" +param;
 		Map<String, Object> commandMap = Maps.newHashMap();
 		commandMap.put("command", command);
 		sendOutputJson(publishers[0], commandMap);
@@ -782,10 +846,10 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 	
 	/**
 	 * Sends a command to the mavlink activity to perform some action. The
-	 * command argument comes in a String separated by '-' separator. 
+	 * command argument comes in a String separated by '=' separator. 
 	 * 
 	 * @param opt			 Command from the command option list.
-	 * @param param			 Contains the command arguments as a string separated by '-' separator.
+	 * @param param			 Contains the command arguments as a string separated by '=' separator.
 	 *            			 This follows the parameters of the command as explained
 	 *            			 in the CommandOptions enum.
 	 * @return				 Response from the mavlink activity.
@@ -812,10 +876,10 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 	 * CommandOptions ordinal value. After this follows the other arguments
 	 * required for the function.
 	 * 
-	 * @param cmd			 Contains the command as a string separated by '-' separator.
+	 * @param cmd			 Contains the command as a string separated by '=' separator.
 	 *           			 The first value is always a CommandOption's ordinal value.
 	 *            			 After this follows the parameters of the command as explained
-	 *            			 in the CommandOptions enum. They are separated by '-'.
+	 *            			 in the CommandOptions enum. They are separated by '='.
 	 * @param timeout		 Timeout Period of the command.
 	 * @return				 Response from the mavlink activity.
 	 * 						 value = 0 	-> 	SUCCESS,
@@ -842,10 +906,10 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 	 * CommandOptions ordinal value. After this follows the other arguments
 	 * required for the function.
 	 * 
-	 * @param cmd			 Contains the command as a string separated by '-' separator.
+	 * @param cmd			 Contains the command as a string separated by '=' separator.
 	 *           			 The first value is always a CommandOption's ordinal value.
 	 *            			 After this follows the parameters of the command as explained
-	 *            			 in the CommandOptions enum. They are separated by '-'.
+	 *            			 in the CommandOptions enum. They are separated by '='.
 	 * @return				 Response from the mavlink activity.
 	 * 						 value = 0 	-> 	SUCCESS,
 	 * 						 value =-1 	-> 	TIMEOUT,
@@ -905,104 +969,120 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 		{
 			if (message.containsKey("mission"))
 			{
-				readWaypointList = new ArrayList<String[]>();
-				//getLog().info(message.get("mission").toString());
-				String [] result = message.get("mission").toString().split("\\],");
-				String[] wpList;
-				for (int i = 0; i < result.length; i++)
+				if (message.get("mission") != null)
 				{
-					wpList = result[i].replaceAll("\\[", "")
-							.replaceAll("\\]", "").replaceAll(" ", "")
-							.split(",");
-					readWaypointList.add(wpList);
-				} 
+					readWaypointList = new ArrayList<String[]>();
+					// getLog().info(message.get("mission").toString());
+					String[] result = message.get("mission").toString()
+							.split("\\],");
+					String[] wpList;
+					for (int i = 0; i < result.length; i++)
+					{
+						wpList = result[i].replaceAll("\\[", "")
+								.replaceAll("\\]", "").replaceAll(" ", "")
+								.split(",");
+						readWaypointList.add(wpList);
+					}
+				}
 			}
 			if (message.containsKey("param_list"))
 			{
-				//@SuppressWarnings("unchecked")
-				Map<String,Double> map = (Map<String,Double>) message.get("param_list");
-				//getLog().info(message.get("param_list").toString());
-				paramList = map;
+				if (message.get("param_list") != null)
+				{
+					Map<String, Double> map = (Map<String, Double>) message
+							.get("param_list");
+					// getLog().info(message.get("param_list").toString());
+					paramList = map;
+				}
 			}
 			if (message.containsKey("param"))
 			{
-				String doubleMessage = message.get("param").toString();
-				param = Double.parseDouble(doubleMessage);
+				if (message.get("param") != null)
+				{
+					String doubleMessage = message.get("param").toString();
+					param = Double.parseDouble(doubleMessage);
+				}
 			}
 			if (message.containsKey("log_entry"))
 			{
-				logEntry = new ArrayList<String>();
-				//getLog().info(message.get("log_entry").toString());
-				String [] result = message.get("log_entry").toString().replaceAll("\\[", "")
-						.replaceAll("\\]", "").replaceAll(" ", "")
-						.split(",");
-				for (int i = 0; i < result.length; i++)
+				if (message.get("log_entry") != null)
 				{
-					logEntry.add(result[i]);
+					logEntry = new ArrayList<String>();
+					// getLog().info(message.get("log_entry").toString());
+					String[] result = message.get("log_entry").toString()
+							.replaceAll("\\[", "").replaceAll("\\]", "")
+							.replaceAll(" ", "").split(",");
+					for (int i = 0; i < result.length; i++)
+					{
+						logEntry.add(result[i]);
+					}
 				}
 			}
 			if (message.containsKey("command"))
 			{
-				String[] splitMessage = message.get("command").toString()
-						.split("-");
-				if (splitMessage[0].equals("SUCCESS"))
+				if (message.get("command")!=null)
 				{
-					getLog().info(
-							"Mavlink activity returned SUCCESS for the given command");
-					synchronized (this)
+					String[] splitMessage = message.get("command").toString()
+							.split("=");
+					if (splitMessage[0].equals("SUCCESS"))
 					{
-						cmdReturn = 0;
+						getLog().info(
+								"Mavlink activity returned SUCCESS for the given command");
+						synchronized (this)
+						{
+							cmdReturn = 0;
+						}
 					}
-				}
-				else if (splitMessage[0].equals("BADCMD"))
-				{
-					getLog().warn(
-							"Mavlink activity does not recognize the given command");
-					synchronized (this)
+					else if (splitMessage[0].equals("BADCMD"))
 					{
-						cmdReturn = -2;
+						getLog().warn(
+								"Mavlink activity does not recognize the given command");
+						synchronized (this)
+						{
+							cmdReturn = -2;
+						}
 					}
-				}
-				else if (splitMessage[0].equals("NULL"))
-				{
-					getLog().warn(
-							"Mavlink activity returned NULL for the get command");
-					synchronized (this)
+					else if (splitMessage[0].equals("NULL"))
 					{
-						cmdReturn = -3;
+						getLog().warn(
+								"Mavlink activity returned NULL for the get command");
+						synchronized (this)
+						{
+							cmdReturn = -3;
+						}
 					}
-				}
-				else if (splitMessage[0].equals("FAIL"))
-				{
-					getLog().warn(
-							"Mavlink activity returned FAIL status for the given command");
-					if (splitMessage.length == 2)
+					else if (splitMessage[0].equals("FAIL"))
 					{
-						try
+						getLog().warn(
+								"Mavlink activity returned FAIL status for the given command");
+						if (splitMessage.length == 2)
+						{
+							try
+							{
+								synchronized (this)
+								{
+									cmdReturn = Integer
+											.parseInt(splitMessage[1].trim());
+								}
+							}
+							catch (NumberFormatException e)
+							{
+								getLog().error(
+										"Arbitrary fail type from mavlink activity");
+							}
+						}
+						else if (splitMessage.length == 1)
 						{
 							synchronized (this)
 							{
-								cmdReturn = Integer.parseInt(splitMessage[1]
-										.trim());
+								cmdReturn = 1;
 							}
 						}
-						catch (NumberFormatException e)
-						{
-							getLog().error(
-									"Arbitrary fail type from mavlink activity");
-						}
 					}
-					else if (splitMessage.length ==1)
+					else
 					{
-						synchronized (this)
-						{
-							cmdReturn = 1;
-						}
+						getLog().warn("Mavlink Activity sent unkown response");
 					}
-				}
-				else
-				{
-					getLog().warn("Mavlink Activity sent unkown response");
 				}
 			}
 		}
@@ -1030,6 +1110,7 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 		int ack = sendCommand(CommandOptions.SET_MODE, "Stabilize");
 		if (ack == 0)
 		{
+			ack = sendCommand(CommandOptions.ARM);
 			getLog().info("Mode successfully set to stabilize");
 			ack = sendCommand(CommandOptions.WRITE_MISSION);
 			if (ack == 0)
@@ -1039,21 +1120,18 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 				if (ack == 0)
 				{
 					getLog().info("Arming of the drone successful");
+					if(paramList.isEmpty())
+					{
+						rc_out[2] = 1130;
+					}
+					else
+					{
+					rc_out[2] = (short) (paramList.get("RC3_MIN").shortValue()+130);
+					}
 					ack = sendCommand(CommandOptions.SET_MODE, "Auto");
 					if (ack == 0)
 					{
-						Date start = new Date();
-						int i = 1;
-						while ((System.currentTimeMillis() - start.getTime()) < 3050)
-						{
-							if ((System.currentTimeMillis() - start.getTime()) >(1000*i))
-							{
-								getLog().warn(
-										"GOING TO FLY IN " + (4 - i) + " sec");
-								i++;
-							}
-						}
-						rc_out[2] = (short) (paramList.get("RC3_MIN").shortValue()+150);
+						getLog().warn("Going to fly any second dnow");
 						getLog().info("Drone set to auto mode");
 						getLog().info(
 								"All sequence successfully sent to the drone");
