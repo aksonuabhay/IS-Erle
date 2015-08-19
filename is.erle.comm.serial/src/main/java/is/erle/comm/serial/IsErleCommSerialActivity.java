@@ -255,6 +255,9 @@ public class IsErleCommSerialActivity extends BaseRoutableRosActivity {
 		}
 	}
 	
+	/**
+	 * Callback for serial listener.
+	 */
 	private void handleSerialInput()
 	{
 		int tempInt = serial.read(serialData);

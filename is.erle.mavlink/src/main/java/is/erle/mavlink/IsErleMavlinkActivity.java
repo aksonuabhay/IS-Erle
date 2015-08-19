@@ -163,6 +163,10 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	 * subscribers[2] -> captain
 	 * Topic Name : captain/output
 	 * Usage : Receive command from the captain activity
+	 * 
+	 * subscribers[3] -> rc_output
+	 * Topic Name : captain/rc_output
+	 * Usage : Receive RC output from the captain activity
 	 */
 	private static String subscribers[];
 	
@@ -341,6 +345,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	/**
 	 * Frame of reference of the safety allowed area min max pair.
 	 */
+	@SuppressWarnings("unused")
 	private byte allowedAreaFrame;
 	
 	/**
@@ -552,6 +557,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 					// temp.put("mavMessage", mavMessage);
 					// sendOutputJson(publishers[2], temp);
 					getLog().info(mavMessage.toString());
+					@SuppressWarnings("unused")
 					ManagedCommand mavMessageHandler = getManagedCommands().submit(new Runnable()
 					{
 						
@@ -666,6 +672,15 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		}
     }
     
+	/**
+	 * Handles all the commands from the captain activity and performs the
+	 * actions. Then, it processes the results and sends it back to the captain
+	 * activity.
+	 * 
+	 * @param message
+	 *            message from captain activity split into an array using "="
+	 *            separator
+	 */
 	private void handleCaptainMessage(String[] message)
 	{
 		/*
@@ -699,7 +714,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			getLog().debug("SENDING MISSION ITEM: " + heartbeatSend);
 			break;
 
-		// READ MISSION LIST
+		/**
+		 *  Handles READ MISSION LIST Command from the captain activity
+		 */
 		case 1:
 			boolean result = false;
 			Map<String, Object> tempMissionRead = Maps.newHashMap();
@@ -756,7 +773,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			}
 			break;
 
-		// GET_MISSION
+		/**
+		 * Handles GET_MISSION Command from the captain activity
+		 */
 		case 2:
 			Map<String, Object> tempMission = Maps.newHashMap();
 			if (message.length == 1)
@@ -791,7 +810,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			}
 			break;
 
-		// WRITE MISSION
+		/**
+		 * Handles WRITE MISSION Command from the captain activity
+		 */
 		case 3:
 			boolean resultWriteMission = false;
 			Map<String, Object> tempWriteMissionStart = Maps.newHashMap();
@@ -837,7 +858,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			}
 			break;
 
-		// SET CURRENT ACTIVE WP
+		/**
+		 * Handles SET CURRENT ACTIVE WP Command from the captain activity
+		 */
 		case 4:
 			boolean resultSetWP = false;
 			Map<String, Object> tempSetCurrentWP = Maps.newHashMap();
@@ -897,7 +920,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			}
 			break;
 
-		// CLEAR MISSION
+		/**
+		 * Handles CLEAR MISSION Command from the captain activity
+		 */
 		case 5:
 			boolean resultClearMission = false;
 			Map<String, Object> tempClearMission = Maps.newHashMap();
@@ -944,7 +969,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			}
 			break;
 
-		// ARM
+		/**
+		 * Handles ARM Command from the captain activity
+		 */
 		case 6:
 			boolean resultARM = false;
 			Map<String, Object> tempARM = Maps.newHashMap();
@@ -1022,7 +1049,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			}
 			break;
 
-		// READ PARAMETER LIST START
+		/**
+		 * Handles READ PARAMETER LIST START Command from the captain activity
+		 */
 		case 7:
 			boolean resultParameterList = false;
 			Map<String, Object> tempReadParameterListStart = Maps.newHashMap();
@@ -1068,7 +1097,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			}
 			break;
 
-		// GET PARAMETER LIST
+		/**
+		 * Handles GET PARAMETER LIST Command from the captain activity
+		 */
 		case 8:
 			Map<String, Object> tempParameterList = Maps.newHashMap();
 			if (message.length == 1)
@@ -1100,7 +1131,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			}
 			break;
 
-		// GET PARAMETER
+		/**
+		 * Handles GET PARAMETER Command from the captain activity
+		 */
 		case 9:
 			Map<String, Object> tempParameter = Maps.newHashMap();
 			if (message.length == 2)
@@ -1139,7 +1172,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			}
 			break;
 
-		// SET_PARAMETER
+		/**
+		 * Handles SET_PARAMETER Command from the captain activity
+		 */
 		case 10:
 			boolean resultSetParameter = false;
 			Map<String, Object> tempSetParameter = Maps.newHashMap();
@@ -1201,7 +1236,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			}
 			break;
 
-		// AUTOPILOT_REBOOT
+		/**
+		 * Handles AUTOPILOT_REBOOT Command from the captain activity
+		 */
 		case 11:
 			boolean resultAutoPilotReboot = false;
 			Map<String, Object> tempAutoPilotReboot = Maps.newHashMap();
@@ -1246,7 +1283,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			}
 			break;
 
-		// AUTOPILOT_SHUTDOWN
+		/**
+		 * Handles AUTOPILOT_SHUTDOWN Command from the captain activity
+		 */
 		case 12:
 			boolean resultAutoPilotShutDown = false;
 			Map<String, Object> tempAutoPilotShutDown = Maps.newHashMap();
@@ -1292,7 +1331,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			}
 			break;
 
-		// BOOTLOADER_REBOOT
+		/**
+		 * Handles BOOTLOADER_REBOOT Command from the captain activity
+		 */
 		case 13:
 			boolean resultBootloaderReboot = false;
 			Map<String, Object> tempBootloaderReboot = Maps.newHashMap();
@@ -1338,7 +1379,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			}
 			break;
 
-		// SYSTEM_SHUTDOWN
+		/**
+		 * Handles SYSTEM_SHUTDOWN Command from the captain activity
+		 */
 		case 14:
 			boolean resultSystemShutDown = false;
 			Map<String, Object> tempSystemShutDown = Maps.newHashMap();
@@ -1383,7 +1426,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			}
 			break;
 
-		// SYSTEM_REBOOT
+		/**
+		 * Handles SYSTEM_REBOOT Command from the captain activity
+		 */
 		case 15:
 			boolean resultSystemReboot = false;
 			Map<String, Object> tempSystemReboot = Maps.newHashMap();
@@ -1428,7 +1473,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			}
 			break;
 
-		// SET_MODE
+		/**
+		 * Handles SET_MODE Command from the captain activity
+		 */
 		case 16:
 			boolean resultSetMode = false;
 			Map<String, Object> tempSetMode = Maps.newHashMap();
@@ -1473,7 +1520,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			}
 			break;
 
-		// SET_ALLOWED_AREA
+		/**
+		 * Handles SET_ALLOWED_AREA Command from the captain activity
+		 */
 		case 17:
 			boolean resultSetAllowedArea = false;
 			Map<String, Object> tempSetAllowedArea = Maps.newHashMap();
@@ -1550,7 +1599,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			}
 			break;
 
-		// SET_GPS_ORIGIN
+		/**
+		 * Handles SET_GPS_ORIGIN Command from the captain activity
+		 */
 		case 18:
 			boolean resultSetGpsOrigin = false;
 			Map<String, Object> tempSetGpsOrigin = Maps.newHashMap();
@@ -1615,7 +1666,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			}
 			break;
 
-		// READ_LOG_ENTRY
+		/**
+		 * Handles READ_LOG_ENTRY Command from the captain activity
+		 */
 		case 19:
 			boolean resultReadLogEntry = false;
 			Map<String, Object> tempReadLogEntry = Maps.newHashMap();
@@ -1662,7 +1715,9 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			}
 			break;
 
-		// GET_LOG_ENTRY
+		/**
+		 * Handles GET_LOG_ENTRY Command from the captain activity
+		 */
 		case 20:
 			Map<String, Object> tempGetLogEntry = Maps.newHashMap();
 			if (message.length == 1)
@@ -1697,17 +1752,23 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			}
 			break;
 
-		// READ_LOG_DATA
+		/**
+		 * Handles READ_LOG_DATA Command from the captain activity
+		 */
 		case 21:
 			// Still to write the function
 			break;
 
-		// GET_LOG_DATA
+		/**
+		 * Handles GET_LOG_DATA Command from the captain activity
+		 */
 		case 22:
 			// Still to write the function
 			break;
 
-		// UPDATE_TARGET
+		/**
+		 * Handles UPDATE_TARGET Command from the captain activity
+		 */
 		case 23:
 			Map<String, Object> tempUpdateTarget = Maps.newHashMap();
 			if (message.length == 2)
@@ -1759,7 +1820,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 
 	}
 
-	/*
+	/**
      * Use this function to get a variable name which is equal to certain value
      * Intended for getting variables in the enum folder of mavlink package
      */
@@ -1797,11 +1858,12 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		return variableName;
     }
 
-    /*
+    /**
      * Use this function to get all the variables of a specified class
      * Intended for getting values from mavlink package
      */
-    private String [] getVariableNames(String className )
+    @SuppressWarnings("unused")
+	private String [] getVariableNames(String className )
     {
     	String variableNames [];
 		Class<?> classVar = null;
@@ -1821,13 +1883,17 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		}
 		return variableNames;
     }
-    /*
-     * Handles all incoming messages from drone
-     */
+    
+	/**
+	 * Handles all incoming messages from drone via communications activity.
+	 * 
+	 * @param mavMessage2
+	 *            message received from communication activity
+	 */
 	private void handleMavMessage(MAVLinkMessage mavMessage2) 
 	{
-		//To Do
-		switch (mavMessage2.msgid) {
+		switch (mavMessage2.msgid) 
+		{
 		case msg_set_cam_shutter.MAVLINK_MSG_ID_SET_CAM_SHUTTER:
 			/*
 			 * Not a message receive case
@@ -4976,11 +5042,35 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		
 	}
 
+	/**
+	 * It sends a START message to the waypoint activity, denoting the start of
+	 * a send mission sequence. Function overload for
+	 * {@link #sendMissionListStart(byte, byte)}. Calls
+	 * {@link #sendMissionListStart(byte, byte)} with {@link #targetSystem} and
+	 * {@link #targetComponent}
+	 * 
+	 * @return <code>true</code> if sending of the mission send list command
+	 *         is successful; <code>false</code> otherwise.
+	 */
 	private boolean sendMissionListStart()
 	{
 		return sendMissionListStart(targetSystem, targetComponent);
 	}
 	
+	/**
+	 * It sends a START message to the waypoint activity, denoting the start of
+	 * a send mission sequence.it also sets the global {@link #tempTSystem} and
+	 * {@link #tempTComponent} with the values asked by the user. It waits for
+	 * the mission acknowledgement message from the drone, it it returns success
+	 * then true is returned.
+	 * 
+	 * @param tSystem
+	 *            Target system of the drone.
+	 * @param tComponent
+	 *            Target Component on the drone.
+	 * @return <code>true</code> if sending of the mission send list command
+	 *         is successful; <code>false</code> otherwise.
+	 */
 	private boolean sendMissionListStart(byte tSystem, byte tComponent)
 	{
 		String tempMissionRequest = "START";
@@ -5048,11 +5138,40 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		}
 	}
 	
+	/**
+	 * Function overload for {@link #sendMissionListCount(short, byte, byte)}.
+	 * Calls {@link #sendMissionListCount(short, byte, byte)} with
+	 * {@link #targetSystem} and {@link #targetComponent}
+	 * 
+	 * @param count
+	 *            Number of mission items in the mission file.
+	 * @return <code>true</code> if the sending of the mission count command is
+	 *         successful and the activity receives a waypoint request;
+	 *         <code>false</code> otherwise.
+	 */
+	@SuppressWarnings("unused")
 	private boolean sendMissionListCount(short count)
 	{
 		return sendMissionListCount(count,targetSystem,targetComponent);
 	}
 	
+	/**
+	 * It sends a mission count message to the communications activity to be
+	 * sent to th drone, denoting the start of a send mission sequence.it also
+	 * sets the global {@link #missionRequestFlag} to false initially and on
+	 * successful receive of waypoint request message it sets it to false.
+	 * 
+	 * 
+	 * @param count
+	 *            Number of mission items in the mission file.
+	 * @param tSystem
+	 *            Target system of the drone.
+	 * @param tComponent
+	 *            Target Component on the drone.
+	 * @return <code>true</code> if the sending of the mission count command is
+	 *         successful and the activity receives a waypoint request;
+	 *         <code>false</code> otherwise.
+	 */
 	private boolean sendMissionListCount(short count, byte tSystem, byte tComponent)
 	{
 		missionRequestFlag = false;
@@ -5100,6 +5219,12 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		 */
 	}
 	
+	/**
+	 * Read the waypoint data from the mission file locally with this sequence number.
+	 * 
+	 * @param seq
+	 *            Seq number of the waypoint to read in mission file.
+	 */
 	private void readMissionFile(short seq)
 	{
 		String request = "MISSION_REQUEST-"
@@ -5114,6 +5239,18 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		}
 	}
 	
+	/**
+	 * It sends a mission item message to the communications activity to be sent
+	 * to th drone, after getting a waypoint request.
+	 * 
+	 * 
+	 * @param missionWP
+	 *            Waypoint data from the mission file.
+	 * @param tSystem
+	 *            Target system of the drone.
+	 * @param tComponent
+	 *            Target Component on the drone.
+	 */
 	private void sendMissionItem(String [] missionWP, byte tSystem, byte tComponent)
 	{
 
@@ -5151,12 +5288,36 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		getLog().info("SENDING MISSION ITEM: " + missionItem.seq);
 		getLog().info(missionItem.toString()); 
 	}
-	
+
+	/**
+	 * Function overload for {@link #readMissionListStart(byte, byte)}. Calls
+	 * {@link #readMissionListStart(byte, byte)} with {@link #targetSystem} and
+	 * {@link #targetComponent}
+	 * 
+	 * @return <code>true</code> if the sending of the mission request list
+	 *         command is successful; <code>false</code> otherwise and even
+	 *         timeout.
+	 */
 	private boolean readMissionListStart()
 	{
 		return readMissionListStart(targetSystem, targetComponent);
 	}
 
+	/**
+	 * It sends a request list command to the drone to read all the mission file
+	 * on the drone. It then waits for the drone to send a waypoint count
+	 * message by checking for {@link #readWaypointCount} value. If it is not -1
+	 * then some waypoint count message has been received. If it doesn't
+	 * receieve the message it will retry for three times after which it will
+	 * timeout and return a false.
+	 * 
+	 * @param tSystem
+	 *            Target system of the drone.
+	 * @param tComponent
+	 *            Target Component on the drone.
+	 * @return <code>true</code> if the sending of the mission request list command
+	 *         is successful; <code>false</code> otherwise and even timeout.
+	 */
 	private boolean readMissionListStart(byte tSystem, byte tComponent)
 	{
 		msg_mission_request_list reqMissionList = new msg_mission_request_list();
@@ -5200,11 +5361,36 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		 */
 	}
 
+	/**
+	 * Function overload for {@link #setMissionCount(short, byte, byte)}. Calls
+	 * {@link #setMissionCount(short, byte, byte)} with {@link #targetSystem}
+	 * and {@link #targetComponent}
+	 * 
+	 * @param count
+	 *            Number of waypoint data stored on the drone.
+	 * @return <code>true</code> if the sending of the waypoint request command
+	 *         is successful; <code>false</code> otherwise and even timeout.
+	 */
 	private boolean setMissionCount(short count)
 	{
 		return setMissionCount(count, targetSystem, targetComponent);
 	}
 
+	/**
+	 * It sets the value of {@link #readWaypointCount} with that received from
+	 * the drone. It sends a mission request command to the drone to read the
+	 * zeroth waypoint data on the drone. It then waits for the drone to send a
+	 * mission item message after which it return true, otherwise false.
+	 * 
+	 * @param count
+	 *            Number of waypoint data stored on the drone.
+	 * @param tSystem
+	 *            Target system of the drone.
+	 * @param tComponent
+	 *            Target Component on the drone.
+	 * @return <code>true</code> if the sending of the waypoint request command
+	 *         is successful; <code>false</code> otherwise and even timeout.
+	 */
 	private boolean setMissionCount(short count, byte tSystem, byte tComponent)
 	{
 		/*
@@ -5215,11 +5401,40 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		return sendWPRequest((short) 0, tSystem, tComponent);
 	}
 
+	/**
+	 * Function overload for {@link #sendWPRequest(short, byte, byte)}. Calls
+	 * {@link #sendWPRequest(short, byte, byte)} with {@link #targetSystem} and
+	 * {@link #targetComponent}
+	 * 
+	 * @param i
+	 *            Request this waypoint data from the drone.
+	 * @return <code>true</code> if the sending of the waypoint request command
+	 *         is successful and the activity receives a valid waypoint message;
+	 *         <code>false</code> otherwise and even timeout.
+	 */
+	@SuppressWarnings("unused")
 	private boolean sendWPRequest(short i)
 	{
 		return sendWPRequest(i, targetSystem, targetComponent);
 	}
 
+	/**
+	 * It sends a waypoint request to the drone for ith waypoint data. It then
+	 * checks whether a waypoint dat ahas been received or not by checking the
+	 * size of {@link #readWaypointList}. If it increased by one, that means a
+	 * waypoint data has been received and then it returns a true value,
+	 * otherwise it return false.
+	 * 
+	 * @param i
+	 *            Request this waypoint data from the drone.
+	 * @param tSystem
+	 *            Target system of the drone.
+	 * @param tComponent
+	 *            Target Component on the drone.
+	 * @return <code>true</code> if the sending of the waypoint request command
+	 *         is successful and the activity receives a valid waypoint message;
+	 *         <code>false</code> otherwise and even timeout.
+	 */
 	private boolean sendWPRequest(short i, byte tSystem, byte tComponent)
 	{
 		/*
@@ -5269,11 +5484,35 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		 */
 	}
 
+	/**
+	 * Updates the {@link #readWaypointList} with the new mission item received.
+	 * Function overload for
+	 * {@link #updateReadWPList(msg_mission_item, byte, byte)}. Calls
+	 * {@link #updateReadWPList(msg_mission_item, byte, byte)} with
+	 * {@link #targetSystem} and {@link #targetComponent}
+	 * 
+	 * @param mavMissionItem
+	 *            Mission data received from the drone.
+	 */
 	private void updateReadWPList(msg_mission_item mavMissionItem)
 	{
 		updateReadWPList(mavMissionItem, targetSystem, targetComponent);
 	}
 
+	/**
+	 * Updates the {@link #readWaypointList} with the new mission item received.
+	 * It is called after receiving a mission item from the drone. If the
+	 * expected nuber of the mission items have been received then, it sends a
+	 * mission acknowledgement message otherwise it sends a waypoint request
+	 * message to get the next mission item.
+	 * 
+	 * @param mavMissionItem
+	 *            Mission data received from the drone.
+	 * @param tSystem
+	 *            Target system of the drone.
+	 * @param tComponent
+	 *            Target Component on the drone
+	 */
 	private void updateReadWPList(msg_mission_item mavMissionItem,
 			byte tSystem, byte tComponent)
 	{
@@ -5322,11 +5561,34 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		}
 	}
 
+	/**
+	 * Sends an acknowledgement data to the drone saying the mission receive was
+	 * successful or failure due to some reasons.
+	 * Function overload for {@link #sendMissionAck(byte, byte, byte)}. Calls
+	 * {@link #sendMissionAck(byte, byte, byte)} with {@link #targetSystem} and
+	 * {@link #targetComponent}
+	 * 
+	 * @param ackType
+	 *            Acknowledgement type to be sent.
+	 * @see MAV_MISSION_RESULT
+	 */
 	private void sendMissionAck(byte ackType)
 	{
 		sendMissionAck(ackType, targetSystem, targetComponent);
 	}
 
+	/**
+	 * Send an acknowledgement data to the drone saying the mission receive was
+	 * successful or failure due to some reasons.
+	 * 
+	 * @param ackType
+	 *            Acknowledgement type to be sent.
+	 * @param tSystem
+	 *            Target system of the drone.
+	 * @param tComponent
+	 *            Target Component on the drone
+	 * @see MAV_MISSION_RESULT
+	 */
 	private void sendMissionAck(byte ackType, byte tSystem, byte tComponent)
 	{
 		msg_mission_ack missionAck = new msg_mission_ack();
@@ -5345,15 +5607,38 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		 */
 	}
 
-	// Untested
+	/**
+	 * Sets the current mission sequence on the drone to the specified sequence.
+	 * Function overload for {@link #setCurrentActiveWP(short, byte, byte)}.
+	 * Calls {@link #setCurrentActiveWP(short, byte, byte)} with
+	 * {@link #targetSystem} and {@link #targetComponent}
+	 * 
+	 * @param currentSequence
+	 *            Current mission sequence to be set(made active) on the drone.
+	 * @return It checks for the {@link #missionCurrentSeq} and if it is equal
+	 *         to the currentSequence, it returns a <code>true</code>, otherwise
+	 *         it times out after 3 retries and returns <code>false</code>.
+	 */
 	private boolean setCurrentActiveWP(short currentSequence)
 	{
 		return setCurrentActiveWP(currentSequence, targetSystem, targetComponent);
 	}
 
-	// Untested
-
-	// Untested
+	/**
+	 * Sets the current mission sequence on the drone to the specified sequence.
+	 * It means that, the drone will start executing that particular mission
+	 * sequence stored on the mission file.
+	 * 
+	 * @param currentSequence
+	 *            Current mission sequence to be set(made active) on the drone.
+	 * @param tSystem
+	 *            Target system of the drone.
+	 * @param tComponent
+	 *            Target Component on the drone
+	 * @return It checks for the {@link #missionCurrentSeq} and if it is equal
+	 *         to the currentSequence, it returns a <code>true</code>, otherwise
+	 *         it times out after 3 retries and returns <code>false</code>.
+	 */
 	private boolean setCurrentActiveWP(short currentSequence, byte tSystem,
 			byte tComponent)
 	{
@@ -5400,13 +5685,33 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		 */
 	}
 
-	// Untested
+	/**
+	 * Clears all the mission data on the drone.
+	 * Function overload for {@link #clearMissionList(byte, byte)}.
+	 * Calls {@link #clearMissionList(byte, byte)} with
+	 * {@link #targetSystem} and {@link #targetComponent}
+	 * 
+	 * @return It checks for the {@link #isMissionCleared} value and if it is equal
+	 *         to false, it returns a <code>true</code>, otherwise
+	 *         it times out after 3 retries and returns <code>false</code>.
+	 */
 	private boolean clearMissionList()
 	{
 		return clearMissionList(targetSystem, targetComponent);
 	}
 
-	// Untested
+	/**
+	 * Clears all the mission data on the drone.
+	 *
+	 * 
+	 * @param tSystem
+	 *            Target system of the drone.
+	 * @param tComponent
+	 *            Target Component on the drone
+	 * @return It checks for the {@link #isMissionCleared} value and if it is equal
+	 *         to false, it returns a <code>true</code>, otherwise
+	 *         it times out after 3 retries and returns <code>false</code>.
+	 */
 	private boolean clearMissionList(byte tSystem, byte tComponent)
 	{
 		msg_mission_clear_all missionClear = new msg_mission_clear_all();
@@ -5449,27 +5754,108 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		}
 	}
 
-	// Tested
+	/**
+	 * It arms/disarms the drone.
+	 * Function overload for {@link #doARM(boolean, byte, byte)}. Calls
+	 * {@link #doARM(boolean, byte, byte)} with {@link #targetSystem} and
+	 * {@link #targetComponent}
+	 * 
+	 * @param armit
+	 *            True for arming the drone, false for disarming the drone.
+	 * @return It checks for the {@link #isCommandSent} value and if it is equal
+	 *         to false, it returns a <code>true</code>, otherwise it times
+	 *         out after 3 retries and returns <code>false</code>.
+	 */
 	private boolean doARM(boolean armit)
 	{
 		return doARM(armit, targetSystem, targetComponent);
 	}
 
-	// Tested
+	/**
+	 * It arms/disarms the drone.
+	 * It calls a doCommand function with
+	 * {@link MAV_CMD#MAV_CMD_COMPONENT_ARM_DISARM}. Be careful with this
+	 * function, it can arm/disarm without any safety checks meaning the drone
+	 * can get disarmed in air too!
+	 * 
+	 * @param armit
+	 *            True for arming the drone, false for disarming the drone.
+	 * @param tSystem
+	 *            Target system of the drone.
+	 * @param tComponent
+	 *            Target Component on the drone
+	 * @return It checks for the {@link #isCommandSent} value and if it is equal
+	 *         to false, it returns a <code>true</code>, otherwise it times
+	 *         out after 3 retries and returns <code>false</code>.
+	 */
 	private boolean doARM(boolean armit, byte tSystem, byte tComponent)
 	{
 		return doCommand((short) MAV_CMD.MAV_CMD_COMPONENT_ARM_DISARM, armit ? 1 : 0,
 				21196, 0, 0, 0, 0, 0, tSystem, tComponent);
 	}
 
-	// Tested
+	/**
+	 * Function overload for
+	 * {@link #doCommand(short, float, float, float, float, float, float, float, byte, byte)}
+	 * . Calls
+	 * {@link #doCommand(short, float, float, float, float, float, float, float, byte, byte)}
+	 * with {@link #targetSystem} and {@link #targetComponent}
+	 * 
+	 * @param actionid
+	 *            {@link MAV_CMD} class has all the commands to send.
+	 * @param p1
+	 *            Parameter 1
+	 * @param p2
+	 *            Parameter 2
+	 * @param p3
+	 *            Parameter 3
+	 * @param p4
+	 *            Parameter 4
+	 * @param p5
+	 *            Parameter 5
+	 * @param p6
+	 *            Parameter 6
+	 * @param p7
+	 *            Parameter 7
+	 * @return It checks for the {@link #isCommandSent} value and if it is equal
+	 *         to false, it returns a <code>true</code>, otherwise it times
+	 *         out after 3 retries and returns <code>false</code>.
+	 */
+	@SuppressWarnings("unused")
 	private boolean doCommand(short actionid, float p1, float p2, float p3,
 			float p4, float p5, float p6, float p7)
 	{
 		return doCommand(actionid, p1, p2, p3, p4, p5, p6, p7, targetSystem, targetComponent);
 	}
 
-	// Tested
+	/**
+	 * Sends a command to the drone from a list of commands in the
+	 * {@link MAV_CMD} class.
+	 * 
+	 * @param actionid
+	 *            {@link MAV_CMD} class has all the commands to send.
+	 * @param p1
+	 *            Parameter 1
+	 * @param p2
+	 *            Parameter 2
+	 * @param p3
+	 *            Parameter 3
+	 * @param p4
+	 *            Parameter 4
+	 * @param p5
+	 *            Parameter 5
+	 * @param p6
+	 *            Parameter 6
+	 * @param p7
+	 *            Parameter 7
+	 * @param tSystem
+	 *            Target system of the drone.
+	 * @param tComponent
+	 *            Target Component on the drone
+	 * @return It checks for the {@link #isCommandSent} value and if it is equal
+	 *         to false, it returns a <code>true</code>, otherwise it times
+	 *         out after 3 retries and returns <code>false</code>.
+	 */
 	private boolean doCommand(short actionid, float p1, float p2, float p3,
 			float p4, float p5, float p6, float p7, byte tSystem,
 			byte tComponent)
@@ -5526,44 +5912,89 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		 */
 	}
 
-	/*
-	 * Tested - This function reads all the parameters stored on the drone.
-	 * WARNING - Never call this function when the drone is in air
+	/**
+	 * This function reads all the parameters stored on the drone. WARNING -
+	 * Never call this function when the drone is in air. Function overload for
+	 * {@link #readParameterListStart(byte, byte)} . Calls
+	 * {@link #readParameterListStart(byte, byte)} with {@link #targetSystem}
+	 * and {@link #targetComponent}
+	 * 
+	 * @return It checks for {@link #receiveParamList} value and if it is equal
+	 *         to false, it returns a <code>true</code>, otherwise it times
+	 *         out after 3 retries and returns <code>false</code>.
 	 */
 	private boolean readParameterListStart()
 	{
 		return readParameterListStart(targetSystem, targetComponent);
 	}
 
-	/*
-	 * This function should not be called before the readParameterListStart
-	 * function as it initializes the critical components to be used
+	/**
+	 * This function reads all the parameters stored on the drone. WARNING -
+	 * Never call this function when the drone is in air. Function overload for
+	 * {@link #readParameterList(byte, byte)} . Calls
+	 * {@link #readParameterList(byte, byte)} with {@link #targetSystem}
+	 * and {@link #targetComponent}
+	 * 
+	 * @return It checks for {@link #receiveParamList} value and if it is equal
+	 *         to false, it returns a <code>true</code>, otherwise it times
+	 *         out after 3 retries and returns <code>false</code>.
 	 */
+	@SuppressWarnings("unused")
 	private boolean readParamList()
 	{
 		return readParamList(targetSystem, targetComponent);
 	}
 
-	/*
-	 * Gets a single Parameter from the drone.
+	/**
+	 * Gets a single Parameter from the drone with the given index. WARNING -
+	 * Never call this function when the drone is in air. Function overload for
+	 * {@link #readParam(short, byte, byte)} . Calls
+	 * {@link #readParam(short, byte, byte)} with {@link #targetSystem} and
+	 * {@link #targetComponent}
+	 * 
+	 * @param index
+	 *            The index of parameter to be requested.
+	 * @return It checks for {@link #receiveParam} value and if it is equal to
+	 *         false, it returns a <code>true</code>, otherwise it times out
+	 *         after 3 retries and returns <code>false</code>.
 	 */
+	@SuppressWarnings("unused")
 	private boolean readParam(short index)
 	{
 		return readParam(index, targetSystem, targetComponent);
 	}
 
-	/*
-	 * Gets a single Parameter from the drone.
+	/**
+	 * Gets a single Parameter from the drone with a given string id. WARNING -
+	 * Never call this function when the drone is in air. Function overload for
+	 * {@link #readParam(String, byte, byte)} . Calls
+	 * {@link #readParam(String, byte, byte)} with {@link #targetSystem} and
+	 * {@link #targetComponent}
+	 * 
+	 * @param id
+	 *            The string id of parameter to be requested.
+	 * @return It checks for {@link #receiveParam} value and if it is equal to
+	 *         false, it returns a <code>true</code>, otherwise it times out
+	 *         after 3 retries and returns <code>false</code>.
 	 */
+	@SuppressWarnings("unused")
 	private boolean readParam(String id)
 	{
 		return readParam(id, targetSystem, targetComponent);
 	}
 
-	/*
-	 * Tested - This function reads all the parameters stored on the drone.
-	 * WARNING - Never call this function when the drone is in air This is a
-	 * function overload with specific target system and component
+	/**
+	 * This function starts reading all the parameters stored on the drone. WARNING -
+	 * Never call this function when the drone is in air. It initialises all the
+	 * maps used for storing the parameters with a Concurrent HashMap.
+	 * 
+	 * @param tSystem
+	 *            Target system of the drone.
+	 * @param tComponent
+	 *            Target Component on the drone
+	 * @return It checks for {@link #receiveParamList} value and if it is equal
+	 *         to false, it returns a <code>true</code>, otherwise it times
+	 *         out after 3 retries and returns <code>false</code>.
 	 */
 	private boolean readParameterListStart(byte tSystem, byte tComponent)
 	{
@@ -5575,10 +6006,19 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		return readParamList(tSystem, tComponent);
 	}
 
-	/*
-	 * This function should not be called before the readParameterListStart
-	 * function as it initializes the critical components to be used This is a
-	 * function overload with specific target system and component
+	/**
+	 * This function reads all the parameters stored on the drone. WARNING -
+	 * Never call this function when the drone is in air. This function should
+	 * not be called before the readParameterListStart function as it
+	 * initializes the critical components to be used.
+	 * 
+	 * @param tSystem
+	 *            Target system of the drone.
+	 * @param tComponent
+	 *            Target Component on the drone
+	 * @return It checks for {@link #receiveParamList} value and if it is equal
+	 *         to false, it returns a <code>true</code>, otherwise it times
+	 *         out after 3 retries and returns <code>false</code>.
 	 */
 	private boolean readParamList(byte tSystem, byte tComponent)
 	{
@@ -5632,9 +6072,20 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		 */
 	}
 
-	/*
-	 * This is a function overload with specific target system and component
-	 * Gets a single Parameter from the drone.
+	/**
+	 * Gets a single Parameter from the drone with a given index. WARNING -
+	 * Never call this function when the drone is in air. Gets the parameter
+	 * with this index from the drone.
+	 * 
+	 * @param index
+	 *            The index of parameter to be requested.
+	 * @param tSystem
+	 *            Target system of the drone.
+	 * @param tComponent
+	 *            Target Component on the drone
+	 * @return It checks for {@link #receiveParam} value and if it is equal to
+	 *         false, it returns a <code>true</code>, otherwise it times out
+	 *         after 3 retries and returns <code>false</code>.
 	 */
 	private boolean readParam(short index, byte tSystem, byte tComponent)
 	{
@@ -5681,9 +6132,20 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		 */
 	}
 
-	/*
-	 * This is a function overload with specific target system and component
-	 * Gets a single Parameter from the drone.
+	/**
+	 * Gets a single Parameter from the drone with a given string id. WARNING -
+	 * Never call this function when the drone is in air. Gets the parameter
+	 * with this String from the drone.
+	 * 
+	 * @param id
+	 *            The string id of parameter to be requested.
+	 * @param tSystem
+	 *            Target system of the drone.
+	 * @param tComponent
+	 *            Target Component on the drone
+	 * @return It checks for {@link #receiveParam} value and if it is equal to
+	 *         false, it returns a <code>true</code>, otherwise it times out
+	 *         after 3 retries and returns <code>false</code>.
 	 */
 	private boolean readParam(String id, byte tSystem, byte tComponent)
 	{
@@ -5731,6 +6193,15 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		 */
 	}
 
+	/**
+	 * Saves the parameter into the map after checking whether 
+	 * {@link #readParamList(byte, byte)} has been called or just
+	 * {@link #readParam(String, byte, byte)} has been called. Based on it
+	 * calculates whether all the parameter data has been successfully received
+	 * or not.
+	 * 
+	 * @param paramValue Parameter value message from the drone.
+	 */
 	private void saveParam(msg_param_value paramValue)
 	{
 		if (receiveParamList)
@@ -5760,24 +6231,69 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 
 	}
 	
-	@SuppressWarnings("unused")
-	private double getParam(String ID)
+	/**
+	 * Returns the parameter value from the {@link #paramList} map associated
+	 * with the String Id.
+	 * 
+	 * @param ID
+	 *            Id of parameter requested.
+	 * @return Value of the parameter Id in the {@link #paramList} map.
+	 */
+	public double getParam(String ID)
 	{
 		return paramList.get(ID);
 	}
 	
-	private Map<String , Double> getParamList()
+	/**
+	 * Returns the {@link #paramList} map
+	 * 
+	 * @return {@link #paramList}
+	 */
+	public Map<String , Double> getParamList()
 	{
 		return paramList;
 	}
 
-	// TESTED
+	/**
+	 * Sets the parameter with the given string id on the default drone. WARNING
+	 * - Never call this function when the drone is in air. Function overload
+	 * for {@link #setParam(String, float, byte, byte)} . Calls
+	 * {@link #setParam(String, float, byte, byte)} with {@link #targetSystem}
+	 * and {@link #targetComponent}
+	 * 
+	 * @param pID
+	 *            String Id of the parameter to be set.
+	 * @param pValue
+	 *            Value of the Parameter ID to be set on the drone.
+	 * @return It checks for the parameter's value in {@link #paramList} and
+	 *         if it is equal to the input, it return a <code>true</code>,
+	 *         otherwise it times out after 3 retries and returns
+	 *         <code>false</code>.
+	 */
 	private boolean setParam(String pID, float pValue)
 	{
 		return setParam(pID, pValue, targetSystem, targetComponent);
 	}
 
-	// TESTED
+	/**
+	 * Sets the parameter with the given string id on the drone. It checks for
+	 * the updated values from the {@link #paramList} map and when it gets a
+	 * match with the input paramter values. Otherwise, it times out retrying
+	 * and returns false.
+	 * 
+	 * @param pID
+	 *            String Id of the parameter to be set.
+	 * @param pValue
+	 *            Value of the Parameter ID to be set on the drone.
+	 * @param tSystem
+	 *            Target system of the drone.
+	 * @param tComponent
+	 *            Target Component on the drone
+	 * @return It checks for the parameter's value in {@link #paramList} and
+	 *         if it is equal to the input, it returns a <code>true</code>,
+	 *         otherwise it times out after 3 retries and returns
+	 *         <code>false</code>.
+	 */
 	private boolean setParam(String pID, float pValue, byte tSystem,
 			byte tComponent)
 	{
@@ -5843,126 +6359,287 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 
 	}
 	
+	/**
+	 * It reboots the autopilot. WARNING - Never call this function when the
+	 * drone is in air. Function overload for
+	 * {@link #doRebootAutopilot(byte, byte)} . Calls
+	 * {@link #doRebootAutopilot(byte, byte)} with {@link #targetSystem} and
+	 * {@link #targetComponent}
+	 * 
+	 * @return It checks for the {@link #isCommandSent} value and if it is equal
+	 *         to false, it returns a <code>true</code>, otherwise it times
+	 *         out after 3 retries and returns <code>false</code>.
+	 */
 	private boolean doRebootAutopilot()
     {
 		return doRebootAutopilot(targetSystem, targetComponent);
     }
 
+	/**
+	 * It reboots the autopilot. WARNING - Never call this function when the
+	 * drone is in air. It calls the
+	 * {@link #doCommand(short, float, float, float, float, float, float, float, byte, byte)}
+	 * function with a {@link MAV_CMD#MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN} option
+	 * and other parameters as specified in its comments.
+	 * 
+	 * @param tSystem
+	 *            Target system of the drone.
+	 * @param tComponent
+	 *            Target Component on the drone
+	 * @return It checks for the {@link #isCommandSent} value and if it is equal
+	 *         to false, it returns a <code>true</code>, otherwise it times out
+	 *         after 3 retries and returns <code>false</code>.
+	 */
 	private boolean doRebootAutopilot(byte tSystem, byte tComponent)
     {
         int param1 = 1;
+        boolean result=true;
         if (tSystem != 0 && tComponent != 0)
         {
-            doCommand((short) MAV_CMD.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, param1, 0, 0, 0, 0, 0, 0,tSystem,tComponent);
+            result = doCommand((short) MAV_CMD.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, param1, 0, 0, 0, 0, 0, 0,tSystem,tComponent);
         }
         else
         {
 
             for (short a = 0; a < 255; a++)
             {
-                doCommand((short)MAV_CMD.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, param1, 0, 0, 0, 0, 0, 0,(byte)a,(byte) 0);
+               result &= doCommand((short)MAV_CMD.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, param1, 0, 0, 0, 0, 0, 0,(byte)a,(byte) 0);
             }
         }
-        return true;
+        return result;
     }
 	
+	/**
+	 * It shuts down the autopilot. WARNING - Never call this function when the
+	 * drone is in air. Function overload for
+	 * {@link #doRebootAutopilot(byte, byte)} . Calls
+	 * {@link #doRebootAutopilot(byte, byte)} with {@link #targetSystem} and
+	 * {@link #targetComponent}
+	 * 
+	 * @return It checks for the {@link #isCommandSent} value and if it is equal
+	 *         to false, it returns a <code>true</code>, otherwise it times
+	 *         out after 3 retries and returns <code>false</code>.
+	 */
 	private boolean doShutdownAutopilot()
     {
 		return doShutdownAutopilot(targetSystem, targetComponent);
     }
 	
+	/**
+	 * It shuts down the autopilot. WARNING - Never call this function when the
+	 * drone is in air. It calls the
+	 * {@link #doCommand(short, float, float, float, float, float, float, float, byte, byte)}
+	 * function with a {@link MAV_CMD#MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN} option
+	 * and other parameters as specified in its comments.
+	 * 
+	 * @param tSystem
+	 *            Target system of the drone.
+	 * @param tComponent
+	 *            Target Component on the drone
+	 * @return It checks for the {@link #isCommandSent} value and if it is equal
+	 *         to false, it returns a <code>true</code>, otherwise it times out
+	 *         after 3 retries and returns <code>false</code>.
+	 */
 	private boolean doShutdownAutopilot(byte tSystem, byte tComponent)
     {
         int param1 = 2;
+        boolean result = true;
         if (tSystem != 0 && tComponent != 0)
         {
-            doCommand((short) MAV_CMD.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, param1, 0, 0, 0, 0, 0, 0,tSystem,tComponent);
+            result = doCommand((short) MAV_CMD.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, param1, 0, 0, 0, 0, 0, 0,tSystem,tComponent);
         }
         else
         {
 
             for (short a = 0; a < 255; a++)
             {
-                doCommand((short)MAV_CMD.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, param1, 0, 0, 0, 0, 0, 0,(byte)a,(byte) 0);
+                result &= doCommand((short)MAV_CMD.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, param1, 0, 0, 0, 0, 0, 0,(byte)a,(byte) 0);
             }
         }
-        return true;
+        return result;
     }
-	
+
+	/**
+	 * It reboots the system in bootloader mode so that new image can be
+	 * uploaded. WARNING - Never call this function when the drone is in air.
+	 * Function overload for {@link #doBootloaderReboot(byte, byte)} . Calls
+	 * {@link #doBootloaderReboot(byte, byte)} with {@link #targetSystem} and
+	 * {@link #targetComponent}
+	 * 
+	 * @return It checks for the {@link #isCommandSent} value and if it is equal
+	 *         to false, it returns a <code>true</code>, otherwise it times
+	 *         out after 3 retries and returns <code>false</code>.
+	 */
 	private boolean doBootloaderReboot()
     {
 		return doBootloaderReboot(targetSystem, targetComponent);
     }
 
+	/**
+	 * It reboots the system in bootloader mode so that new image can be
+	 * uploaded. WARNING - Never call this function when the drone is in air. It
+	 * calls the
+	 * {@link #doCommand(short, float, float, float, float, float, float, float, byte, byte)}
+	 * function with a {@link MAV_CMD#MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN} option
+	 * and other parameters as specified in its comments.
+	 * 
+	 * @param tSystem
+	 *            Target system of the drone.
+	 * @param tComponent
+	 *            Target Component on the drone.
+	 * @return It checks for the {@link #isCommandSent} value and if it is equal
+	 *         to false, it returns a <code>true</code>, otherwise it times out
+	 *         after 3 retries and returns <code>false</code>.
+	 */
 	private boolean doBootloaderReboot(byte tSystem, byte tComponent)
     {
         int param1 = 3;
+        boolean result = true;
         if (tSystem != 0 && tComponent != 0)
         {
-            doCommand((short) MAV_CMD.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, param1, 0, 0, 0, 0, 0, 0,tSystem,tComponent);
+            result = doCommand((short) MAV_CMD.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, param1, 0, 0, 0, 0, 0, 0,tSystem,tComponent);
         }
         else
         {
 
             for (short a = 0; a < 255; a++)
             {
-                doCommand((short)MAV_CMD.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, param1, 0, 0, 0, 0, 0, 0,(byte)a,(byte) 0);
+                result &= doCommand((short)MAV_CMD.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, param1, 0, 0, 0, 0, 0, 0,(byte)a,(byte) 0);
             }
         }
-        return true;
+        return result;
     }
-	
+
+	/**
+	 * It reboots the entire system. WARNING - Never call this function when the
+	 * drone is in air. Function overload for
+	 * {@link #doSystemReboot(byte, byte)} . Calls
+	 * {@link #doSystemReboot(byte, byte)} with {@link #targetSystem} and
+	 * {@link #targetComponent}
+	 * 
+	 * @return It checks for the {@link #isCommandSent} value and if it is equal
+	 *         to false, it return a <code>true</code>, otherwise it times
+	 *         out after 3 retries and returns <code>false</code>.
+	 */
 	private boolean doSystemReboot()
     {
 		return doSystemReboot(targetSystem, targetComponent);
     }
 
+	/**
+	 * It reboots the entire system. WARNING - Never call this function when the
+	 * drone is in air. It calls the
+	 * {@link #doCommand(short, float, float, float, float, float, float, float, byte, byte)}
+	 * function with a {@link MAV_CMD#MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN} option
+	 * and other parameters as specified in its comments.
+	 * 
+	 * @param tSystem
+	 *            Target system of the drone.
+	 * @param tComponent
+	 *            Target Component on the drone
+	 * @return It checks for the {@link #isCommandSent} value and if it is equal
+	 *         to false, it returns a <code>true</code>, otherwise it times out
+	 *         after 3 retries and returns <code>false</code>.
+	 */
 	private boolean doSystemReboot(byte tSystem, byte tComponent)
     {
         int param2 = 1;
+        boolean result = true;
         if (tSystem != 0 && tComponent != 0)
         {
-            doCommand((short) MAV_CMD.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, 0, param2, 0, 0, 0, 0, 0,tSystem,tComponent);
+            result =  doCommand((short) MAV_CMD.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, 0, param2, 0, 0, 0, 0, 0,tSystem,tComponent);
         }
         else
         {
 
             for (short a = 0; a < 255; a++)
             {
-                doCommand((short)MAV_CMD.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, 0, param2, 0, 0, 0, 0, 0,(byte)a,(byte) 0);
+                result &= doCommand((short)MAV_CMD.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, 0, param2, 0, 0, 0, 0, 0,(byte)a,(byte) 0);
             }
         }
-        return true;
+        return result;
     }
 	
+	/**
+	 * It shuts down the entire system. WARNING - Never call this function when
+	 * the drone is in air. Function overload for
+	 * {@link #doSystemShutdown(byte, byte)} . Calls
+	 * {@link #doSystemShutdown(byte, byte)} with {@link #targetSystem} and
+	 * {@link #targetComponent}
+	 * 
+	 * @return It checks for the {@link #isCommandSent} value and if it is equal
+	 *         to false, it returns a <code>true</code>, otherwise it times
+	 *         out after 3 retries and returns <code>false</code>.
+	 */
 	private boolean doSystemShutdown()
     {
 		return doSystemShutdown(targetSystem, targetComponent);
     }
 
+	/**
+	 * It shuts down the entire system. WARNING - Never call this function when
+	 * the drone is in air. It calls the
+	 * {@link #doCommand(short, float, float, float, float, float, float, float, byte, byte)}
+	 * function with a {@link MAV_CMD#MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN} option
+	 * and other parameters as specified in its comments.
+	 * 
+	 * @param tSystem
+	 *            Target system of the drone.
+	 * @param tComponent
+	 *            Target Component on the drone
+	 * @return It checks for the {@link #isCommandSent} value and if it is equal
+	 *         to false, it returns a <code>true</code>, otherwise it times out
+	 *         after 3 retries and returns <code>false</code>.
+	 */
 	private boolean doSystemShutdown(byte tSystem, byte tComponent)
     {
         int param2 = 2;
+        boolean result = true;
         if (tSystem != 0 && tComponent != 0)
         {
-            doCommand((short) MAV_CMD.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, 0, param2, 0, 0, 0, 0, 0,tSystem,tComponent);
+            result = doCommand((short) MAV_CMD.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, 0, param2, 0, 0, 0, 0, 0,tSystem,tComponent);
         }
         else
         {
 
             for (short a = 0; a < 255; a++)
             {
-                doCommand((short)MAV_CMD.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, 0, param2, 0, 0, 0, 0, 0,(byte)a,(byte) 0);
+                result &= doCommand((short)MAV_CMD.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, 0, param2, 0, 0, 0, 0, 0,(byte)a,(byte) 0);
             }
         }
-        return true;
+        return result;
     }
 	
+	/**
+	 * It sets the flight mode of the default drone. Function overload for
+	 * {@link #setMode(String, byte)} . Calls {@link #setMode(String, byte)}
+	 * with {@link #targetSystem}.
+	 * 
+	 * @param mode
+	 *            Flight mode to be set on the drone.
+	 * @return It checks for the {@link #isCommandSent} value and if it is equal
+	 *         to false, it returns a <code>true</code>, otherwise it times
+	 *         out after 3 retries and returns <code>false</code>.
+	 */
 	private boolean setMode(String mode)
 	{
 		return setMode(mode, targetSystem);
 	}
-	
+
+	/**
+	 * It sets the flight mode of the target drone. It first looks for the
+	 * numerical mapping value of the flight mode specified in the Parameter.xml
+	 * file. After that it sends a set mode command to the target system for
+	 * which it receives an acknowledgement.
+	 * 
+	 * @param mode
+	 *            Flight mode to be set on the drone.
+	 * @param tSystem
+	 *            Target system of the drone.
+	 * @return It checks for the {@link #isCommandSent} value and if it is equal
+	 *         to false, it returns a <code>true</code>, otherwise it times
+	 *         out after 3 retries and returns <code>false</code>.
+	 */
 	private boolean setMode(String mode, byte tSystem)
 	{
 		Map<String, Short> modeMap = dataXML.getParamOptions("FLTMODE1",
@@ -6021,6 +6698,12 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		return false;
 	}
 	
+	/**
+	 * Saves the allowed area message in {@link #allowedArea}.
+	 * 
+	 * @param allowed
+	 *            Allowed area message from the drone.
+	 */
 	private void saveAllowedArea(msg_safety_allowed_area allowed)
 	{
 		Point3D tempMin= new Point3D(allowed.p1x, allowed.p1y, allowed.p1z);
@@ -6029,12 +6712,51 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		allowedAreaFrame = allowed.frame;
 	}
 	
+	/**
+	 * Sets the allowed area of the drone. Function overload for
+	 * {@link #setAllowedArea(Point3D, Point3D, byte, byte, byte)} . Calls
+	 * {@link #setAllowedArea(Point3D, Point3D, byte, byte, byte)} with
+	 * {@link #targetSystem} and {@link #targetComponent}
+	 * 
+	 * @param minLatLongAlt
+	 *            South West Front Corner of the box you want to limit your
+	 *            drone to.
+	 * @param maxLatLongAlt
+	 *            North East Back Corner of the box you want to limit your drone
+	 *            to.
+	 * @param frame
+	 *            Frame of reference of the above coordinates.
+	 * @return It compares the {@link #allowedArea} value with the input values
+	 *         and if they are equal, it returns a <code>true</code>, otherwise it
+	 *         times out after 3 retries and returns <code>false</code>.
+	 */
 	private boolean setAllowedArea(Point3D minLatLongAlt,
 			Point3D maxLatLongAlt, byte frame)
 	{
 		return setAllowedArea(minLatLongAlt, maxLatLongAlt, frame, targetSystem, targetComponent);
 	}
-	
+
+	/**
+	 * Sets the allowed area of the drone. It sends a safety set allowed area
+	 * message to the drone with two diagonally opposite corners of a box the
+	 * drone is supposed to fly in.
+	 * 
+	 * @param minLatLongAlt
+	 *            South West Front Corner of the box you want to limit your
+	 *            drone to.
+	 * @param maxLatLongAlt
+	 *            North East Back Corner of the box you want to limit your drone
+	 *            to.
+	 * @param frame
+	 *            Frame of reference of the above coordinates.
+	 * @param tSystem
+	 *            Target system of the drone.
+	 * @param tComponent
+	 *            Target Component on the drone.
+	 * @return It compares the {@link #allowedArea} value with the input values
+	 *         and if they are equal, it returns a <code>true</code>, otherwise
+	 *         it times out after 3 retries and returns <code>false</code>.
+	 */
 	private boolean setAllowedArea(Point3D minLatLongAlt,
 			Point3D maxLatLongAlt, byte frame, byte tSystem, byte tComponent)
 	{
@@ -6091,11 +6813,38 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		}
 	}
 	
+	/**
+	 * It injects GPS data into the drone. Function overload for
+	 * {@link #injectGpsData(byte[], int, byte, byte)} . Calls
+	 * {@link #injectGpsData(byte[], int, byte, byte)} with
+	 * {@link #targetSystem} and {@link #targetComponent}
+	 * 
+	 * @param data
+	 *            Data array to be inserted into the drone as GPS data.
+	 * @param length
+	 *            Length of this data array.
+	 * 
+	 */
+	@SuppressWarnings("unused")
 	private void injectGpsData(byte[] data, int length)
 	{
 		injectGpsData(data, length, targetSystem, targetComponent);
 	}
 	
+	/**
+	 * It injects GPS data into the drone from an external source like a rtk
+	 * gps.
+	 * 
+	 * @param data
+	 *            Data array to be inserted into the drone as GPS data.
+	 * @param length
+	 *            Length of this data array.
+	 * 
+	 * @param tSystem
+	 *            Target system of the drone.
+	 * @param tComponent
+	 *            Target Component on the drone.
+	 */
 	private void injectGpsData(byte[] data, int length, byte tSystem,
 			byte tComponent)
 	{
@@ -6113,6 +6862,13 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		getLog().debug("INJECTING GPS DATA : " + Arrays.toString(tempByte));
 	}
 	
+	/**
+	 * Saves Global GPS Origin received from the drone
+	 * {@link #globalGpsOrigin}.
+	 * 
+	 * @param msg
+	 *            Global GPS Origin message from the drone.
+	 */
 	private void saveGlobalGpsOrigin(msg_gps_global_origin msg)
 	{
 		float tempLat = (float) (msg.latitude / 10000000.0);
@@ -6121,13 +6877,40 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		globalGpsOrigin = new Point3D(tempLon, tempLat, tempAlt);
 	}
 
-	// Not Tested
+	/**
+	 * It sets Global GPS Origin of the drone. Function overload for
+	 * {@link #setGlobalGpsOrigin(Point3D, byte)} . Calls
+	 * {@link #setGlobalGpsOrigin(Point3D, byte)} with {@link #targetSystem}.
+	 * 
+	 * @param latLonAlt
+	 *            GPS Origin to be set.
+	 * @return It compares the {@link #globalGpsOrigin} value with the input
+	 *         value and if they are equal , it returns a <code>true</code>,
+	 *         otherwise it times out after 3 retries and returns
+	 *         <code>false</code>.
+	 * 
+	 */
 	private boolean setGlobalGpsOrigin(Point3D latLonAlt)
 	{
 		return setGlobalGpsOrigin(latLonAlt, targetSystem);
 	}
 
-	// Not Tested
+	/**
+	 * It sets Global GPS Origin of the drone. It sends a
+	 * {@link msg_set_gps_global_origin} message to the drone with the given
+	 * coordinates and then waits for the {@link #globalGpsOrigin} values to be
+	 * set.
+	 * 
+	 * @param latLonAlt
+	 *            GPS Origin to be set.
+	 * @param tSystem
+	 *            Target system of the drone.
+	 * @return It compares the {@link #globalGpsOrigin} value with the input
+	 *         value and if they are equal , it returns a <code>true</code>,
+	 *         otherwise it times out after 3 retries and returns
+	 *         <code>false</code>.
+	 * 
+	 */
 	private boolean setGlobalGpsOrigin(Point3D latLonAlt, byte tSystem)
 	{
 		Point3D prevGlobalGpsOrigin = globalGpsOrigin;
@@ -6168,8 +6951,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			}
 			if (globalGpsOrigin != null)
 			{
-				if (globalGpsOrigin.equals(latLonAlt)
-						&& globalGpsOrigin.equals(latLonAlt))
+				if (globalGpsOrigin.equals(latLonAlt))
 				{
 					getLog().info("Successfully set global gps origin");
 					return true;
@@ -6178,23 +6960,78 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		}
 	}
 	
-	//NOT TESTED
+	/**
+	 * It gets Log entries stored on the default drone. Function overload for
+	 * {@link #getLogEntry(short, short, byte, byte)} . Calls
+	 * {@link #getLogEntry(short, short, byte, byte)} with
+	 * {@link #targetSystem} and {@link #targetComponent}.
+	 * 
+	 * @param startno
+	 *            Starting address of the log entries.
+	 * @param end
+	 *            Ending address of the Log entries.
+	 * @return It compares the {@link #logEntry} size with the value received
+	 *         from the drone and if they are equal , it returns a
+	 *         <code>true</code>, otherwise it times out after 3 retries and
+	 *         returns <code>false</code>.
+	 * 
+	 */
 	private boolean getLogEntry(short startno, short end)
 	{
 		return getLogEntry(startno, end, targetSystem, targetComponent);
 	}
 	
+	/**
+	 * It gets all the Log entries stored on the drone. Function overload for
+	 * {@link #getLogEntry(short, short, byte, byte)} . Calls
+	 * {@link #getLogEntry(short, short, byte, byte)} with
+	 * 0 and 0xFFFF.
+	 * 
+	 * @param tSystem
+	 *            Target system of the drone.
+	 * @param tComponent
+	 *            Target Component on the drone.
+	 * @return It compares the {@link #logEntry} size with the value received
+	 *         from the drone and if they are equal , it returns a
+	 *         <code>true</code>, otherwise it times out after 3 retries and
+	 *         returns <code>false</code>.
+	 * 
+	 */
+	@SuppressWarnings("unused")
 	private boolean getLogEntry(byte tSystem, byte tComponent)
 	{
 		return getLogEntry((short)0, (short)0xFFFF, tSystem, tComponent);
 	}
 	
+	/**
+	 * Saves the log entries got from the drone.
+	 * 
+	 * @param entry
+	 *            Log entry from the drone.
+	 */
 	private void saveLogEntry(msg_log_entry entry)
 	{
 		logEntry.add(entry);
 	}
 
-	// NOT TESTED
+	/**
+	 * It gets Log entries stored on the drone from the starting address to the
+	 * ending address given.
+	 * 
+	 * @param startno
+	 *            Starting address of the log entries.
+	 * @param end
+	 *            Ending address of the Log entries.
+	 * @param tSystem
+	 *            Target system of the drone.
+	 * @param tComponent
+	 *            Target Component on the drone.
+	 * @return It compares the {@link #logEntry} size with the value received
+	 *         from the drone and if they are equal , it returns a
+	 *         <code>true</code>, otherwise it times out after 3 retries and
+	 *         returns <code>false</code>.
+	 * 
+	 */
 	private boolean getLogEntry(short startno, short end, byte tSystem,
 			byte tComponent)
 	{
@@ -6250,19 +7087,41 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		}
 	}
 
-	// NOT TESTED
+	/**
+	 * It gets all the Log entries stored on the default drone. Function overload for
+	 * {@link #getLogEntry(short, short)} . Calls
+	 * {@link #getLogEntry(short, short)} with 0 and 0xFFFF.
+	 * 
+	 * @return It compares the {@link #logEntry} size with the value received
+	 *         from the drone and if they are equal , it returns a
+	 *         <code>true</code>, otherwise it times out after 3 retries and
+	 *         returns <code>false</code>.
+	 * 
+	 */
+	@SuppressWarnings("unused")
 	private boolean getLogEntry()
 	{
 		return getLogEntry((short)0, (short)0xFFFF);
 	}
 	
-	//NOT TESTED
+	/**
+	 * Erases all the log entries on the default drone.Function overload for
+	 * {@link #eraseLog(byte, byte)} . Calls {@link #eraseLog(byte, byte)} with
+	 * {@link #targetSystem} and {@link #targetComponent}.
+	 */
+	@SuppressWarnings("unused")
 	private void eraseLog()
 	{
 		eraseLog(targetSystem, targetComponent);
 	}
 	
-	// NOT TESTED
+	/**
+	 * Erases all the Log entries on the drone.
+	 * @param tSystem
+	 *            Target system of the drone.
+	 * @param tComponent
+	 *            Target Component on the drone.
+	 */
 	private void eraseLog(byte tSystem, byte tComponent)
 	{
 		msg_log_erase req = new msg_log_erase();
@@ -6277,13 +7136,35 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		sendOutputJson(publishers[0], tempEraseLog);
 	}
 	
-	//NOT TESTED
+	/**
+	 * It gets all the Log entries stored on the drone. Function overload for
+	 * {@link #getLogList(byte, byte)} . Calls {@link #getLogList(byte, byte)}
+	 * with {@link #targetSystem} and {@link #targetComponent}.
+	 * 
+	 * @return It compares the {@link #logEntry} size with the value received
+	 *         from the drone and if they are equal , it returns a
+	 *         <code>true</code>, otherwise it times out after 3 retries and
+	 *         returns <code>false</code>.
+	 * 
+	 */
 	private boolean getLogList()
 	{
 		return getLogList(targetSystem, targetComponent);
 	}
 	
-	//NOT TESTED
+	/**
+	 * It gets all the Log entries stored on the drone.
+	 * 
+	 * @param tSystem
+	 *            Target system of the drone.
+	 * @param tComponent
+	 *            Target Component on the drone.
+	 * @return It compares the {@link #logEntry} size with the value received
+	 *         from the drone and if they are equal , it returns a
+	 *         <code>true</code>, otherwise it times out after 3 retries and
+	 *         returns <code>false</code>.
+	 * 
+	 */
 	private boolean getLogList(byte tSystem, byte tComponent)
 	{
 		logEntry = new ArrayList<msg_log_entry>();
@@ -6317,6 +7198,16 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		return false;
 	}
 	
+	/**
+	 * Checks whether the requested rate of data stream is achievable or not.
+	 * 
+	 * @param pps
+	 *            packets per second of that stram.
+	 * @param rate
+	 *            requeste rate of the stream.
+	 * @return <code>true<code> if the rate is achievable, otherwise <code>false<code>.
+	 */
+	@SuppressWarnings("unused")
 	private boolean rateCheck(double pps, int rate)
 	{
 		if (pps == Double.POSITIVE_INFINITY || pps == Double.NEGATIVE_INFINITY)
@@ -6345,15 +7236,30 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		}
 		return false;
 	}
-	
-	private void getDataStream(int id, int i, boolean startStop,
+
+	/**
+	 * It starts/stops a data stream from the drone like a gps data stream, imu data
+	 * stream at a given rate.
+	 * 
+	 * @param id
+	 *            Stream ID from {@link MAV_DATA_STREAM}
+	 * @param rate
+	 *            Requested rate of stream
+	 * @param startStop
+	 *            Start or stop the stream.
+	 * @param tSystem
+	 *            Target system of the drone.
+	 * @param tComponent
+	 *            Target Component on the drone.
+	 */
+	private void getDataStream(int id, int rate, boolean startStop,
 			byte tSystem, byte tComponent)
 	{
 		msg_request_data_stream req = new msg_request_data_stream();
 		req.target_system = tSystem;
 		req.target_component = tComponent;
 		req.req_stream_id = (byte) id;
-		req.req_message_rate = (short) i;
+		req.req_message_rate = (short) rate;
 		req.start_stop = (byte) (startStop ? 1 : 0);
 		Map<String, Object> tempRequestDataStream;
 		byte tempByte[] = req.pack().encodePacket();
@@ -6364,21 +7270,67 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		sendOutputJson(publishers[0], tempRequestDataStream);
 	}
 	
-	private void getDataStream(int id, int i, byte tSystem, byte tComponent)
+	/**
+	 * It gets a data stream from the drone like a gps data stream, imu data
+	 * stream. Function overload for
+	 * {@link #getDataStream(int, int, boolean, byte, byte)} . Calls
+	 * {@link #getDataStream(int, int, boolean, byte, byte)} with true.
+	 * 
+	 * @param id
+	 *            Stream ID from {@link MAV_DATA_STREAM}
+	 * @param rate
+	 *            Requested rate of stream
+	 * @param tSystem
+	 *            Target system of the drone.
+	 * @param tComponent
+	 *            Target Component on the drone.
+	 */
+	private void getDataStream(int id, int rate, byte tSystem, byte tComponent)
 	{
-		getDataStream(id, i, true, tSystem, tComponent);
+		getDataStream(id, rate, true, tSystem, tComponent);
 	}
 
-	private void getDataStream(int id, int i)
+	/**
+	 * It gets a data stream from the drone like a gps data stream, imu data
+	 * stream. Function overload for
+	 * {@link #getDataStream(int, int, byte, byte)} . Calls
+	 * {@link #getDataStream(int, int, byte, byte)} with {@link #targetSystem}
+	 * and {@link #targetComponent}.
+	 * 
+	 * @param id
+	 *            Stream ID from {@link MAV_DATA_STREAM}
+	 * @param rate
+	 *            Requested rate of stream
+	 */
+	private void getDataStream(int id, int rate)
 	{
-		getDataStream(id, i, targetSystem, targetComponent);
+		getDataStream(id, rate, targetSystem, targetComponent);
 	}
 	
+	/**
+	 * Sends a RC packet to the drone thus emulating a rc transmitter. Function overload for
+	 * {@link #sendRCPacket(String[], byte, byte)} . Calls
+	 * {@link #sendRCPacket(String[], byte, byte)} with {@link #targetSystem}
+	 * and {@link #targetComponent}.
+	 * 
+	 * @param mesg
+	 *            RC Message to be sent of length 8.
+	 */
 	private void sendRCPacket(String [] mesg)
 	{
 		sendRCPacket(mesg, targetSystem	, targetComponent);
 	}
 	
+	/**
+	 * Sends a RC packet to the drone thus emulating a rc transmitter.
+	 * 
+	 * @param mesg
+	 *            RC Message to be sent of length 8.
+	 * @param tSystem
+	 *            Target system of the drone.
+	 * @param tComponent
+	 *            Target Component on the drone.
+	 */
 	private void sendRCPacket(String [] mesg, byte tSystem, byte tComponent)
 	{
 		if (mesg.length!=8)

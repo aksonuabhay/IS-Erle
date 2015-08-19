@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-
 	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-
-
 	<classpathentry kind="lib" path="/home/abhay/interactivespaces/controller/bootstrap/org.apache.servicemix.bundles.freemarker-2.3.22_1.jar"/>
 	<classpathentry kind="lib" path="/home/abhay/interactivespaces/controller/bootstrap/com.springsource.org.apache.httpcomponents.httpcore-4.1.jar"/>
 	<classpathentry kind="lib" path="/home/abhay/interactivespaces/controller/bootstrap/rosjava_osgi_node-1.8.0.jar"/>
@@ -79,6 +76,6 @@
 	<classpathentry kind="lib" path="/home/abhay/interactivespaces/workbench/extras/testing/org.apache.servicemix.bundles.junit-4.11_1.jar"/>
 	<classpathentry kind="lib" path="/home/abhay/interactivespaces/workbench/extras/testing/interactivespaces-workbench-testing-1.8.0.SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="/home/abhay/interactivespaces/workbench/extras/testing/interactivespaces-workbench-testing-1.8.0.jar"/>
-
+	<classpathentry kind="lib" path="/home/abhay/Downloads/JavaDocx/dist/javadocx.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
