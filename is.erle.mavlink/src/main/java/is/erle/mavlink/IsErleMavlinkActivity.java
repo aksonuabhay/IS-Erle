@@ -2793,14 +2793,14 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			{
 				mavServoOutputRaw = (msg_servo_output_raw) mavMessage2;
 				String tempServoOutputRaw = "[" + mavServoOutputRaw.time_usec
-						+ "] ," + "SERVO 1 : " + mavServoOutputRaw.servo1_raw
-						+ " , " + "SERVO 2 : " + mavServoOutputRaw.servo2_raw
-						+ " , " + "SERVO 3 : " + mavServoOutputRaw.servo3_raw
-						+ " , " + "SERVO 4 : " + mavServoOutputRaw.servo4_raw
-						+ " , " + "SERVO 5 : " + mavServoOutputRaw.servo5_raw
-						+ " , " + "SERVO 6 : " + mavServoOutputRaw.servo6_raw
-						+ " , " + "SERVO 7 : " + mavServoOutputRaw.servo7_raw
-						+ " , " + "SERVO 8 : " + mavServoOutputRaw.servo8_raw
+						+ "] ," + "MOTOR 1 : " + mavServoOutputRaw.servo1_raw
+						+ " , " + "MOTOR 2 : " + mavServoOutputRaw.servo2_raw
+						+ " , " + "MOTOR 3 : " + mavServoOutputRaw.servo3_raw
+						+ " , " + "MOTOR 4 : " + mavServoOutputRaw.servo4_raw
+						+ " , " + "MOTOR 5 : " + mavServoOutputRaw.servo5_raw
+						+ " , " + "MOTOR 6 : " + mavServoOutputRaw.servo6_raw
+						+ " , " + "MOTOR 7 : " + mavServoOutputRaw.servo7_raw
+						+ " , " + "MOTOR 8 : " + mavServoOutputRaw.servo8_raw
 						+ " , " + "PORT : " + mavServoOutputRaw.port;
 				Map<String, Object> tempMavServoOutputRaw = Maps.newHashMap();
 				tempMavServoOutputRaw.put("data",
@@ -2810,7 +2810,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 				getLog().debug(tempServoOutputRaw);
 				
 				tempMavServoOutputRaw.clear();
-				tempMavServoOutputRaw.put("servo", tempServoOutputRaw);
+				tempMavServoOutputRaw.put("motor", tempServoOutputRaw);
 				sendOutputJson(publishers[14], tempMavServoOutputRaw);
 			}
 			break;

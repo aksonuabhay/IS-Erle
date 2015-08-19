@@ -15,10 +15,10 @@ global controller_pid
 def signal_handler(signal, frame):
     print "Closing everything"
     exit_sequence(comms_port)
-    if master_pid:
-        os.kill(master_pid.pid,signal)
-    if controller_pid:
-        os.kill(controller_pid.pid,signal)
+    #if master_pid:
+    #    os.kill(master_pid.pid,signal)
+    #if controller_pid:
+    #    os.kill(controller_pid.pid,signal)
     sys.exit(0)
 
 def make_request(url):
@@ -121,8 +121,11 @@ except requests.exceptions.ConnectionError:
     time.sleep(10)
     controller_pid = subprocess.Popen(['gnome-terminal', '-x', './../../controller/bin/isstartup'])
     time.sleep(10)
-    data= make_request(url_prefix+"liveactivity/all.json")
-
+    try:
+        data= make_request(url_prefix+"liveactivity/all.json")
+    except requests.exceptions.ConnectionError:
+        time.sleep(10)
+        data= make_request(url_prefix+"liveactivity/all.json")
 
 if data['result']=='success':
     for i in range(0,len(data['data']),1):

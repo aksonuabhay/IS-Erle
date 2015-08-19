@@ -18,6 +18,7 @@ import org.python.antlr.PythonParser.continue_stmt_return;
 import com.google.common.collect.Maps;
 import interactivespaces.activity.impl.ros.BaseRoutableRosActivity;
 import interactivespaces.util.concurrency.ManagedCommand;
+import interactivespaces.util.events.EventFrequency;
 
 /**
  * IsErleCaptainActivity is class which handles all tasks a real Captain of a
@@ -550,7 +551,7 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 				mapRCOut.put("rc", Arrays.toString(rc_out));
 				sendOutputJson(publishers[1], mapRCOut);
 			}
-		}, 0, 20, TimeUnit.SECONDS);
+		},EventFrequency.eventsPerSecond(2.0));
         
         String paramFileLocation = getSpaceEnvironment().getFilesystem().getTempDirectory().getAbsolutePath()+"/Param.param";
         File paramFile = new File(paramFileLocation);
