@@ -3,8 +3,6 @@ package is.erle.mavlink;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Map;
-
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -15,11 +13,25 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import com.google.common.collect.Multiset.Entry;
-
+/**
+ * This class processes the ParameterData.xml file for the required information.
+ * It has utility functions to read the xml file and then parse it into a map, a
+ * string or a range of values.
+ * 
+ * @author Abhay Kumar
+ * @version %I%, %G%
+ * @since 1.0.0
+ */
 public class XMLParamParser
 {
+	/**
+	 * The ParameterData.xml file.
+	 */
 	private File xmlFile;
+	
+	/**
+	 * The ParameterData.xml document.
+	 */
 	private Document xmlDocument;
 	
     public final String PARAMDELIMETER = "@";
@@ -41,37 +53,88 @@ public class XMLParamParser
     public final String ADVANCED = "Advanced";
     public final String STANDARD = "Standard";
     
+	/**
+	 * Get {@link #xmlFile}
+	 * 
+	 * @return {@link #xmlFile}
+	 */
 	public File getFile()
 	{
 		return xmlFile;
 	}
 	
+	/**
+	 * Get {@link #xmlDocument}
+	 * 
+	 * @return {@link #xmlDocument}
+	 */
 	public Document getDocument()
 	{
 		return xmlDocument;
 	}
 	
+	/**
+	 * Set {@link #xmlFile}
+	 * 
+	 * @param xmlFile
+	 *            Value to set to {@link #xmlFile}
+	 */
 	public void setFile(File xmlFile)
 	{
 		this.xmlFile = xmlFile;
 	}
 	
+	/**
+	 * Set {@link #xmlDocument}
+	 * 
+	 * @param xmlFile
+	 *            Value to set to {@link #xmlDocument}
+	 */
 	public void setFile(Document xmlDocument)
 	{
 		this.xmlDocument = xmlDocument;
 	}
 	
+	/**
+	 * Constructor with xmlFile as input.
+	 * 
+	 * @param xmlFile
+	 *            Value to set to {@link #xmlFile}
+	 * @throws SAXException
+	 * @throws IOException
+	 * @throws ParserConfigurationException
+	 */
 	public XMLParamParser(File xmlFile) throws SAXException, IOException, ParserConfigurationException
 	{
 		this.xmlFile = xmlFile ;
 		xmlDocument = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(this.xmlFile);
 	}
 	
+	/**
+	 * Constructor with xmlDocument as input.
+	 * 
+	 * @param xmlDocument
+	 *            Value to set to {@link #xmlDocument}
+	 */
 	public XMLParamParser(Document xmlDocument)
 	{
 		this.xmlDocument = xmlDocument ;
 	}
 	
+	/**
+	 * It processes the {@link #xmlDocument} to return the string contained for
+	 * a given nodeKey,metaKey and vehicleType
+	 * 
+	 * @param nodeKey
+	 *            Name of the node queried like "FLTMODE1"
+	 * @param metaKey
+	 *            Name of the subnode or metakey inside this node whose value is
+	 *            being queried.
+	 * @param vehicleType
+	 *            Type of the vehicle to look for this node.
+	 * @return String contained within the metakey of the {@link #xmlDocument}
+	 */
+	@SuppressWarnings("unused")
 	public String getParamDataXml(String nodeKey, String metaKey,
 			String vehicleType)
 	{
@@ -125,6 +188,18 @@ public class XMLParamParser
 		return null;
 	}
 	
+	/**
+	 * It processes the {@link #xmlDocument} to return a HashMap containing the
+	 * parameter options for a given nodeKey and vehicleType. The
+	 * metakey used here is {@link #VALUES}
+	 * 
+	 * @param nodeKey
+	 *            Name of the node queried like "FLTMODE1"
+	 * @param vehicleType
+	 *            Type of the vehicle to look for this node.
+	 * @return Parameter options for the given node and vehicle type
+	 *         {@link #xmlDocument}
+	 */
 	public HashMap<String, Short> getParamOptions(String nodeKey,
 			String vehicleType)
 	{
@@ -153,6 +228,18 @@ public class XMLParamParser
 		return valueMap;
 	}
 	
+	/**
+	 * It processes the {@link #xmlDocument} to return a HashMap containing the
+	 * Bitmask parameter options for a given nodeKey and vehicleType. The
+	 * metakey used here is {@link #BITMASK}
+	 * 
+	 * @param nodeKey
+	 *            Name of the node queried
+	 * @param vehicleType
+	 *            Type of the vehicle to look for this node.
+	 * @return Bitmask Parameter options for the given node and vehicle type
+	 *         {@link #xmlDocument}
+	 */
 	public HashMap<String, Short> getParamBitMask(String nodeKey,
 			String vehicleType)
 	{
@@ -181,6 +268,17 @@ public class XMLParamParser
 		return valueMap;
 	}
 	
+	/**
+	 * It processes the {@link #xmlDocument} to return whether a reboot is
+	 * required or not. The metakey used here is {@link #REBOOTREQUIRED}
+	 * 
+	 * @param nodeKey
+	 *            Name of the node queried
+	 * @param vehicleType
+	 *            Type of the vehicle to look for this node.
+	 * @return <code>true</code> if reboot is required for the given node key;
+	 *         otherwise <code>false</code>
+	 */
 	public boolean getParamRebootRequired(String nodeKey, String vehicleType)
 	{
 		boolean answer = false;
@@ -201,7 +299,18 @@ public class XMLParamParser
 		}
 		return answer;
 	}
-	
+
+	/**
+	 * It processes the {@link #xmlDocument} to return a pair containing the
+	 * parameter range for a given nodeKey and vehicleType. The metakey used
+	 * here is {@link #RANGE}
+	 * 
+	 * @param nodeKey
+	 *            Name of the node queried
+	 * @param vehicleType
+	 *            Type of the vehicle to look for this node.
+	 * @return Minimum and Maximum value of a parameter.
+	 */
 	public MinMaxPair<Float> getParamRange(String nodeKey, String vehicleType)
 	{
 		MinMaxPair<Float> pair = null;

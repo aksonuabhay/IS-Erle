@@ -5968,7 +5968,6 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	 *         to false, it returns a <code>true</code>, otherwise it times
 	 *         out after 3 retries and returns <code>false</code>.
 	 */
-	@SuppressWarnings("unused")
 	private boolean doCommand(short actionid, float p1, float p2, float p3,
 			float p4, float p5, float p6, float p7)
 	{
