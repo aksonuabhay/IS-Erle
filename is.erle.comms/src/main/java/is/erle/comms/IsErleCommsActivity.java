@@ -50,22 +50,30 @@ public class IsErleCommsActivity extends BaseRoutableRosActivity {
 	private static final String CONFIGURATION_SUBSCRIBER_NAME = "space.activity.routes.inputs";
 	
 	/**
-	 * The topic names for publishing data
+	 * The topic names for publishing data.
+	 * <p>
 	 * PUBLISHER MAPPING
-	 * 
-	 * publishers[0] -> output 
+	 * <p>
+	 * publishers[0] -> output
+	 * <p> 
 	 * Topic Name : comms/output
+	 * <p>
 	 * Usage : Send output to the mavlink activity after receiving it from the drone.
+	 * <p>
 	 */
 	private static String publishers[];
 
 	/**
-	 * The topic names for subscribing data 
+	 * The topic names for subscribing data.
+	 * <p>
 	 * SUBSCRIBER MAPPING
-	 * 
+	 * <p>
 	 * subscribers[0] -> input 
+	 * <p>
 	 * Topic Name : comms/input
+	 * <p>
 	 * Usage : Receive data from mavlink activity and send it to the drone.
+	 * <p>
 	 */
 	private static String subscribers[];
 	

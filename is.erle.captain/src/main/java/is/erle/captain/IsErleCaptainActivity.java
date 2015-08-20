@@ -73,34 +73,51 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 	private static final String CONFIGURATION_SUBSCRIBER_NAME = "space.activity.routes.inputs";
 	
 	/**
-	 * The topic names for publishing data
+	 * The topic names for publishing data.
+	 * <p>
 	 * PUBLISHER MAPPING
-	 * 
+	 * <p>
 	 * publishers[0] -> output 
+	 * <p>
 	 * Topic Name : captain/output
+	 * <p>
 	 * Usage : Send command to the mavlink activity to execute some functions.
-	 * 
+	 * <p>
 	 * publishers[1] -> rc_output
+	 * <p>
 	 * Topic Name : captain/rc_output
+	 * <p>
 	 * Usage : Send RC output to the mavlink activity.
+	 * <p>
 	 */
 	private static String publishers[];
 
 	/**
-	 * The topic names for subscribing data 
+	 * The topic names for subscribing data.
+	 * <p>
 	 * SUBSCRIBER MAPPING
-	 * 
+	 * <p>
+	 * <p>
 	 * subscribers[0] -> input 
+	 * <p>
 	 * Topic Name : captain/input
+	 * <p>
 	 * Usage : Receive data from mavlink activity and process response.
-	 * 
+	 * <p>
+	 * <p>
 	 * subscribers[1] -> inputWP 
+	 * <p>
 	 * Topic Name : mavlink/heartbeat
+	 * <p>
 	 * Usage : Receive data from mavlink activity about heartbeat message and process it.
-	 * 
-	 * subscribers[2] -> WP_Processor 
+	 * <p>
+	 * <p>
+	 * subscribers[2] -> WP_Processor
+	 * <p> 
 	 * Topic Name : waypoint/processor/output
+	 * <p>
 	 * Usage : Receive start data from waypoiny processor activity about starting a mission.
+	 * <p>
 	 */
 	private static String subscribers[];
 	
@@ -113,12 +130,19 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 	/**
 	 * A Global variale to store the response received after a command from the
 	 * mavlink activity.
+	 * <p>
 	 * VALUE TABLE
+	 * <p>
 	 * cmdReturn=0 -> SUCCESS
+	 * <p>
 	 * cmdReturn=-1 -> TIMEOUT
+	 * <p>
 	 * cmdReturn=-2 -> BADCMD
+	 * <p>
 	 * cmdReturn=-3 -> NULL
+	 * <p>
 	 * cmdReturn= +ve value -> FAIL CODE
+	 * <p>
 	 */
 	private static int cmdReturn=-1;
 	
@@ -139,6 +163,8 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 	enum CommandOptions
 	{
 		/**
+		 * Ordinal Value - 0
+		 * <p>
 		 * Request heartbeat message from mavlink activity.
 		 * Can not have any function arguments.
 		 * 
@@ -147,6 +173,8 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 		HEARTBEAT,
 		
 		/**
+		 * Ordinal Value - 1
+		 * <p>
 		 * Read Mission file from the drone. Can have 2 arguments as target
 		 * system and target component. If no arguments are given, then the
 		 * command will be sent to the default drone of the mavlink activity.
@@ -157,6 +185,8 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 		READ_MISSION,
 		
 		/**
+		 * Ordinal Value - 2
+		 * <p>
 		 * Get Mission data stored in mavlink activity after receiving from drone.
 		 * Can not have any other arguments.
 		 * 
@@ -165,6 +195,8 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 		GET_MISSION,
 		
 		/**
+		 * Ordinal Value - 3
+		 * <p>
 		 * Write Mission file on the drone. Can have 2 arguments as target
 		 * system and target component. If no arguments are given, then the
 		 * command will be sent to the default drone of the mavlink activity.
@@ -175,6 +207,8 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 		WRITE_MISSION,
 		
 		/**
+		 * Ordinal Value - 4
+		 * <p>
 		 * Set current active waypoint on the drone from the mission file. Can
 		 * have 3 arguments as current sequence, target system and target
 		 * component in order. If 1 argument is given, then the command will be
@@ -187,6 +221,8 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 		SET_CURRENT_ACTIVE_WP,
 		
 		/**
+		 * Ordinal Value - 5
+		 * <p>
 		 * Clears Mission file on the drone. Can have 2 arguments as target
 		 * system and target component. If no arguments are given, then the
 		 * command will be sent to the default drone of the mavlink activity.
@@ -197,6 +233,8 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 		CLEAR_MISSION,
 		
 		/**
+		 * Ordinal Value - 6
+		 * <p>
 		 * Arms/Disarms the drone. Can have 0,1,2,3 arguments as switch on/off,
 		 * target system and target component in order. If no arguments are
 		 * given, then the command will be sent arm the default drone of the
@@ -211,6 +249,8 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 		ARM,
 		
 		/**
+		 * Ordinal Value - 7
+		 * <p>
 		 * Read all the parameter data from the drone. Can have 2 arguments as
 		 * target system and target component in order. If no arguments are
 		 * given, then the command will be sent to the default drone of the
@@ -222,6 +262,8 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 		READ_PARAMETER_LIST_START,
 		
 		/**
+		 * Ordinal Value - 8
+		 * <p>
 		 * Get parameter data map stored in mavlink activity after receiving
 		 * from drone. Can not have any other arguments.
 		 * 
@@ -230,6 +272,8 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 		GET_PARAMETER_LIST,
 		
 		/**
+		 * Ordinal Value - 9
+		 * <p>
 		 * Get parameter data for a single parameter stored in mavlink activity
 		 * after receiving from drone. It will have one more argument in the
 		 * form of parameter string id.
@@ -239,6 +283,8 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 		GET_PARAMETER,
 		
 		/**
+		 * Ordinal Value - 10
+		 * <p>
 		 * Sets the supplied parameter value on the drone. Can have 2 or 4
 		 * arguments as parameter Id, parameter value, target system and target
 		 * component in order. If 2 arguments are given, then the command will
@@ -253,6 +299,8 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 		SET_PARAMETER,
 		
 		/**
+		 * Ordinal Value - 11
+		 * <p>
 		 * Reboot the Autopilot system running on the drone. Can have 2
 		 * arguments as target system and target component in order. If no
 		 * arguments are given, then the command will be sent to the default
@@ -264,6 +312,8 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 		AUTOPILOT_REBOOT,
 		
 		/**
+		 * Ordinal Value - 12
+		 * <p>
 		 * Shutdown the Autopilot system running on the drone. Can have 2
 		 * arguments as target system and target component in order. If no
 		 * arguments are given, then the command will be sent to the default
@@ -275,6 +325,8 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 		AUTOPILOT_SHUTDOWN,
 		
 		/**
+		 * Ordinal Value - 13
+		 * <p>
 		 * Do Bootloader reboot of the drone. Can have 2 arguments as target
 		 * system and target component in order. If no arguments are given, then
 		 * the command will be sent to the default drone of the mavlink
@@ -286,6 +338,8 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 		BOOTLOADER_REBOOT,
 		
 		/**
+		 * Ordinal Value - 14
+		 * <p>
 		 * Shutdown the system of the drone. Can have 2 arguments as target
 		 * system and target component in order. If no arguments are given, then
 		 * the command will be sent to the default drone of the mavlink
@@ -297,6 +351,8 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 		SYSTEM_SHUTDOWN,
 		
 		/**
+		 * Ordinal Value - 15
+		 * <p>
 		 * Reboot the system of the drone. Can have 2 arguments as target system
 		 * and target component in order. If no arguments are given, then the
 		 * command will be sent to the default drone of the mavlink activity.
@@ -306,6 +362,8 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 		SYSTEM_REBOOT,
 		
 		/**
+		 * Ordinal Value - 16
+		 * <p>
 		 * Set the mode of the drone as auto, guided, stabilize etc. Can have 1
 		 * or 2 arguments as mode and target system in order. If 1 argument is
 		 * given, then the command will be sent to the default drone of the
@@ -317,6 +375,8 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 		SET_MODE,
 		
 		/**
+		 * Ordinal Value - 17
+		 * <p>
 		 * Set the allowed area of the drone. Can have 7 or 9 arguments as
 		 * Point3D 1, Point3D 2,coordinate frame, target system and target
 		 * component in order. If 7 arguments are given, then the command will
@@ -331,6 +391,8 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 		SET_ALLOWED_AREA,
 		
 		/**
+		 * Ordinal Value - 18
+		 * <p>
 		 * Set the GPS Origin of the drone. Can have 3 or 5 arguments as Point3D
 		 * gps origin , target system and target component in order. If 3
 		 * arguments are given, then the command will be sent to the default
@@ -345,6 +407,8 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 		SET_GPS_ORIGIN,
 		
 		/**
+		 * Ordinal Value - 19
+		 * <p>
 		 * Read all the Log Entries from the drone. Can have 2 arguments as
 		 * target system and target component in order. If no arguments are
 		 * given, then the command will be sent to the default drone of the
@@ -355,6 +419,8 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 		READ_LOG_ENTRY,
 		
 		/**
+		 * Ordinal Value - 20
+		 * <p>
 		 * Get all the Log Entries stored in mavlink activity after receiving
 		 * from drone. Can not have any other arguments.
 		 * 
@@ -363,6 +429,8 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 		GET_LOG_ENTRY,
 		
 		/**
+		 * Ordinal Value - 21
+		 * <p>
 		 * Send a Command to the drone from MAV_CMD class. It can have 8 or 10
 		 * arguments as Command, param1, param2, param3, param4, param5, param6,
 		 * param7, target system, target component. If arguments are there, the
@@ -375,6 +443,8 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 		SEND_COMMAND,
 		
 		/**
+		 * Ordinal Value - 22
+		 * <p>
 		 * Requests the drone to send back the requested data streams like
 		 * sensors, navigation etc. Can have 2,4 or 5 arguments as stream id,
 		 * rate, start/stop, target system and target component. If 2 arguments
@@ -389,6 +459,8 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 		READ_DATASTREAM,
 		
 		/**
+		 * Ordinal Value - 23
+		 * <p>
 		 * Update the default target system and target component. Can have 1 or
 		 * 2 arguments as target system and target component in order. If 1
 		 * argument is given, then the default target system of the mavlink
@@ -400,19 +472,33 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 	
 	/**  
 	 * A List of String arrays containing waypoint data read from the drone
+	 * <p>
 	 * DATA MAPPING FOR STRING ARRAY
+	 * <p>
 	 * Index 0 -> INDEX
+	 * <p>
 	 * Index 1 -> CURRENT WP
+	 * <p>
 	 * Index 2 -> COORD FRAME
+	 * <p>
 	 * Index 3 -> COMMAND
+	 * <p>
 	 * Index 4 -> PARAM1
+	 * <p>
 	 * Index 5 -> PARAM2
+	 * <p>
 	 * Index 6 -> PARAM3
+	 * <p>
 	 * Index 7 -> PARAM4
+	 * <p>
 	 * Index 8 -> PARAM5/X/LONGITUDE
+	 * <p>
 	 * Index 9 -> PARAM6/Y/LATITUDE
+	 * <p>
 	 * Index 10 -> PARAM7/Z/ALTITUDE
+	 * <p>
 	 * Index 11 -> AUTOCONTINUE
+	 * <p>
 	 */
 	private List<String []> readWaypointList;
 	
@@ -438,7 +524,19 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 	private static short []rc_out = new short[8];
 	
 	/**
-	 * Command file location.
+	 * Command file location. By default controller/tmp/command.txt
+	 * <p>
+	 * FORMAT
+	 * <P>
+	 * COMMAND(Ordinal value of Command option) ARG1 ARG2 ....ARGn
+	 * <p>
+	 * Example : To read mission file from default drone
+	 * <p>
+	 * 1
+	 * <p>
+	 * Example : To change mode of the default drone to Stabilize
+	 * <p>
+	 * 16 Stabilize
 	 */
 	private String commandFileLocation;
 	
@@ -644,11 +742,17 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 	 * @param targetSystem	   Target drone to send command to.
 	 * @param targetComponent  Target component on the drone.
 	 * @return				   Response from the mavlink activity.
+	 * <p>
 	 * 						   value = 0 	-> 	SUCCESS,
+	 * <p>
 	 * 						   value =-1 	-> 	TIMEOUT,
+	 * <p>
 	 * 						   value=-2 	-> 	BADCMD,
+	 * <p>
 	 * 						   value=-3 	-> 	NULL,
+	 * <p>
 	 *						   value= +ve  ->   FAIL CODE
+	 *<p>
 	 * @see					   #cmdReturnCheck(int)
 	 * @see					   CommandOptions
 	 * @since				   1.0.0
@@ -675,11 +779,17 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 	 * @param targetSystem	   Target drone to send command to.
 	 * @param targetComponent  Target component on the drone.
 	 * @return				   Response from the mavlink activity.
+	 * <p>
 	 * 						   value = 0 	-> 	SUCCESS,
+	 * <p>
 	 * 						   value =-1 	-> 	TIMEOUT,
+	 * <p>
 	 * 						   value=-2 	-> 	BADCMD,
+	 * <p>
 	 * 						   value=-3 	-> 	NULL,
+	 * <p>
 	 *						   value= +ve  ->   FAIL CODE
+	 *<p>
 	 * @see					   #cmdReturnCheck(int)
 	 * @see					   CommandOptions
 	 * @since				   1.0.0
@@ -699,11 +809,17 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 	 * 
 	 * @param opt			 Command from the command option list.
 	 * @return				 Response from the mavlink activity.
+	 * <p>
 	 * 						 value = 0 	-> 	SUCCESS,
+	 * <p>
 	 * 						 value =-1 	-> 	TIMEOUT,
+	 * <p>
 	 * 						 value=-2 	-> 	BADCMD,
+	 * <p>
 	 * 						 value=-3 	-> 	NULL,
+	 * <p>
 	 *						 value= +ve  ->  FAIL CODE
+	 *<p>
 	 * @see					 #cmdReturnCheck(int)
 	 * @see					 CommandOptions
 	 * @since				 1.0.0
@@ -722,11 +838,17 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 	 * @param opt			 Command from the command option list.
 	 * @param timeout		 Timeout Period of the command.
 	 * @return				 Response from the mavlink activity.
+	 * <p>
 	 * 						 value = 0 	-> 	SUCCESS,
+	 * <p>
 	 * 						 value =-1 	-> 	TIMEOUT,
+	 * <p>
 	 * 						 value=-2 	-> 	BADCMD,
+	 * <p>
 	 * 						 value=-3 	-> 	NULL,
+	 * <p>
 	 *						 value= +ve  ->  FAIL CODE
+	 *<p>
 	 * @see					 #cmdReturnCheck(int)
 	 * @see					 CommandOptions
 	 * @since				 1.0.0
@@ -751,11 +873,17 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 	 *            			 in the CommandOptions enum.
 	 * @param timeout		 Timeout Period of the command.
 	 * @return				 Response from the mavlink activity.
+	 * <p>
 	 * 						 value = 0 	-> 	SUCCESS,
+	 * <p>
 	 * 						 value =-1 	-> 	TIMEOUT,
+	 * <p>
 	 * 						 value=-2 	-> 	BADCMD,
+	 * <p>
 	 * 						 value=-3 	-> 	NULL,
+	 * <p>
 	 *						 value= +ve  ->  FAIL CODE
+	 *<p>
 	 * @see					 #cmdReturnCheck(int)
 	 * @see					 CommandOptions
 	 * @since				 1.0.0
@@ -783,11 +911,17 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 	 *            			 This follows the parameters of the command as explained
 	 *            			 in the CommandOptions enum.
 	 * @return				 Response from the mavlink activity.
+	 * <p>
 	 * 						 value = 0 	-> 	SUCCESS,
+	 * <p>
 	 * 						 value =-1 	-> 	TIMEOUT,
+	 * <p>
 	 * 						 value=-2 	-> 	BADCMD,
+	 * <p>
 	 * 						 value=-3 	-> 	NULL,
+	 * <p>
 	 *						 value= +ve  ->  FAIL CODE
+	 *<p>
 	 * @see					 #cmdReturnCheck(int)
 	 * @see					 CommandOptions
 	 * @since				 1.0.0
@@ -807,11 +941,17 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 	 *            			 in the CommandOptions enum.
 	 * @param timeout		 Timeout Period of the command.
 	 * @return				 Response from the mavlink activity.
+	 * <p>
 	 * 						 value = 0 	-> 	SUCCESS,
+	 * <p>
 	 * 						 value =-1 	-> 	TIMEOUT,
+	 * <p>
 	 * 						 value=-2 	-> 	BADCMD,
+	 * <p>
 	 * 						 value=-3 	-> 	NULL,
+	 * <p>
 	 *						 value= +ve  ->  FAIL CODE
+	 *<p>
 	 * @see					 #cmdReturnCheck(int)
 	 * @see					 CommandOptions
 	 * @since				 1.0.0
@@ -835,11 +975,17 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 	 *            			 This follows the parameters of the command as explained
 	 *            			 in the CommandOptions enum.
 	 * @return				 Response from the mavlink activity.
+	 * <p>
 	 * 						 value = 0 	-> 	SUCCESS,
+	 * <p>
 	 * 						 value =-1 	-> 	TIMEOUT,
+	 * <p>
 	 * 						 value=-2 	-> 	BADCMD,
+	 * <p>
 	 * 						 value=-3 	-> 	NULL,
+	 * <p>
 	 *						 value= +ve  ->  FAIL CODE
+	 *<p>
 	 * @see					 #cmdReturnCheck(int)
 	 * @see					 CommandOptions
 	 * @since				 1.0.0
@@ -861,11 +1007,17 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 	 *            			 in the CommandOptions enum. They are separated by '='.
 	 * @param timeout		 Timeout Period of the command.
 	 * @return				 Response from the mavlink activity.
+	 * <p>
 	 * 						 value = 0 	-> 	SUCCESS,
+	 * <p>
 	 * 						 value =-1 	-> 	TIMEOUT,
+	 * <p>
 	 * 						 value=-2 	-> 	BADCMD,
+	 * <p>
 	 * 						 value=-3 	-> 	NULL,
+	 * <p>
 	 *						 value= +ve  ->  FAIL CODE
+	 *<p>
 	 * @see					 #cmdReturnCheck(int)
 	 * @see					 CommandOptions
 	 * @since				 1.0.0
@@ -890,11 +1042,17 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 	 *            			 After this follows the parameters of the command as explained
 	 *            			 in the CommandOptions enum. They are separated by '='.
 	 * @return				 Response from the mavlink activity.
+	 * <p>
 	 * 						 value = 0 	-> 	SUCCESS,
+	 * <p>
 	 * 						 value =-1 	-> 	TIMEOUT,
+	 * <p>
 	 * 						 value=-2 	-> 	BADCMD,
+	 * <p>
 	 * 						 value=-3 	-> 	NULL,
+	 * <p>
 	 *						 value= +ve  ->  FAIL CODE
+	 *<p>
 	 * @see					 #cmdReturnCheck(int)
 	 * @see					 CommandOptions
 	 * @since				 1.0.0
@@ -911,11 +1069,18 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 	 * variable to make it to have the default value.
 	 * 
 	 * @param timeout		Time to wait for the response from mavlink activity.
-	 * @return				value = 0 	-> 	SUCCESS,
+	 * @return				Response from the mavlink activity.
+	 * <p>
+	 * 						value = 0 	-> 	SUCCESS,
+	 * <p>
 	 * 						value =-1 	-> 	TIMEOUT,
+	 * <p>
 	 * 						value=-2 	-> 	BADCMD,
+	 * <p>
 	 * 						value=-3 	-> 	NULL,
+	 * <p>
 	 *						value= +ve  ->  FAIL CODE
+	 *<p>
 	 * @since				1.0.0
 	 */
 	private int cmdReturnCheck(int timeout)

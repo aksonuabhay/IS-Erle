@@ -65,125 +65,189 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	private static final String CONFIGURATION_SUBSCRIBER_NAME = "space.activity.routes.inputs";
 	
 	/**
-	 * The topic names for publishing data
+	 * The topic names for publishing data.
+	 * <p>
 	 * PUBLISHER MAPPING
-	 * 
+	 * <p>
 	 * publishers[0] -> outputCOM_M 
+	 * <p>
 	 * Topic Name : comms/input
+	 * <p>
 	 * Usage : Send output to the comms activity
-	 * 
+	 * <p>
 	 * publishers[1] -> outputWP_M
+	 * <p>
 	 * Topic Name : waypoint/input
+	 * <p>
 	 * Usage : Send output to the waypoint generator activity
-	 * 
+	 * <p>
 	 * publishers[2] -> outputGeneral_M
+	 * <p>
 	 * Topic Name : mavlink/output
+	 * <p>
 	 * Usage : A General output topic having all the logs of mavlink activity
-	 * 
+	 * <p>
 	 * publishers[3] -> captain
+	 * <p>
 	 * Topic Name : captain/input
+	 * <p>
 	 * Usage : Send output to the captain activity
-	 * 
+	 * <p>
 	 * publishers[4] -> heartbeat
+	 * <p>
 	 * Topic Name : mavlink/heartbeat
+	 * <p>
 	 * Usage : An output topic having all the heartbeat messages
-	 * 
+	 * <p>
 	 * publishers[5] -> hud
+	 * <p>
 	 * Topic Name : mavlink/hud
+	 * <p>
 	 * Usage : An output topic having all the HUD (Head Up Display) messages
-	 * 
+	 * <p>
 	 * publishers[6] -> attitude
+	 * <p>
 	 * Topic Name : mavlink/attitude
+	 * <p>
 	 * Usage : An output topic having all the attitude messages
-	 * 
+	 * <p>
 	 * publishers[7] -> status
+	 * <p>
 	 * Topic Name : mavlink/system/status
+	 * <p>
 	 * Usage : An output topic having all the system status messages
-	 * 
+	 * <p>
 	 * publishers[8] -> time
+	 * <p>
 	 * Topic Name : mavlink/system/time
+	 * <p>
 	 * Usage : An output topic having all the system time messages
-	 * 
+	 * <p>
 	 * publishers[9] -> gps
+	 * <p>
 	 * Topic Name : mavlink/sensors/gps
+	 * <p>
 	 * Usage : An output topic having all the GPS sensor  messages
-	 * 
+	 * <p>
 	 * publishers[10] -> imu
+	 * <p>
 	 * Topic Name : mavlink/sensors/imu
+	 * <p>
 	 * Usage : An output topic having all the IMU sensor  messages
-	 * 
+	 * <p>
 	 * publishers[11] -> scaled_pressure
+	 * <p>
 	 * Topic Name : mavlink/sensors/pressure
+	 * <p>
 	 * Usage : An output topic having all the scaled Pressure sensor  messages
-	 * 
+	 * <p>
 	 * publishers[12] -> global_position
+	 * <p>
 	 * Topic Name : mavlink/position/global
+	 * <p>
 	 * Usage : An output topic having all the Global Position  messages
-	 * 
+	 * <p>
 	 * publishers[13] -> local_position
+	 * <p>
 	 * Topic Name : mavlink/position/local
+	 * <p>
 	 * Usage : An output topic having all the Local Position  messages
-	 * 
+	 * <p>
 	 * publishers[14] -> servo_output
+	 * <p>
 	 * Topic Name : mavlink/servoOutput
+	 * <p>
 	 * Usage : An output topic having all the servo/BLDC motor output  messages
-	 * 
+	 * <p>
 	 * publishers[15] -> rc_input
+	 * <p>
 	 * Topic Name : mavlink/rcInput
+	 * <p>
 	 * Usage : An output topic having all the RC transmitter input messages
-	 * 
+	 * <p>
 	 * publishers[16] -> current_mission_seq
+	 * <p>
 	 * Topic Name : mavlink/current_mission_seq
+	 * <p>
 	 * Usage : An output topic having all the Current Mission Sequence number messages
-	 * 
+	 * <p>
 	 * publishers[17] -> nav_controller_output
+	 * <p>
 	 * Topic Name : mavlink/controller/nav
+	 * <p>
 	 * Usage : An output topic having all the Current Mission Sequence number messages
-	 * 
-	 *  publishers[18] -> terrain_report
+	 * <p>
+	 * publishers[18] -> terrain_report
+	 * <p>
 	 * Topic Name : mavlink/terrainReport
+	 * <p>
 	 * Usage : An output topic having all the Terrain Report messages
+	 * <p>
 	 */
 	private static String publishers[];
 
 	/**
-	 * The topic names for subscribing data 
+	 * The topic names for subscribing data.
+	 * <p>
 	 * SUBSCRIBER MAPPING
-	 * 
+	 * <p>
 	 * subscribers[0] -> inputCOM_M 
+	 * <p>
 	 * Topic Name : comms/output
+	 * <p>
 	 * Usage : Receive data from comms activity ie from drone
-	 * 
+	 * <p>
 	 * subscribers[1] -> inputWP_M 
+	 * <p>
 	 * Topic Name : waypoint/output
+	 * <p>
 	 * Usage : Receive data from waypoint generator activity about the waypoints
-	 * 
+	 * <p>
 	 * subscribers[2] -> captain
+	 * <p>
 	 * Topic Name : captain/output
+	 * <p>
 	 * Usage : Receive command from the captain activity
-	 * 
+	 * <p>
 	 * subscribers[3] -> rc_output
+	 * <p>
 	 * Topic Name : captain/rc_output
+	 * <p>
 	 * Usage : Receive RC output from the captain activity
 	 */
 	private static String subscribers[];
 	
     /**
     * A message to pack and unpack all messages to/from payload
+    * <p>
     * Common interface for all MAVLink Messages
+    * <p>
     * Packet Anatomy
+    * <p>
     * This is the anatomy of one packet. It is inspired by the CAN and SAE AS-4 standards.
+    * <p>
     * Byte Index  Content              Value       Explanation
+    * <p>
     * 0            Packet start sign  v1.0: 0xFE   Indicates the start of a new packet.  (v0.9: 0x55)
+    * <p>
     * 1            Payload length      0 - 255     Indicates length of the following payload.
+    * <p>
     * 2            Packet sequence     0 - 255     Each component counts up his send sequence. Allows to detect packet loss
+    * <p>
     * 3            System ID           1 - 255     ID of the SENDING system. Allows to differentiate different MAVs on the same network.
+    * <p>
     * 4            Component ID        0 - 255     ID of the SENDING component. Allows to differentiate different components of the same system, e.g. the IMU and the autopilot.
+    * <p>
     * 5            Message ID          0 - 255     ID of the message - the id defines what the payload means and how it should be correctly decoded.
+    * <p>
     * 6 to (n+6)   Payload             0 - 255     Data of the message, depends on the message id.
+    * <p>
     * (n+7)to(n+8) Checksum (low byte, high byte)  ITU X.25/SAE AS-4 hash, excluding packet start sign, so bytes 1..(n+6) Note: The checksum also includes MAVLINK_CRC_EXTRA (Number computed from message fields. Protects the packet from decoding a different version of the same packet but with different variables).
+    * <p>
     * The checksum is the same as used in ITU X.25 and SAE AS-4 standards (CRC-16-CCITT), documented in SAE AS5669A. Please see the MAVLink source code for a documented C-implementation of it. LINK TO CHECKSUM
+    * <p>
     * The minimum packet length is 8 bytes for acknowledgement packets without payload
+    * <p>
     * The maximum packet length is 263 bytes for full payload
     */
 	private MAVLinkPacket mavPacket;
@@ -234,19 +298,33 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	
 	/**  
 	 * A List of String arrays containing waypoint data read from the drone
+	 * <p>
 	 * DATA MAPPING FOR STRING ARRAY
+	 * <p>
 	 * Index 0 -> INDEX
+	 * <p>
 	 * Index 1 -> CURRENT WP
+	 * <p>
 	 * Index 2 -> COORD FRAME
+	 * <p>
 	 * Index 3 -> COMMAND
+	 * <p>
 	 * Index 4 -> PARAM1
+	 * <p>
 	 * Index 5 -> PARAM2
+	 * <p>
 	 * Index 6 -> PARAM3
+	 * <p>
 	 * Index 7 -> PARAM4
+	 * <p>
 	 * Index 8 -> PARAM5/X/LONGITUDE
+	 * <p>
 	 * Index 9 -> PARAM6/Y/LATITUDE
+	 * <p>
 	 * Index 10 -> PARAM7/Z/ALTITUDE
+	 * <p>
 	 * Index 11 -> AUTOCONTINUE
+	 * <p>
 	 */
 	private List<String []> readWaypointList;
 	

@@ -16,17 +16,6 @@ import interactivespaces.activity.impl.ros.BaseRoutableRosActivity;
  * A simple Interactive Spaces Java-based activity.
  */
 
-/*
- * Format
- * QGC WPL <VERSION> 
- * <INDEX> <CURRENT WP> <COORD FRAME><COMMAND> <PARAM1> <PARAM2> <PARAM3> <PARAM4><PARAM5/X/LONGITUDE> <PARAM6/Y/LATITUDE> <PARAM7/Z/ALTITUDE><AUTOCONTINUE> 
- * 
- * Example
- * QGC WPL 110 
- * 0 1 0 16 0.149999999999999994 0 0 0 8.54800000000000004 47.3759999999999977 550 1 
- * 1 0 0 16 0.149999999999999994 0 0 0 8.54800000000000004 47.3759999999999977 550 1 
- * 2 0 0 16 0.149999999999999994 0 0 0 8.54800000000000004 47.3759999999999977 550 1
- */
 /**
  * This class does the task of processing the mission file. It checks the file
  * for possible errors. It reads the file and transmits it to the mavlink
@@ -37,7 +26,23 @@ import interactivespaces.activity.impl.ros.BaseRoutableRosActivity;
  * on the comm activity's channel. Mavlink receives acknowledments from the
  * drone in return which it will publish it to this activity. This activity will
  * respond with relevant waypoint query data.
- * 
+ * <p>
+ * Format
+ * <p>
+ * QGC WPL VERSION 
+ * <p>
+ * INDEX CURRENT WP COORD_FRAME COMMAND PARAM1 PARAM2 PARAM3 PARAM4 PARAM5/X/LONGITUDE PARAM6/Y/LATITUDE PARAM7/Z/ALTITUDE AUTOCONTINUE 
+ * <p>
+ * Example
+ * <p>
+ * QGC WPL 110 
+ * <p>
+ * 0 1 0 16 0.149999999999999994 0 0 0 8.54800000000000004 47.3759999999999977 550 1 
+ * <p>
+ * 1 0 0 16 0.149999999999999994 0 0 0 8.54800000000000004 47.3759999999999977 550 1 
+ * <p>
+ * 2 0 0 16 0.149999999999999994 0 0 0 8.54800000000000004 47.3759999999999977 550 1
+ * <p>
  * @author Abhay Kumar
  * @version %I%, %G%
  * @since 1.0.0
@@ -56,22 +61,30 @@ public class IsErleWaypointGeneratorActivity extends BaseRoutableRosActivity
 	private static final String CONFIGURATION_SUBSCRIBER_NAME = "space.activity.routes.inputs";
 	
 	/**
-	 * The topic names for publishing data
+	 * The topic names for publishing data.
+	 * <p>
 	 * PUBLISHER MAPPING
-	 * 
+	 * <p>
 	 * publishers[0] -> outputWP 
+	 * <p>
 	 * Topic Name : waypoint/output
+	 * <p>
 	 * Usage : Send output to the mavlink activity after reading from file/request.
+	 * <p>
 	 */
 	private static String publishers[];
 
 	/**
-	 * The topic names for subscribing data 
+	 * The topic names for subscribing data.
+	 * <p> 
 	 * SUBSCRIBER MAPPING
-	 * 
+	 * <p>
 	 * subscribers[0] -> inputWP 
+	 * <p>
 	 * Topic Name : waypoint/input
+	 * <p>
 	 * Usage : Receive data from mavlink activity and process request.
+	 * <p>
 	 */
 	private static String subscribers[];
 	
