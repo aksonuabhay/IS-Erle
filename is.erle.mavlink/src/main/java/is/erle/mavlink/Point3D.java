@@ -167,12 +167,7 @@ public class Point3D
 	/**
 	 * Multiply this Point3D object with a constant.
 	 * 
-	 * @param x
-	 *            X value/longitude.
-	 * @param y
-	 *            Y value/latitude.
-	 * @param z
-	 *            Z value/altitude
+	 * @param constant Constant value to be multiplied to this object.
 	 * @return Multiplied values of this object.
 	 */
 	public Point3D multiply(double constant)
@@ -279,7 +274,7 @@ public class Point3D
 	 * 
 	 * @param point3D1
 	 *            A Point3D object.
-	 * @param point3D1
+	 * @param point3D2
 	 *            Another Point3D object.
 	 * @return Angle value between 2 point vectors.
 	 */

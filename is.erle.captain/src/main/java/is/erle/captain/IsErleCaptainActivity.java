@@ -338,7 +338,7 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 		 * the given coordinate frame. Otherwise it will be sent to the target
 		 * system and target component specified.
 		 * 
-		 * @see is.erle.mavlink.IsErleMavlinkActivity#setAllowedArea(Point3D,
+		 * @see is.erle.mavlink.IsErleMavlinkActivity#setGlobalGpsOrigin(Point3D,
 		 *      byte, byte)
 		 * @see is.erle.mavlink.Point3D
 		 */

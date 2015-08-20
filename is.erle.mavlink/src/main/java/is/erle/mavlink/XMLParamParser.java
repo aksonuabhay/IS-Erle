@@ -87,7 +87,7 @@ public class XMLParamParser
 	/**
 	 * Set {@link #xmlDocument}
 	 * 
-	 * @param xmlFile
+	 * @param xmlDocument
 	 *            Value to set to {@link #xmlDocument}
 	 */
 	public void setFile(Document xmlDocument)
