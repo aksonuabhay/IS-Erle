@@ -690,7 +690,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		 * SET_PARAMETER, AUTOPILOT_REBOOT, AUTOPILOT_SHUTDOWN,
 		 * BOOTLOADER_REBOOT, SYSTEM_SHUTDOWN, SYSTEM_REBOOT, SET_MODE,
 		 * SET_ALLOWED_AREA, SET_GPS_ORIGIN, READ_LOG_ENTRY, GET_LOG_ENTRY,
-		 * READ_LOG_DATA, GET_LOG_DATA
+		 * SEND_COMMAND, READ_DATASTREAM,UPDATE_TARGET
 		 */
 		int c = 0;
 		try
@@ -1753,17 +1753,154 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 			break;
 
 		/**
-		 * Handles READ_LOG_DATA Command from the captain activity
+		 * Handles SEND_COMMAND Command from the captain activity
 		 */
 		case 21:
-			// Still to write the function
+			boolean resultSendCommand = false;
+			Map<String, Object> tempSendCommand = Maps.newHashMap();
+			if (message.length == 9)
+			{
+				Short actionid =null;
+				Float p[] = new Float[7];
+				try
+				{
+					actionid = Short.parseShort(message[1]);
+					for (int i = 0; i < p.length; i++)
+					{
+						p[i] = Float.parseFloat(message[2+i]);
+					} 
+					resultSendCommand = doCommand(actionid, p[0], p[1], p[2], p[3], p[4], p[5], p[6]);
+				}
+				catch (NumberFormatException e)
+				{
+					getLog().error("Number format exception in send Command handler");
+					getLog().error(e);
+					tempSendCommand.put("command", "BADCMD");
+					sendOutputJson(publishers[3], tempSendCommand);
+					return;
+				}
+			}
+			else if (message.length == 11)
+			{
+				byte system = 0, component = 0;
+				Short actionid =null;
+				Float p[] = new Float[7];
+				try
+				{
+					system = Byte.parseByte(message[9]);
+					component = Byte.parseByte(message[10]);
+					actionid = Short.parseShort(message[1]);
+					for (int i = 0; i < p.length; i++)
+					{
+						p[i] = Float.parseFloat(message[2+i]);
+					} 
+					resultSendCommand = doCommand(actionid,p[0], p[1], p[2], p[3], p[4], p[5], p[6],system,component);
+				}
+				catch (NumberFormatException e)
+				{
+					getLog().error("Number format exception in send Command handler");
+					getLog().error(e);
+					tempSendCommand.put("command", "BADCMD");
+					sendOutputJson(publishers[3], tempSendCommand);
+					return;
+				}
+			}
+			else
+			{
+				tempSendCommand.put("command", "BADCMD");
+				sendOutputJson(publishers[3], tempSendCommand);
+				return;
+			}
+
+			if (resultSendCommand)
+			{
+				tempSendCommand.put("command", "SUCCESS");
+				sendOutputJson(publishers[3], tempSendCommand);
+			}
+			else
+			{
+				tempSendCommand.put("command", "FAIL");
+				sendOutputJson(publishers[3], tempSendCommand);
+				return;
+			}
 			break;
 
 		/**
-		 * Handles GET_LOG_DATA Command from the captain activity
+		 * Handles READ_DATASTREAM Command from the captain activity
 		 */
 		case 22:
-			// Still to write the function
+			Map<String, Object> tempReadDataStream = Maps.newHashMap();
+			if (message.length == 3)
+			{
+				int id, value;
+				try
+				{
+					id = Integer.parseInt(message[1]);
+					value = Integer.parseInt(message[2]);
+					getDataStream(id, value);
+				}
+				catch (NumberFormatException e)
+				{
+					getLog().error(
+							"Number format exception in read DataStream handler");
+					getLog().error(e);
+					tempReadDataStream.put("command", "BADCMD");
+					sendOutputJson(publishers[3], tempReadDataStream);
+					return;
+				}
+			}
+			else if (message.length == 5)
+			{
+				int id, value;
+				try
+				{
+					id = Integer.parseInt(message[1]);
+					value = Integer.parseInt(message[2]);
+					byte system = Byte.parseByte(message[3]);
+					byte component = Byte.parseByte(message[4]);
+					getDataStream(id, value, system, component);
+				}
+				catch (NumberFormatException e)
+				{
+					getLog().error(
+							"Number format exception in read DataStream handler");
+					getLog().error(e);
+					tempReadDataStream.put("command", "BADCMD");
+					sendOutputJson(publishers[3], tempReadDataStream);
+					return;
+				}
+			}
+			else if (message.length == 6)
+			{
+				int id, value;
+				boolean startStop;
+				try
+				{
+					id = Integer.parseInt(message[1]);
+					value = Integer.parseInt(message[2]);
+					startStop = Boolean.parseBoolean(message[3]);
+					byte system = Byte.parseByte(message[4]);
+					byte component = Byte.parseByte(message[5]);
+					getDataStream(id, value, startStop, system, component);
+				}
+				catch (NumberFormatException e)
+				{
+					getLog().error(
+							"Number format exception in read DataStream handler");
+					getLog().error(e);
+					tempReadDataStream.put("command", "BADCMD");
+					sendOutputJson(publishers[3], tempReadDataStream);
+					return;
+				}
+			}
+			else
+			{
+				tempReadDataStream.put("command", "BADCMD");
+				sendOutputJson(publishers[3], tempReadDataStream);
+				return;
+			}
+			tempReadDataStream.put("command", "SUCCESS");
+			sendOutputJson(publishers[3], tempReadDataStream);
 			break;
 
 		/**
@@ -1821,9 +1958,15 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	}
 
 	/**
-     * Use this function to get a variable name which is equal to certain value
-     * Intended for getting variables in the enum folder of mavlink package
-     */
+	 * Use this function to get a variable name which is equal to certain value
+	 * Intended for getting variables in the enum folder of mavlink package.
+	 * 
+	 * @param className
+	 *            Name of the class to be queried.
+	 * @param matchVar
+	 *            Variable to be matched
+	 * @return Name of the variable in the class.
+	 */
     private String getVariableName(String className , int matchVar)
     {
 		String variableName = null;
@@ -1858,10 +2001,14 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		return variableName;
     }
 
-    /**
-     * Use this function to get all the variables of a specified class
-     * Intended for getting values from mavlink package
-     */
+	/**
+	 * Use this function to get all the variables of a specified class Intended
+	 * for getting values from mavlink package.
+	 * 
+	 * @param className
+	 *            Name of the class to be queried.
+	 * @return All the public data names.
+	 */
     @SuppressWarnings("unused")
 	private String [] getVariableNames(String className )
     {
@@ -5931,8 +6078,8 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	/**
 	 * This function reads all the parameters stored on the drone. WARNING -
 	 * Never call this function when the drone is in air. Function overload for
-	 * {@link #readParameterList(byte, byte)} . Calls
-	 * {@link #readParameterList(byte, byte)} with {@link #targetSystem}
+	 * {@link #readParamList(byte, byte)} . Calls
+	 * {@link #readParamList(byte, byte)} with {@link #targetSystem}
 	 * and {@link #targetComponent}
 	 * 
 	 * @return It checks for {@link #receiveParamList} value and if it is equal
@@ -7205,7 +7352,7 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	 *            packets per second of that stram.
 	 * @param rate
 	 *            requeste rate of the stream.
-	 * @return <code>true<code> if the rate is achievable, otherwise <code>false<code>.
+	 * @return <code>true</code> if the rate is achievable, otherwise <code>false</code>.
 	 */
 	@SuppressWarnings("unused")
 	private boolean rateCheck(double pps, int rate)

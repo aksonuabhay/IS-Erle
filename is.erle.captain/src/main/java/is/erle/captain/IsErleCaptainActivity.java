@@ -13,8 +13,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
-import org.python.antlr.PythonParser.continue_stmt_return;
-
 import com.google.common.collect.Maps;
 import interactivespaces.activity.impl.ros.BaseRoutableRosActivity;
 import interactivespaces.util.concurrency.ManagedCommand;
@@ -50,7 +48,19 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 	 */
 	private ManagedCommand heartbeatThread;
 	
+	/**
+	 * A rc output thread.
+	 */
 	private ManagedCommand rcOutput;
+	
+	/**
+	 * Sends commands read from a command.txt file as soon as the file is
+	 * available.Does nothing with the file, so you will have to manually delete
+	 * it after sending commands. The file pattern is first the command from
+	 * CommandOptions enum, followed by its arguments separated by a single
+	 * space.
+	 */
+	private ManagedCommand commandSender;
 	
 	/**
 	 * The name of the config property for obtaining the publisher List.
@@ -69,6 +79,10 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 	 * publishers[0] -> output 
 	 * Topic Name : captain/output
 	 * Usage : Send command to the mavlink activity to execute some functions.
+	 * 
+	 * publishers[1] -> rc_output
+	 * Topic Name : captain/rc_output
+	 * Usage : Send RC output to the mavlink activity.
 	 */
 	private static String publishers[];
 
@@ -345,14 +359,24 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 		GET_LOG_ENTRY,
 		
 		/**
-		 * 
+		 * Send a Command to the drone from MAV_CMD class. It can have 8 or 10
+		 * arguments as Command, param1, param2, param3, param4, param5, param6,
+		 * param7, target system, target component. If arguments are there, the
+		 * command will be sent to the default drone of the mavlink activity
+		 * otherwise it will be sent to the target system and target component.
 		 */
-		READ_LOG_DATA,
+		SEND_COMMAND,
 		
 		/**
-		 * 
+		 * Requests the drone to send back the requested data streams like
+		 * sensors, navigation etc. Can have 2,4 or 5 arguments as stream id,
+		 * rate, start/stop, target system and target component. If 2 arguments
+		 * are given, it is considered as stream id and rate respectively, if 4
+		 * are given, then it is considered as stream id, rate, target system
+		 * and target component and if 5 arguments are given, it is considered
+		 * as stream id, rate, start/stop, target system and target component.
 		 */
-		GET_LOG_DATA,
+		READ_DATASTREAM,
 		
 		/**
 		 * Update the default target system and target component. Can have 1 or
@@ -390,6 +414,7 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 	/**
 	 * Stores the parameter value last requested.
 	 */
+	@SuppressWarnings("unused")
 	private double param;
 	
 	/**
@@ -406,6 +431,16 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 	 * RC Transmitter output values to be sent regularly.
 	 */
 	private static short []rc_out = new short[8];
+	
+	/**
+	 * Command file location.
+	 */
+	private String commandFileLocation;
+	
+	/**
+	 * Last Modified date of command file.
+	 */
+	private Date commandFileLastModified;
 	
     @Override
     public void onActivitySetup() {
@@ -519,86 +554,13 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 				getLog().info(Arrays.toString(logEntry.toArray()));
 			}
 		}*/
-		if (!paramList.isEmpty())
-		{
-			rc_out[0] = (short) (paramList.get("RC1_MIN").shortValue() / 2 + paramList
-					.get("RC1_MAX").shortValue() / 2);
-			rc_out[1] = (short) (paramList.get("RC2_MIN").shortValue() / 2 + paramList
-					.get("RC2_MAX").shortValue() / 2);
-			rc_out[2] = paramList.get("RC3_MIN").shortValue();
-			rc_out[3] = (short) (paramList.get("RC4_MIN").shortValue() / 2 + paramList
-					.get("RC4_MAX").shortValue() / 2);
 
-		}
-		else
-		{
-			rc_out[0] = 1500;
-			rc_out[1] = 1500;
-			rc_out[2] = 1000;
-			rc_out[3] = 1500;
-		}
-		rc_out[4] = (short) 0xFFFF;
-		rc_out[5] = (short) 0xFFFF;
-		rc_out[6] = (short) 0xFFFF;
-		rc_out[7] = (short) 0xFFFF;
-        
-        rcOutput = getManagedCommands().scheduleAtFixedRate(new Runnable()
-		{
-			
-			public void run()
-			{
-				Map<String, Object> mapRCOut = Maps.newHashMap();
-				mapRCOut.put("rc", Arrays.toString(rc_out));
-				sendOutputJson(publishers[1], mapRCOut);
-			}
-		},EventFrequency.eventsPerSecond(2.0));
-        
-        String paramFileLocation = getSpaceEnvironment().getFilesystem().getTempDirectory().getAbsolutePath()+"/Param.param";
-        File paramFile = new File(paramFileLocation);
-        if(paramFile.exists())
-        {
-			BufferedReader br =	null;
-			try
-			{
-				br = new BufferedReader(new FileReader(paramFileLocation));
-			}
-			catch (FileNotFoundException e1)
-			{
-				getLog().error("Param file deleted");
-			}
-			String currentLine;
-			try
-			{
-				while ((currentLine = br.readLine()) != null)
-				{
-					String [] splitLine = currentLine.split(" ");
-						if(splitLine.length == 2)
-						{
-							splitLine[1]=splitLine[1];
-							int cmdRslt = sendCommand(CommandOptions.SET_PARAMETER,splitLine);
-							if(cmdRslt == 0)
-							{
-								getLog().info("Set " +splitLine[0] + "with value " + splitLine[1]);
-							}
-							else
-							{
-								getLog().warn("Could not set "+splitLine[0] + "with value " + splitLine[1]);
-							}
-						}
-						else
-						{
-							getLog().error("Param File contains invalid lines");
-						}
-				}
-			}
-			catch (IOException e)
-			{
-				getLog().error("Input Output Exception");
-			}
-        }
+        launchRcOutputThread();
+        setParams();
+        launchCommandSenderThread();
     }
 
-    /**
+	/**
      * Executes on activity deactivate.
      * @see		interactivespaces.activity.impl.BaseActivity#onActivityDeactivate()
      * @since	1.0.0
@@ -630,7 +592,7 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 		}
 		heartbeatThread.cancel();
 		rcOutput.cancel();
-
+		commandSender.cancel();
     }
 
     /**
@@ -704,6 +666,7 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 	 * @see					   CommandOptions
 	 * @since				   1.0.0
 	 */
+	@SuppressWarnings("unused")
 	private int sendCommand(CommandOptions opt, byte targetSystem,
 			byte targetComponent)
 	{
@@ -990,6 +953,7 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 			{
 				if (message.get("param_list") != null)
 				{
+					@SuppressWarnings("unchecked")
 					Map<String, Double> map = (Map<String, Double>) message
 							.get("param_list");
 					// getLog().info(message.get("param_list").toString());
@@ -1157,6 +1121,210 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 		else
 		{
 			getLog().error("Set Stabilize mode failed");
+		}
+	}
+	
+	/**
+	 * Launches the rc output thread. It sends rc output on rc_output channel at
+	 * a frequency of 2 Hz.
+	 */
+	private void launchRcOutputThread()
+	{
+		if (!paramList.isEmpty())
+		{
+			rc_out[0] = (short) (paramList.get("RC1_MIN").shortValue() / 2 + paramList
+					.get("RC1_MAX").shortValue() / 2);
+			rc_out[1] = (short) (paramList.get("RC2_MIN").shortValue() / 2 + paramList
+					.get("RC2_MAX").shortValue() / 2);
+			rc_out[2] = paramList.get("RC3_MIN").shortValue();
+			rc_out[3] = (short) (paramList.get("RC4_MIN").shortValue() / 2 + paramList
+					.get("RC4_MAX").shortValue() / 2);
+
+		}
+		else
+		{
+			rc_out[0] = 1500;
+			rc_out[1] = 1500;
+			rc_out[2] = 1000;
+			rc_out[3] = 1500;
+		}
+		rc_out[4] = (short) 0xFFFF;
+		rc_out[5] = (short) 0xFFFF;
+		rc_out[6] = (short) 0xFFFF;
+		rc_out[7] = (short) 0xFFFF;
+
+		rcOutput = getManagedCommands().scheduleAtFixedRate(new Runnable()
+		{
+
+			public void run()
+			{
+				Map<String, Object> mapRCOut = Maps.newHashMap();
+				mapRCOut.put("rc", Arrays.toString(rc_out));
+				sendOutputJson(publishers[1], mapRCOut);
+			}
+		}, EventFrequency.eventsPerSecond(2.0));
+
+	}
+	
+	/**
+	 * It launches a command sender thread which scans for a command.txt file
+	 * every second. If it finds a command file, it sends it to the mavlink
+	 * activity to be sent to the drone. The command file follows the convention
+	 * of first command being the CommandOptions ordinal value followed by its
+	 * arguments.Every argument is separated by " " separator and each line
+	 * contains only one command.
+	 */
+	private void launchCommandSenderThread()
+	{
+		commandFileLocation = getSpaceEnvironment().getFilesystem()
+				.getTempDirectory().getAbsolutePath()
+				+ "/command.txt";
+		commandSender = getManagedCommands().scheduleAtFixedRate(new Runnable()
+		{
+
+			public void run()
+			{
+				File commandFile = new File(commandFileLocation);
+				if (commandFile.exists())
+				{
+					if (commandFileLastModified == null)
+					{
+						commandFileLastModified = new Date(
+								commandFile.lastModified());
+						BufferedReader br = null;
+						String currentLine;
+						try
+						{
+							br = new BufferedReader(new FileReader(
+									commandFileLocation));
+							while ((currentLine = br.readLine()) != null)
+							{
+								currentLine = currentLine.trim().replaceAll(
+										" ", "=");
+								int cmdRslt = sendCommand(currentLine);
+								if (cmdRslt == 0)
+								{
+									getLog().info(
+											"Send Command :  " + currentLine);
+								}
+								else
+								{
+									getLog().warn(
+											"Send Command :  " + currentLine
+													+ " not fulfilled");
+								}
+							}
+						}
+						catch (FileNotFoundException e1)
+						{
+							getLog().error("Param file deleted");
+						}
+						catch (IOException e)
+						{
+							getLog().error("Input Output Exception");
+						}
+					}
+					else
+					{
+						Date current = new Date(commandFile.lastModified());
+						if (!current.equals(commandFileLastModified))
+						{
+							BufferedReader br = null;
+							String currentLine;
+							try
+							{
+								br = new BufferedReader(new FileReader(
+										commandFileLocation));
+								while ((currentLine = br.readLine()) != null)
+								{
+									currentLine = currentLine.trim()
+											.replaceAll(" ", "=");
+									int cmdRslt = sendCommand(currentLine);
+									if (cmdRslt == 0)
+									{
+										getLog().info(
+												"Send Command :  "
+														+ currentLine + " processed");
+									}
+									else
+									{
+										getLog().warn(
+												"Send Command :  "
+														+ currentLine
+														+ " not fulfilled");
+									}
+								}
+							}
+							catch (FileNotFoundException e1)
+							{
+								getLog().error("Param file deleted");
+							}
+							catch (IOException e)
+							{
+								getLog().error("Input Output Exception");
+							}
+						}
+					}
+				}
+
+			}
+		}, EventFrequency.eventsPerSecond(1));
+	}
+	
+	/**
+	 * Set parameters on the drone from a Param.param file. The file contains
+	 * the parameter name followed by a space followed by a value. Each line has
+	 * just one parameter to be set. This function is called at the activation
+	 * time.
+	 */
+	private void setParams()
+	{
+		String paramFileLocation = getSpaceEnvironment().getFilesystem()
+				.getTempDirectory().getAbsolutePath()
+				+ "/Param.param";
+		File paramFile = new File(paramFileLocation);
+		if (paramFile.exists())
+		{
+			BufferedReader br = null;
+			String currentLine;
+			try
+			{
+				br = new BufferedReader(new FileReader(paramFileLocation));
+				while ((currentLine = br.readLine()) != null)
+				{
+					String[] splitLine = currentLine.split(" ");
+					if (splitLine.length == 2)
+					{
+						splitLine[1] = splitLine[1];
+						int cmdRslt = sendCommand(CommandOptions.SET_PARAMETER,
+								splitLine);
+						if (cmdRslt == 0)
+						{
+							getLog().info(
+									"Set " + splitLine[0] + " with value "
+											+ splitLine[1]);
+						}
+						else
+						{
+							getLog().warn(
+									"Could not set " + splitLine[0]
+											+ " with value " + splitLine[1]);
+						}
+					}
+					else
+					{
+						getLog().error("Param File contains invalid lines");
+					}
+				}
+			}
+			catch (FileNotFoundException e1)
+			{
+				getLog().error("Param file deleted");
+			}
+			catch (IOException e)
+			{
+				getLog().error("Input Output Exception");
+			}
 		}
 	}
 }
