@@ -72,16 +72,19 @@ public class IsErleCommsActivity extends BaseRoutableRosActivity {
 	/**
 	 * A counter to count the the number of calls sendOutputJson calls.
 	 */
+	@SuppressWarnings("unused")
 	private static long jsonOutputCounter = 0;
 	
 	/**
 	 * A counter to count the the number of calls onNewInputJson calls.
 	 */
+	@SuppressWarnings("unused")
 	private static long jsonInputCounter = 0 ;
 	
 	/**
 	 * Stores the address of the drone to send data to.
 	 */
+	@SuppressWarnings("unused")
 	private InetSocketAddress udpDroneAddress;
 	
 	/**
@@ -113,13 +116,15 @@ public class IsErleCommsActivity extends BaseRoutableRosActivity {
 	/**
 	 * A date instance to check and implement timeout for server response and switch to udpClient.
 	 */
+	@SuppressWarnings("unused")
 	private Date start;
 	 
-    /**
-     * Executes on activity setup.
-     * @see		interactivespaces.activity.impl.BaseActivity#onActivitySetup()
-     * @since	1.0.0
-     */
+	/**
+	 * Executes on activity setup.
+	 * 
+	 * @see interactivespaces.activity.impl.BaseActivity#onActivitySetup()
+	 * @since 1.0.0
+	 */
     @Override
 	public void onActivitySetup()
 	{
@@ -191,31 +196,34 @@ public class IsErleCommsActivity extends BaseRoutableRosActivity {
         addManagedResource(udpClient);
 	}
 
-    /**
-     * Executes on activity startup.
-     * @see		interactivespaces.activity.impl.BaseActivity#onActivityStartup()
-     * @since	1.0.0
-     */
+	/**
+	 * Executes on activity startup.
+	 * 
+	 * @see interactivespaces.activity.impl.BaseActivity#onActivityStartup()
+	 * @since 1.0.0
+	 */
 	@Override
     public void onActivityStartup() {
         getLog().info("Activity is.erle.comms startup");
     }
 
-    /**
-     * Executes on activity post startup.
-     * @see		interactivespaces.activity.impl.BaseActivity#onActivityPostStartup()
-     * @since	1.0.0
-     */
+	/**
+	 * Executes on activity post startup.
+	 * 
+	 * @see interactivespaces.activity.impl.BaseActivity#onActivityPostStartup()
+	 * @since 1.0.0
+	 */
     @Override
     public void onActivityPostStartup() {
         getLog().info("Activity is.erle.comms post startup");
     }
 
-    /**
-     * Executes on activity activate.
-     * @see		interactivespaces.activity.impl.BaseActivity#onActivityActivate()
-     * @since	1.0.0
-     */
+	/**
+	 * Executes on activity activate.
+	 * 
+	 * @see interactivespaces.activity.impl.BaseActivity#onActivityActivate()
+	 * @since 1.0.0
+	 */
     @Override
     public void onActivityActivate() {
         getLog().info("Activity is.erle.comms activate");
@@ -227,11 +235,12 @@ public class IsErleCommsActivity extends BaseRoutableRosActivity {
         
     }
 
-    /**
-     * Executes on activity deactivate.
-     * @see		interactivespaces.activity.impl.BaseActivity#onActivityDeactivate()
-     * @since	1.0.0
-     */
+	/**
+	 * Executes on activity deactivate.
+	 * 
+	 * @see interactivespaces.activity.impl.BaseActivity#onActivityDeactivate()
+	 * @since 1.0.0
+	 */
     @Override
     public void onActivityDeactivate() {
         getLog().info("Activity is.erle.comms deactivate");
@@ -240,31 +249,34 @@ public class IsErleCommsActivity extends BaseRoutableRosActivity {
 //        sendOutputJson("output", temp);
     }
 
-    /**
-     * Executes on activity pre shutdown.
-     * @see		interactivespaces.activity.impl.BaseActivity#onActivityPreShutdown()
-     * @since	1.0.0
-     */
+	/**
+	 * Executes on activity pre shutdown.
+	 * 
+	 * @see interactivespaces.activity.impl.BaseActivity#onActivityPreShutdown()
+	 * @since 1.0.0
+	 */
     @Override
     public void onActivityPreShutdown() {
         getLog().info("Activity is.erle.comms pre shutdown");
     }
 
-    /**
-     * Executes on activity shutdown.
-     * @see		interactivespaces.activity.impl.BaseActivity#onActivityShutdown()
-     * @since	1.0.0
-     */
+	/**
+	 * Executes on activity shutdown.
+	 * 
+	 * @see interactivespaces.activity.impl.BaseActivity#onActivityShutdown()
+	 * @since 1.0.0
+	 */
     @Override
     public void onActivityShutdown() {
         getLog().info("Activity is.erle.comms shutdown");
     }
 
-    /**
-     * Executes on activity cleanup.
-     * @see		interactivespaces.activity.impl.BaseActivity#onActivityCleanup()
-     * @since	1.0.0
-     */
+	/**
+	 * Executes on activity cleanup.
+	 * 
+	 * @see interactivespaces.activity.impl.BaseActivity#onActivityCleanup()
+	 * @since 1.0.0
+	 */
     @Override
     public void onActivityCleanup() {
         getLog().info("Activity is.erle.comms cleanup");

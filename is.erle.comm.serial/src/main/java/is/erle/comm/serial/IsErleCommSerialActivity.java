@@ -23,6 +23,7 @@ import interactivespaces.util.resource.ManagedResourceWithTask;
  * @version %I%, %G%
  * @since 1.0.0
  */
+@SuppressWarnings("unused")
 public class IsErleCommSerialActivity extends BaseRoutableRosActivity {
 
 	/**
@@ -75,11 +76,12 @@ public class IsErleCommSerialActivity extends BaseRoutableRosActivity {
 	 */
 	private static byte[] serialData;
 
-    /**
-     * Executes on activity setup.
-     * @see		interactivespaces.activity.impl.BaseActivity#onActivitySetup()
-     * @since	1.0.0
-     */
+	/**
+	 * Executes on activity setup.
+	 * 
+	 * @see interactivespaces.activity.impl.BaseActivity#onActivitySetup()
+	 * @since 1.0.0
+	 */
 	@Override
 	public void onActivitySetup() {
 		getLog().info("Activity is.erle.comm.serial setup");
@@ -134,31 +136,34 @@ public class IsErleCommSerialActivity extends BaseRoutableRosActivity {
 		addManagedResource(serialTask);
 	}
 
-    /**
-     * Executes on activity startup.
-     * @see		interactivespaces.activity.impl.BaseActivity#onActivityStartup()
-     * @since	1.0.0
-     */
+	/**
+	 * Executes on activity startup.
+	 * 
+	 * @see interactivespaces.activity.impl.BaseActivity#onActivityStartup()
+	 * @since 1.0.0
+	 */
 	@Override
 	public void onActivityStartup() {
 		getLog().info("Activity is.erle.comm.serial startup");
 	}
 
-    /**
-     * Executes on activity post startup.
-     * @see		interactivespaces.activity.impl.BaseActivity#onActivityPostStartup()
-     * @since	1.0.0
-     */
+	/**
+	 * Executes on activity post startup.
+	 * 
+	 * @see interactivespaces.activity.impl.BaseActivity#onActivityPostStartup()
+	 * @since 1.0.0
+	 */
 	@Override
 	public void onActivityPostStartup() {
 		getLog().info("Activity is.erle.comm.serial post startup");
 	}
 
-    /**
-     * Executes on activity activate.
-     * @see		interactivespaces.activity.impl.BaseActivity#onActivityActivate()
-     * @since	1.0.0
-     */
+	/**
+	 * Executes on activity activate.
+	 * 
+	 * @see interactivespaces.activity.impl.BaseActivity#onActivityActivate()
+	 * @since 1.0.0
+	 */
 	@Override
 	public void onActivityActivate() {
 		getLog().info("Activity is.erle.comm.serial activate");
@@ -170,11 +175,12 @@ public class IsErleCommSerialActivity extends BaseRoutableRosActivity {
 		 */
 	}
 
-    /**
-     * Executes on activity deactivate.
-     * @see		interactivespaces.activity.impl.BaseActivity#onActivityDeactivate()
-     * @since	1.0.0
-     */
+	/**
+	 * Executes on activity deactivate.
+	 * 
+	 * @see interactivespaces.activity.impl.BaseActivity#onActivityDeactivate()
+	 * @since 1.0.0
+	 */
 	@Override
 	public void onActivityDeactivate() {
 		getLog().info("Activity is.erle.comm.serial deactivate");
@@ -185,32 +191,35 @@ public class IsErleCommSerialActivity extends BaseRoutableRosActivity {
 		 
 	}
 
-    /**
-     * Executes on activity pre shutdown.
-     * @see		interactivespaces.activity.impl.BaseActivity#onActivityPreShutdown()
-     * @since	1.0.0
-     */
+	/**
+	 * Executes on activity pre shutdown.
+	 * 
+	 * @see interactivespaces.activity.impl.BaseActivity#onActivityPreShutdown()
+	 * @since 1.0.0
+	 */
 	@Override
 	public void onActivityPreShutdown() {
 		getLog().info("Activity is.erle.comm.serial pre shutdown");
 		//serial.shutdown();
 	}
 
-    /**
-     * Executes on activity shutdown.
-     * @see		interactivespaces.activity.impl.BaseActivity#onActivityShutdown()
-     * @since	1.0.0
-     */
+	/**
+	 * Executes on activity shutdown.
+	 * 
+	 * @see interactivespaces.activity.impl.BaseActivity#onActivityShutdown()
+	 * @since 1.0.0
+	 */
 	@Override
 	public void onActivityShutdown() {
 		getLog().info("Activity is.erle.comm.serial shutdown");
 	}
 
-    /**
-     * Executes on activity cleanup.
-     * @see		interactivespaces.activity.impl.BaseActivity#onActivityCleanup()
-     * @since	1.0.0
-     */
+	/**
+	 * Executes on activity cleanup.
+	 * 
+	 * @see interactivespaces.activity.impl.BaseActivity#onActivityCleanup()
+	 * @since 1.0.0
+	 */
 	@Override
 	public void onActivityCleanup() {
 		getLog().info("Activity is.erle.comm.serial cleanup");

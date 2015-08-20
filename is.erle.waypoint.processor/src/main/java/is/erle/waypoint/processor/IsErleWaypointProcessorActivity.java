@@ -68,6 +68,7 @@ public class IsErleWaypointProcessorActivity extends BaseRoutableRosActivity {
 	 * A thread to see the file changed status. It keeps seeing the file for any
 	 * change in it.
 	 */
+	@SuppressWarnings("unused")
 	private ManagedCommand fileThread;
 	
 	/**
@@ -75,11 +76,12 @@ public class IsErleWaypointProcessorActivity extends BaseRoutableRosActivity {
 	 */
 	private Date lastModified;
 	
-    /**
-     * Executes on activity setup.
-     * @see		interactivespaces.activity.impl.BaseActivity#onActivitySetup()
-     * @since	1.0.0
-     */
+	/**
+	 * Executes on activity setup.
+	 * 
+	 * @see interactivespaces.activity.impl.BaseActivity#onActivitySetup()
+	 * @since 1.0.0
+	 */
     @Override
     public void onActivitySetup() {
         getLog().info("Activity is.erle.waypoint.processor setup");
@@ -116,71 +118,78 @@ public class IsErleWaypointProcessorActivity extends BaseRoutableRosActivity {
 		}, 20, 1, TimeUnit.SECONDS);
     }
 
-    /**
-     * Executes on activity startup.
-     * @see		interactivespaces.activity.impl.BaseActivity#onActivityStartup()
-     * @since	1.0.0
-     */
+	/**
+	 * Executes on activity startup.
+	 * 
+	 * @see interactivespaces.activity.impl.BaseActivity#onActivityStartup()
+	 * @since 1.0.0
+	 */
     @Override
     public void onActivityStartup() {
         getLog().info("Activity is.erle.waypoint.processor startup");
     }
 
-    /**
-     * Executes on activity post startup.
-     * @see		interactivespaces.activity.impl.BaseActivity#onActivityPostStartup()
-     * @since	1.0.0
-     */
+	/**
+	 * Executes on activity post startup.
+	 * 
+	 * @see interactivespaces.activity.impl.BaseActivity#onActivityPostStartup()
+	 * @since 1.0.0
+	 */
     @Override
     public void onActivityPostStartup() {
         getLog().info("Activity is.erle.waypoint.processor post startup");
     }
 
-    /**
-     * Executes on activity activate.
-     * @see		interactivespaces.activity.impl.BaseActivity#onActivityActivate()
-     * @since	1.0.0
-     */
+	/**
+	 * Executes on activity activate.
+	 * 
+	 * @see interactivespaces.activity.impl.BaseActivity#onActivityActivate()
+	 * @since 1.0.0
+	 */
     @Override
     public void onActivityActivate() {
         getLog().info("Activity is.erle.waypoint.processor activate");
     }
 
-    /**
-     * Executes on activity deactivate.
-     * @see		interactivespaces.activity.impl.BaseActivity#onActivityDeactivate()
-     * @since	1.0.0
-     */
+	/**
+	 * Executes on activity deactivate.
+	 * 
+	 * @see interactivespaces.activity.impl.BaseActivity#onActivityDeactivate()
+	 * @since 1.0.0
+	 */
     @Override
     public void onActivityDeactivate() {
         getLog().info("Activity is.erle.waypoint.processor deactivate");
     }
 
-    /**
-     * Executes on activity pre shutdown.
-     * @see		interactivespaces.activity.impl.BaseActivity#onActivityPreShutdown()
-     * @since	1.0.0
-     */
+	/**
+	 * Executes on activity pre shutdown.
+	 * 
+	 * @see interactivespaces.activity.impl.BaseActivity#onActivityPreShutdown()
+	 * @since 1.0.0
+	 */
     @Override
     public void onActivityPreShutdown() {
         getLog().info("Activity is.erle.waypoint.processor pre shutdown");
     }
 
-    /**
-     * Executes on activity shutdown.
-     * @see		interactivespaces.activity.impl.BaseActivity#onActivityShutdown()
-     * @since	1.0.0
-     */
+	/**
+	 * Executes on activity shutdown.
+	 * 
+	 * @see interactivespaces.activity.impl.BaseActivity#onActivityShutdown()
+	 * @since 1.0.0
+	 */
     @Override
     public void onActivityShutdown() {
         getLog().info("Activity is.erle.waypoint.processor shutdown");
     }
 
-    /**
-     * Executes on activity cleanup.
-     * @see		interactivespaces.activity.impl.BaseActivity#onActivityCleanup()
-     * @since	1.0.0
-     */
+	/**
+	 * Executes on activity cleanup.
+	 * 
+	 * @see interactivespaces.activity.impl.BaseActivity#onActivityCleanup()
+	 * @since 1.0.0
+	 */
     @Override
     public void onActivityCleanup() {
         getLog().info("Activity is.erle.waypoint.processor cleanup");

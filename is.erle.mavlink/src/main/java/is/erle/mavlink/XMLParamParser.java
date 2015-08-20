@@ -28,7 +28,7 @@ public class XMLParamParser
 	 * The ParameterData.xml file.
 	 */
 	private File xmlFile;
-	
+
 	/**
 	 * The ParameterData.xml document.
 	 */

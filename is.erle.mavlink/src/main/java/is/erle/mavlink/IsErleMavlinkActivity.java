@@ -23,8 +23,6 @@ import java.lang.Class;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 
-//import javafx.geometry.Point3D;
-
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 
@@ -371,11 +369,12 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 	 */
 	private List<msg_log_entry> logEntry =Collections.synchronizedList( new ArrayList<msg_log_entry>());
 	
-    /**
-     * Executes on activity setup.
-     * @see		interactivespaces.activity.impl.BaseActivity#onActivitySetup()
-     * @since	1.0.0
-     */
+	/**
+	 * Executes on activity setup.
+	 * 
+	 * @see interactivespaces.activity.impl.BaseActivity#onActivitySetup()
+	 * @since 1.0.0
+	 */
     @Override
     public void onActivitySetup() {
         getLog().info("Activity is.erle.mavlink setup");
@@ -404,117 +403,121 @@ public class IsErleMavlinkActivity extends BaseRoutableRosActivity {
 		}
     }
 
-    /**
-     * Executes on activity startup.
-     * @see		interactivespaces.activity.impl.BaseActivity#onActivityStartup()
-     * @since	1.0.0
-     */
+	/**
+	 * Executes on activity startup.
+	 * 
+	 * @see interactivespaces.activity.impl.BaseActivity#onActivityStartup()
+	 * @since 1.0.0
+	 */
     @Override
     public void onActivityStartup() {
         getLog().info("Activity is.erle.mavlink startup");
     }
 
-    /**
-     * Executes on activity post startup.
-     * @see		interactivespaces.activity.impl.BaseActivity#onActivityPostStartup()
-     * @since	1.0.0
-     */
+	/**
+	 * Executes on activity post startup.
+	 * 
+	 * @see interactivespaces.activity.impl.BaseActivity#onActivityPostStartup()
+	 * @since 1.0.0
+	 */
     @Override
     public void onActivityPostStartup() {
         getLog().info("Activity is.erle.mavlink post startup");
     }
 
-    /**
-     * Executes on activity activate.
-     * @see		interactivespaces.activity.impl.BaseActivity#onActivityActivate()
-     * @since	1.0.0
-     */
+	/**
+	 * Executes on activity activate.
+	 * 
+	 * @see interactivespaces.activity.impl.BaseActivity#onActivityActivate()
+	 * @since 1.0.0
+	 */
     @Override
     public void onActivityActivate() {
         getLog().info("Activity is.erle.mavlink activate");
         getDataStream(MAV_DATA_STREAM.MAV_DATA_STREAM_ALL, 1);
-       // getDataStream(MAV_DATA_STREAM.MAV_DATA_STREAM_RAW_SENSORS, 1);
-       // getDataStream(MAV_DATA_STREAM.MAV_DATA_STREAM_RAW_CONTROLLER, 1);
-       // getDataStream(MAV_DATA_STREAM.MAV_DATA_STREAM_RC_CHANNELS, 1);
-//		Map<String, Object> temp = Maps.newHashMap();
-//		temp.put("mission", "START");
-//		sendOutputJson(getConfiguration().getRequiredPropertyString(CONFIGURATION_PUBLISHER_NAME), temp);
-//		sendOutputJson("outputCOM_M", temp);
-        //For waypoint list read test case
-       /* try {
-			Thread.sleep(10000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}*/
-       // readMissionListStart();
-        //readParameterListStart();
-        /*try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}*/
-        //sendMissionListStart();
-        /*
-        for (String [] temp:readWaypointList)
-        {
-        	for (int i=0; i<temp.length ; i++)
-        	{
-        		getLog().info(temp[i]);
-        	}
-        }*/
-        //setMode("Auto");
-        //getLogList();
+		// getDataStream(MAV_DATA_STREAM.MAV_DATA_STREAM_RAW_SENSORS, 1);
+		// getDataStream(MAV_DATA_STREAM.MAV_DATA_STREAM_RAW_CONTROLLER, 1);
+		// getDataStream(MAV_DATA_STREAM.MAV_DATA_STREAM_RC_CHANNELS, 1);
+		// Map<String, Object> temp = Maps.newHashMap();
+		// temp.put("mission", "START");
+		// sendOutputJson(getConfiguration().getRequiredPropertyString(CONFIGURATION_PUBLISHER_NAME),
+		// temp);
+		// sendOutputJson("outputCOM_M", temp);
+		// For waypoint list read test case
+		/*
+		 * try { Thread.sleep(10000); } catch (InterruptedException e) {
+		 * e.printStackTrace(); }
+		 */
+		// readMissionListStart();
+		// readParameterListStart();
+		/*
+		 * try { Thread.sleep(2000); } catch (InterruptedException e) {
+		 * e.printStackTrace(); }
+		 */
+		// sendMissionListStart();
+		/*
+		 * for (String [] temp:readWaypointList) { for (int i=0; i<temp.length ;
+		 * i++) { getLog().info(temp[i]); } }
+		 */
+		// setMode("Auto");
+		// getLogList();
     }
 
-    /**
-     * Executes on activity deactivate.
-     * @see		interactivespaces.activity.impl.BaseActivity#onActivityDeactivate()
-     * @since	1.0.0
-     */
+	/**
+	 * Executes on activity deactivate.
+	 * 
+	 * @see interactivespaces.activity.impl.BaseActivity#onActivityDeactivate()
+	 * @since 1.0.0
+	 */
     @Override
     public void onActivityDeactivate() {
         getLog().info("Activity is.erle.mavlink deactivate");
     }
 
-    /**
-     * Executes on activity pre shutdown.
-     * @see		interactivespaces.activity.impl.BaseActivity#onActivityPreShutdown()
-     * @since	1.0.0
-     */
+	/**
+	 * Executes on activity pre shutdown.
+	 * 
+	 * @see interactivespaces.activity.impl.BaseActivity#onActivityPreShutdown()
+	 * @since 1.0.0
+	 */
     @Override
     public void onActivityPreShutdown() {
         getLog().info("Activity is.erle.mavlink pre shutdown");
     }
 
-    /**
-     * Executes on activity shutdown.
-     * @see		interactivespaces.activity.impl.BaseActivity#onActivityShutdown()
-     * @since	1.0.0
-     */
+	/**
+	 * Executes on activity shutdown.
+	 * 
+	 * @see interactivespaces.activity.impl.BaseActivity#onActivityShutdown()
+	 * @since 1.0.0
+	 */
     @Override
     public void onActivityShutdown() {
         getLog().info("Activity is.erle.mavlink shutdown");
     }
 
-    /**
-     * Executes on activity cleanup.
-     * @see		interactivespaces.activity.impl.BaseActivity#onActivityCleanup()
-     * @since	1.0.0
-     */
+	/**
+	 * Executes on activity cleanup.
+	 * 
+	 * @see interactivespaces.activity.impl.BaseActivity#onActivityCleanup()
+	 * @since 1.0.0
+	 */
     @Override
     public void onActivityCleanup() {
         getLog().info("Activity is.erle.mavlink cleanup");
     }
     
 	/**
-	 * Callback for new message on the subscribed topics.
-	 * Processes incoming messages.
+	 * Callback for new message on the subscribed topics. Processes incoming
+	 * messages.
 	 * 
-	 * @param channelName 	Channel name of incoming message
-	 * @param message 		Message stored in a key-value pair in a map
-	 * @see 				interactivespaces.activity.impl.ros.BaseRoutableRosActivity
-	 * @see					java.util.Map
-	 * @since				1.0.0
+	 * @param channelName
+	 *            Channel name of incoming message
+	 * @param message
+	 *            Message stored in a key-value pair in a map
+	 * @see interactivespaces.activity.impl.ros.BaseRoutableRosActivity
+	 * @see java.util.Map
+	 * @since 1.0.0
 	 */
     @Override
     public void onNewInputJson(String channelName, Map <String , Object> message)

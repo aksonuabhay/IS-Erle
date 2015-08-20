@@ -97,6 +97,10 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 	 * subscribers[1] -> inputWP 
 	 * Topic Name : mavlink/heartbeat
 	 * Usage : Receive data from mavlink activity about heartbeat message and process it.
+	 * 
+	 * subscribers[2] -> WP_Processor 
+	 * Topic Name : waypoint/processor/output
+	 * Usage : Receive start data from waypoiny processor activity about starting a mission.
 	 */
 	private static String subscribers[];
 	
@@ -364,6 +368,9 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 		 * param7, target system, target component. If arguments are there, the
 		 * command will be sent to the default drone of the mavlink activity
 		 * otherwise it will be sent to the target system and target component.
+		 * 
+		 * @see is.erle.mavlink.IsErleMavlinkActivity#doCommand(short, float,
+		 *      float, float, float, float, float, float, byte, byte)
 		 */
 		SEND_COMMAND,
 		
@@ -375,6 +382,9 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 		 * are given, then it is considered as stream id, rate, target system
 		 * and target component and if 5 arguments are given, it is considered
 		 * as stream id, rate, start/stop, target system and target component.
+		 * 
+		 * @see is.erle.mavlink.IsErleMavlinkActivity#getDataStream(int, int, 
+		 * 		byte, byte)
 		 */
 		READ_DATASTREAM,
 		
@@ -385,7 +395,7 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 		 * activity will be set. Otherwise both target system and target
 		 * component will be set.
 		 */
-		UPDATE_TARGET // Update target system and target component
+		UPDATE_TARGET
 	};
 	
 	/**  
@@ -421,11 +431,6 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 	 * Stores the log Entry found on the remote drone.
 	 */
 	private List<String> logEntry;
-    /**
-     * Executes on activity setup.
-     * @see		interactivespaces.activity.impl.BaseActivity#onActivitySetup()
-     * @since	1.0.0
-     */
 	
 	/**
 	 * RC Transmitter output values to be sent regularly.
@@ -442,6 +447,12 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 	 */
 	private Date commandFileLastModified;
 	
+	/**
+	 * Executes on activity setup.
+	 * 
+	 * @see interactivespaces.activity.impl.BaseActivity#onActivitySetup()
+	 * @since 1.0.0
+	 */
     @Override
     public void onActivitySetup() {
         getLog().info("Activity is.erle.captain setup");
@@ -491,31 +502,34 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 				}, 30, 1, TimeUnit.SECONDS);
     }
     
-    /**
-     * Executes on activity startup.
-     * @see		interactivespaces.activity.impl.BaseActivity#onActivityStartup()
-     * @since	1.0.0
-     */
+	/**
+	 * Executes on activity startup.
+	 * 
+	 * @see interactivespaces.activity.impl.BaseActivity#onActivityStartup()
+	 * @since 1.0.0
+	 */
     @Override
     public void onActivityStartup() {
         getLog().info("Activity is.erle.captain startup");
     }
 
-    /**
-     * Executes on activity post startup.
-     * @see		interactivespaces.activity.impl.BaseActivity#onActivityPostStartup()
-     * @since	1.0.0
-     */
+	/**
+	 * Executes on activity post startup.
+	 * 
+	 * @see interactivespaces.activity.impl.BaseActivity#onActivityPostStartup()
+	 * @since 1.0.0
+	 */
     @Override
     public void onActivityPostStartup() {
         getLog().info("Activity is.erle.captain post startup");
     }
 
-    /**
-     * Executes on activity activate.
-     * @see		interactivespaces.activity.impl.BaseActivity#onActivityActivate()
-     * @since	1.0.0
-     */
+	/**
+	 * Executes on activity activate.
+	 * 
+	 * @see interactivespaces.activity.impl.BaseActivity#onActivityActivate()
+	 * @since 1.0.0
+	 */
     @Override
     public void onActivityActivate() {
         getLog().info("Activity is.erle.captain activate");
@@ -561,21 +575,23 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
     }
 
 	/**
-     * Executes on activity deactivate.
-     * @see		interactivespaces.activity.impl.BaseActivity#onActivityDeactivate()
-     * @since	1.0.0
-     */
+	 * Executes on activity deactivate.
+	 * 
+	 * @see interactivespaces.activity.impl.BaseActivity#onActivityDeactivate()
+	 * @since 1.0.0
+	 */
     @Override
     public void onActivityDeactivate() {
         getLog().info("Activity is.erle.captain deactivate");
         //sendCommand(CommandOptions.ARM);
     }
 
-    /**
-     * Executes on activity pre shutdown.
-     * @see		interactivespaces.activity.impl.BaseActivity#onActivityPreShutdown()
-     * @since	1.0.0
-     */
+	/**
+	 * Executes on activity pre shutdown.
+	 * 
+	 * @see interactivespaces.activity.impl.BaseActivity#onActivityPreShutdown()
+	 * @since 1.0.0
+	 */
     @Override
     public void onActivityPreShutdown() {
 		getLog().info("Activity is.erle.captain pre shutdown");
@@ -595,21 +611,23 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 		commandSender.cancel();
     }
 
-    /**
-     * Executes on activity shutdown.
-     * @see		interactivespaces.activity.impl.BaseActivity#onActivityShutdown()
-     * @since	1.0.0
-     */
+	/**
+	 * Executes on activity shutdown.
+	 * 
+	 * @see interactivespaces.activity.impl.BaseActivity#onActivityShutdown()
+	 * @since 1.0.0
+	 */
     @Override
     public void onActivityShutdown() {
         getLog().info("Activity is.erle.captain shutdown");
     }
 
-    /**
-     * Executes on activity cleanup.
-     * @see		interactivespaces.activity.impl.BaseActivity#onActivityCleanup()
-     * @since	1.0.0
-     */
+	/**
+	 * Executes on activity cleanup.
+	 * 
+	 * @see interactivespaces.activity.impl.BaseActivity#onActivityCleanup()
+	 * @since 1.0.0
+	 */
     @Override
     public void onActivityCleanup() {
         getLog().info("Activity is.erle.captain cleanup");
@@ -831,9 +849,6 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 		return sendCommand(opt, param, 3000);
 	}
 	
-	/*
-	 * Not recommended for use
-	 */
 	/**
 	 * Sends a command to the mavlink activity to perform some action. The
 	 * command comes in a String whose first element always contains
@@ -917,14 +932,16 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 	}
 	
 	/**
-	 * Callback for new message on the subscribed topics.
-	 * Processes incoming messages.
+	 * Callback for new message on the subscribed topics. Processes incoming
+	 * messages.
 	 * 
-	 * @param channelName 	Channel name of incoming message
-	 * @param message 		Message stored in a key-value pair in a map
-	 * @see 				interactivespaces.activity.impl.ros.BaseRoutableRosActivity
-	 * @see					java.util.Map
-	 * @since				1.0.0
+	 * @param channelName
+	 *            Channel name of incoming message
+	 * @param message
+	 *            Message stored in a key-value pair in a map
+	 * @see interactivespaces.activity.impl.ros.BaseRoutableRosActivity
+	 * @see java.util.Map
+	 * @since 1.0.0
 	 */
     @Override
     public void onNewInputJson(String channelName, Map <String , Object> message)
@@ -1085,13 +1102,14 @@ public class IsErleCaptainActivity extends BaseRoutableRosActivity {
 				if (ack == 0)
 				{
 					getLog().info("Arming of the drone successful");
-					if(paramList.isEmpty())
+					if (paramList.isEmpty())
 					{
 						rc_out[2] = 1130;
 					}
 					else
 					{
-					rc_out[2] = (short) (paramList.get("RC3_MIN").shortValue()+130);
+						rc_out[2] = (short) (paramList.get("RC3_MIN")
+								.shortValue() + 130);
 					}
 					ack = sendCommand(CommandOptions.SET_MODE, "Auto");
 					if (ack == 0)
