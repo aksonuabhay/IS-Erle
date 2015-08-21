@@ -9,7 +9,10 @@ import os
 session=requests.Session()
 url_prefix = "http://127.0.0.1:8080/interactivespaces/"
 activity_id = {}#{'captain':'0','serial':'0','udp':'0','mavlink':'0','generator':'0','processor':'0'}
-comms_port ='serial'
+
+#Change to serial to start using on serial port
+comms_port ='udp'
+
 global master_pid
 global controller_pid
 def signal_handler(signal, frame):

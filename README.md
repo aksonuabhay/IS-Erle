@@ -22,8 +22,10 @@ git clone https://github.com/aksonuabhay/IS-Erle.git
 ```
 
 ## Building
-Once you have all the prerequisite installed, you can build this project.
-Clone it in the interactivespaces workbench folder and then run :
+Once you have all the prerequisites installed, you can build this project.
+Clone it in the interactivespaces workbench folder. 
+Copy the jar file in the dependencies folder to  bootsrap folder of interactivespaces controller.
+And then run :
 
 ```bash
 
@@ -58,6 +60,7 @@ python data_display.py
 
 ## Contributing
 You can always contribute to this repositpory. Just fork it and do a pull request for adding updates.
+Code documentation can be found [here](http://aksonuabhay.github.io/IS-Erle/Documentation/index.html).
 This repository is dependent on another project for mission data. You can contribute to the
 [FaedDroneLogistics](https://github.com/FaedDroneLogistics/gsoc15) repository too!
 
